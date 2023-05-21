@@ -16,7 +16,7 @@ jobs:
           ./lpm table manifest.json README.md
           if ! git diff --exit-code -s README.md; then
             git config --global user.name "Github Actions" && git config --global user.email "<>"
-            git add README.md 
+            git add README.md
             git commit -m '[CI] Updated README.md.'
             git push
           fi

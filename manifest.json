@@ -156,22 +156,6 @@
       "mod_version": "3"
     },
     {
-      "description": "Add support for detecting file and string encodings as converting between them.",
-      "version": "1.1",
-      "type": "library",
-      "remote": "https://github.com/jgmdev/lite-xl-encoding:16e2477e916f52e18f6d63f5ac61ace58b0c5e45",
-      "mod_version": "3",
-      "id": "encoding"
-    },
-    {
-      "description": "Properly read files that are not encoded in UTF-8 or ASCII by auto-detecting their encoding and allows saving on different text encodings.",
-      "version": "1.0",
-      "remote": "https://github.com/jgmdev/lite-xl-encoding:16e2477e916f52e18f6d63f5ac61ace58b0c5e45",
-      "mod_version": "3",
-      "id": "encodings",
-      "dependencies": { "encoding": { } }
-    },
-    {
       "checksum": "e3607f5107f4e42fd99006289b8214a473824c6973b8e9c637b4657eba763650",
       "description": "Make sure the file ends with one blank line.",
       "version": "0.1",
@@ -234,15 +218,6 @@
       "remote": "https://github.com/takase1121/lite-fallback-fonts:281cafc014f7931f041046f76496797695678bb4",
       "mod_version": "3",
       "id": "fallbackfonts"
-    },
-    {
-      "name": "Multithreaded Find File",
-      "description": "Threaded project find files.",
-      "version": "1.0",
-      "remote": "https://github.com/jgmdev/lite-xl-threads:9299a9a6b778cb34b12f0286b9162779920a9197",
-      "mod_version": "3",
-      "id": "findfileimproved",
-      "dependencies": { "thread": { } }
     },
     {
       "description": "Allows users to load fonts with [fontconfig](https://www.freedesktop.org/software/fontconfig/fontconfig-user.html).",
@@ -326,13 +301,6 @@
       "version": "0.1",
       "path": "plugins/indentguide.lua",
       "id": "indentguide",
-      "mod_version": "3"
-    },
-    {
-      "description": "Adds inter-process communication support",
-      "version": "0.3",
-      "path": "plugins/ipc.lua",
-      "id": "ipc",
       "mod_version": "3"
     },
     {
@@ -975,7 +943,7 @@
     {
       "description": "Provides code completion (also known as IntelliSense) using the Language Server Protocol",
       "version": "0.3",
-      "remote": "https://github.com/lite-xl/lite-xl-lsp:607cc85978b6fe169c2e6cabe779776d752267f8",
+      "remote": "https://github.com/pragtical/lsp:607cc85978b6fe169c2e6cabe779776d752267f8",
       "mod_version": "3",
       "id": "lsp"
     },
@@ -1129,15 +1097,6 @@
       "mod_version": "3"
     },
     {
-      "name": "Multithreaded Project Search",
-      "description": "Threaded project search with 5-10x better performance.",
-      "version": "1.2",
-      "remote": "https://github.com/jgmdev/lite-xl-threads:9299a9a6b778cb34b12f0286b9162779920a9197",
-      "mod_version": "3",
-      "id": "projectsearch",
-      "dependencies": { "thread": { } }
-    },
-    {
       "description": "Show nesting of parentheses with rainbow colours",
       "version": "0.1",
       "path": "plugins/rainbowparen.lua",
@@ -1169,7 +1128,7 @@
       "name": "Source Control Management",
       "description": "Extensible source control management plugin with git and fossil backends.",
       "version": "0.1",
-      "remote": "https://github.com/lite-xl/lite-xl-scm:930951990f9a3c78178265e5380e3c9e40b109d2",
+      "remote": "https://github.com/pragtical/scm:930951990f9a3c78178265e5380e3c9e40b109d2",
       "id": "scm",
       "mod_version": "3",
       "dependencies": { "widget": {} }
@@ -1197,7 +1156,7 @@
       "mod_version": "3"
     },
     {
-      "description": "Provides a GUI to manage core and plugin settings, bindings and select color theme *([video](https://user-images.githubusercontent.com/1702572/169743674-ececae24-f6b7-4ff2-bfa2-c4762cd327d9.mp4))*. (depends on [`widget`](https://github.com/lite-xl/lite-xl-widgets))",
+      "description": "Provides a GUI to manage core and plugin settings, bindings and select color theme *([video](https://user-images.githubusercontent.com/1702572/169743674-ececae24-f6b7-4ff2-bfa2-c4762cd327d9.mp4))*. (depends on [`widget`](https://github.com/pragtical/widget))",
       "version": "0.6",
       "path": "plugins/settings.lua",
       "id": "settings",
@@ -1328,15 +1287,6 @@
       "mod_version": "3"
     },
     {
-      "name": "Threads",
-      "description": "Adds the missing multithreading functionality.",
-      "version": "1.3",
-      "type": "library",
-      "remote": "https://github.com/jgmdev/lite-xl-threads:9299a9a6b778cb34b12f0286b9162779920a9197",
-      "mod_version": "3",
-      "id": "thread"
-    },
-    {
       "description": "Extend Lite XL's treeview menu *([screenshot](https://raw.githubusercontent.com/juliardi/lite-xl-treeview-extender/main/screenshot.png))*",
       "version": "1.0.0",
       "remote": "https://github.com/juliardi/lite-xl-treeview-extender:c6583c3b7f726b08f98c1282d03408facd4cbc91",
@@ -1382,7 +1332,7 @@
     {
       "description": "Plugin library that provides a set of re-usable components to more easily write UI elements for your plugins",
       "version": "0.3",
-      "remote": "https://github.com/lite-xl/lite-xl-widgets:b5e6e212c0516ec7b55f57c7efcfda9d791cdb0d",
+      "remote": "https://github.com/pragtical/widget:b5e6e212c0516ec7b55f57c7efcfda9d791cdb0d",
       "mod_version": "3",
       "id": "widget"
     },
