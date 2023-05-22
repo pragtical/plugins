@@ -1,9 +1,9 @@
--- mod-version:3
+-- mod-version:3.1
 local syntax = require "core.syntax"
 
 syntax.add {
   name = "Meson",
-  files = { "^meson%.build$", "^meson_options%.txt$" },
+  files = { "/meson%.build$", "/meson_options%.txt$" },
   comment = "#",
   patterns = {
     { pattern = { "#", "\n" },            type = "comment"  },
@@ -33,4 +33,3 @@ syntax.add {
     ["false"]      = "literal",
   },
 }
-

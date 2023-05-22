@@ -1,9 +1,9 @@
--- mod-version:3
+-- mod-version:3.1
 local syntax = require "core.syntax"
 
 syntax.add {
   name = "SSH config",
-  files = { "sshd?/?_?config$" },
+  files = { "/sshd?/?_?config$" },
   comment = '#',
   patterns = {
     { pattern = "#.*\n",        type = "comment"  },
@@ -45,7 +45,6 @@ syntax.add {
     ["RekeyLimit"]                   = "keyword",
     ["SendEnv"]                      = "keyword",
     ["HashKnownHosts"]               = "keyword",
-    ["GSSAPIAuthentication"]         = "keyword",
 
     -- sshd config
     ["Subsystem"]                    = "keyword2",

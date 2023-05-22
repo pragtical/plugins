@@ -1,4 +1,4 @@
--- mod-version:3
+-- mod-version:3.1
 local syntax = require "core.syntax"
 
 local keywords = {
@@ -165,7 +165,7 @@ local xml_syntax = {
 
 syntax.add {
   name = ".htaccess File",
-  files = { "^%.htaccess$" },
+  files = { "/%.htaccess$" },
   comment = "#",
   patterns = {
     -- Comments

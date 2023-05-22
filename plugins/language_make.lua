@@ -1,9 +1,9 @@
--- mod-version:3
+-- mod-version:3.1
 local syntax = require "core.syntax"
 
 syntax.add {
   name = "Makefile",
-  files = { "Makefile", "makefile", "%.mk$" },
+  files = { "/Makefile$", "/makefile$", "%.mk$" },
   comment = "#",
   patterns = {
     { pattern = "#.*\n",                  type = "comment"  },
