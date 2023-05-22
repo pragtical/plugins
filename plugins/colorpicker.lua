@@ -1,7 +1,7 @@
 -- mod-version:3
 local command = require "core.command"
 local keymap = require "core.keymap"
-local ColorPickerDialog = require "libraries.widget.colorpickerdialog"
+local ColorPickerDialog = require "widget.colorpickerdialog"
 
 ---Get the color format of given text.
 ---@param text string

@@ -1156,14 +1156,6 @@
       "mod_version": "3"
     },
     {
-      "description": "Provides a GUI to manage core and plugin settings, bindings and select color theme *([video](https://user-images.githubusercontent.com/1702572/169743674-ececae24-f6b7-4ff2-bfa2-c4762cd327d9.mp4))*. (depends on [`widget`](https://github.com/pragtical/widget))",
-      "version": "0.6",
-      "path": "plugins/settings.lua",
-      "id": "settings",
-      "mod_version": "3",
-      "dependencies": { "widget": {} }
-    },
-    {
       "description": "Displays the current time in the corner of the status view",
       "version": "0.1",
       "path": "plugins/smallclock.lua",
