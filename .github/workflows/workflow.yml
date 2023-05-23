@@ -4,16 +4,18 @@ on:
   push:
     branches: [master]
 
+permissions: write-all
+
 jobs:
   reorganize:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Generate table with `lpm`
+      - uses: actions/checkout@v3
+      - name: Generate table with `ppm`
         run: |
-          wget https://github.com/lite-xl/lite-xl-plugin-manager/releases/download/latest/lpm.x86_64-linux -O lpm
-          chmod +x lpm
-          ./lpm table manifest.json README.md
+          wget https://github.com/pragtical/plugin-manager/releases/download/continuous/ppm.x86_64-linux -O ppm
+          chmod +x ppm
+          ./ppm table manifest.json README.md
           if ! git diff --exit-code -s README.md; then
             git config --global user.name "Github Actions" && git config --global user.email "<>"
             git add README.md
