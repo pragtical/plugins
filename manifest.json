@@ -88,7 +88,7 @@
     {
       "description": "A console for running external commands and capturing their output *([gif](https://user-images.githubusercontent.com/3920290/81343656-49325a00-90ad-11ea-8647-ff39d8f1d730.gif))*",
       "version": "0.1",
-      "remote": "https://github.com/franko/console:08c3f5e1483627c3ae688ce5a99008e823357f2c",
+      "remote": "https://github.com/pragtical/console:86b877d293174266bb03f0787511b635bfae27c7",
       "mod_version": "3",
       "id": "console"
     },
