@@ -12,7 +12,7 @@ for i, argument in ipairs(ARGS) do
   end
 end
 
----Logger that will output using lite-xl logging functions or print to
+---Logger that will output using pragtical logging functions or print to
 ---terminal if the parser is running in standalone mode.
 ---@param type "log" | "error"
 ---@param format string

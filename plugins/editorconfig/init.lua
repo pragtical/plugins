@@ -1,6 +1,6 @@
 -- mod-version:3
 --
--- EditorConfig plugin for Lite XL
+-- EditorConfig plugin for Pragtical
 -- @copyright Jefferson Gonzalez <jgmdev@gmail.com>
 -- @license MIT
 --
@@ -62,7 +62,7 @@ function editorconfig.load(project_dir)
 end
 
 ---Helper to add or substract final new line, it also makes final new line
----visble which lite-xl does not.
+---visible which pragtical does not.
 ---@param doc core.doc
 ---@param raw? boolean If true does not register change on undo stack
 ---@return boolean handled_new_line
@@ -283,6 +283,10 @@ function editorconfig.apply(doc)
       doc.insert_final_newline = nil
     end
 
+    if options.charset then
+      doc.encoding = string.upper(options.charset)
+    end
+
     if
       (
         type(doc.trim_trailing_whitespace) == "boolean"
@@ -428,7 +432,7 @@ function Doc:save(...)
 end
 
 --------------------------------------------------------------------------------
--- Run the test suite if requested on CLI with: lite-xl test editorconfig
+-- Run the test suite if requested on CLI with: pragtical test editorconfig
 --------------------------------------------------------------------------------
 for i, argument in ipairs(ARGS) do
   if argument == "test" and ARGS[i+1] == "editorconfig" then

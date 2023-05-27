@@ -1,12 +1,12 @@
 # EditorConfig
 
 This plugin implements the [EditorConfig](https://editorconfig.org/) spec
-purely on lua by leveraging lua patterns and the regex engine on lite-xl.
+purely on lua by leveraging lua patterns and the regex engine on pragtical.
 Installing additional dependencies is not required.
 
 The EditorConfig spec was implemented as best understood,
 if you find any bugs please report them on this repository
-[issue tracker](https://github.com/lite-xl/lite-xl-plugins/issues).
+[issue tracker](https://github.com/pragtical/plugins/issues).
 
 ## Implemented Features
 
@@ -22,15 +22,10 @@ Applied to documents indent info:
 
 Applied on document save:
 
+* charset
 * end_of_line - if set to `cr` it is ignored
 * trim_trailing_whitespace
 * insert_final_newline boolean
-
-## Not implemented
-
-* charset - this feature would need the encoding
-  [PR](https://github.com/lite-xl/lite-xl/pull/1161) or
-  [plugin](https://github.com/jgmdev/lite-xl-encoding)
 
 ## Extras
 
@@ -51,11 +46,11 @@ If you are interested in running the test suite, from the terminal execute
 the following:
 
 ```sh
-lite-xl test editorconfig
+pragtical test editorconfig
 ```
 
 To inspect the generated sections and regex rules:
 
 ```sh
-lite-xl test editorconfig --parsers
+pragtical test editorconfig --parsers
 ```
