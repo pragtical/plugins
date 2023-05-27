@@ -4,14 +4,14 @@ Profiling is mainly the runtime analysis of a program performance by counting
 the calls and duration for the various routines executed thru the lifecycle
 of the application. For more information view the [wikipedia] article.
 
-This plugin adds the ability to profile function calls while running Lite XL,
+This plugin adds the ability to profile function calls while running Pragtical,
 becoming easier to investigate performance related issues and pinpoint what
 could be causing them. It integrates the [lua-profiler] which provides
 the functionality we need.
 
 ## Usage
 
-Open Lite XL and access the command palette by pressing `ctrl+shift+p` and
+Open Pragtical and access the command palette by pressing `ctrl+shift+p` and
 search for `profiler`. The command `Profiler: Toggle` will be shown to let you
 start or stop the profiler. You should start the profiler before triggering
 the events that are causing any performance issues.
@@ -41,7 +41,7 @@ as shown below:
 
 ![metrics](https://user-images.githubusercontent.com/1702572/202113736-ef8d550c-130e-4372-b66c-694ee5f4c5c0.png)
 
-You can send Lite XL developers the output of `profiler.log` so it can be
+You can send Pragtical developers the output of `profiler.log` so it can be
 more easily diagnosed what could be causing any issue.
 
 [wikipedia]: https://en.wikipedia.org/wiki/Profiling_(computer_programming)
