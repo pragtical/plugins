@@ -1258,8 +1258,8 @@
     },
     {
       "description": "Todo tree viewer for annotations in code like `TODO`, `BUG`, `FIX`, `IMPROVEMENT`",
-      "version": "0.1",
-      "remote": "https://github.com/drmargarido/TodoTreeView:a9371045ead3bc820224d3be55db6066398a11c5",
+      "version": "0.2",
+      "path": "plugins/todotreeview.lua",
       "mod_version": "3",
       "id": "todotreeview"
     },
