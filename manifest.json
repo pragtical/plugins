@@ -75,8 +75,7 @@
       "version": "0.1",
       "path": "plugins/colorpicker.lua",
       "id": "colorpicker",
-      "mod_version": "3",
-      "dependencies": { "widget": {} }
+      "mod_version": "3"
     },
     {
       "description": "Underlays color values (eg. `#ff00ff` or `rgb(255, 0, 255)`) with their resultant color. *([screenshot](https://user-images.githubusercontent.com/3920290/80743752-731bd780-8b15-11ea-97d3-847db927c5dc.png))*",
@@ -1127,11 +1126,10 @@
     {
       "name": "Source Control Management",
       "description": "Extensible source control management plugin with git and fossil backends.",
-      "version": "0.1",
-      "remote": "https://github.com/pragtical/scm:930951990f9a3c78178265e5380e3c9e40b109d2",
+      "version": "0.2",
+      "remote": "https://github.com/pragtical/scm:365f46f9430be299a4cc388c727883c6587e7a25",
       "id": "scm",
-      "mod_version": "3",
-      "dependencies": { "widget": {} }
+      "mod_version": "3"
     },
     {
       "description": "Select a color theme, like VScode, Sublime Text.(plugin saves changes)",
@@ -1312,13 +1310,6 @@
       "remote": "https://github.com/TorchedSammy/Visu:782c7b1ebde38dad2c3c6a1c1dee6761230dea16",
       "mod_version": "3",
       "id": "visu"
-    },
-    {
-      "description": "Plugin library that provides a set of re-usable components to more easily write UI elements for your plugins",
-      "version": "0.3",
-      "remote": "https://github.com/pragtical/widget:b5e6e212c0516ec7b55f57c7efcfda9d791cdb0d",
-      "mod_version": "3",
-      "id": "widget"
     },
     {
       "description": "Adds in a word count to the statusview.",
