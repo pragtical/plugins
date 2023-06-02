@@ -400,10 +400,10 @@ function Doc:save(...)
     trim_trailing_whitespace(self)
   end
 
-  local lc = #self.lines
   local handle_new_line = handle_final_new_line(self)
 
   -- remove the unnecesary visible \n\n or the disabled \n
+  local lc = #self.lines
   if handle_new_line then
     self.lines[lc] = self.lines[lc]:gsub("\n$", "")
   end
@@ -411,6 +411,7 @@ function Doc:save(...)
   doc_save(self, ...)
 
   -- restore the visible \n\n or disabled \n
+  lc = #self.lines
   if handle_new_line then
     self.lines[lc] = self.lines[lc] .. "\n"
   end
