@@ -1,4 +1,4 @@
--- mod-version:3
+-- mod-version:3.1
 --
 -- Original Code:
 -- https://github.com/drmargarido/TodoTreeView
@@ -137,7 +137,7 @@ local function get_project_files()
   local start_time = system.get_time()
   core.log_quiet("TODO View: Started Scanning")
   return coroutine.wrap(function()
-    local root = core.project_dir
+    local root = core.root_project().path
     local directories = {""}
 
     while #directories > 0 do
@@ -168,7 +168,7 @@ local function get_project_files()
                 table.insert(directories, directory .. file)
               else
                 info.filename = common.relative_path(
-                  core.project_dir,
+                  core.root_project().path,
                   dir_path .. PATHSEP .. file
                 )
                 coroutine.yield(info)
@@ -188,7 +188,7 @@ local function get_project_files()
 end
 
 function TodoTreeView:refresh_cache()
-  self.current_project_dir = core.project_dir
+  self.current_project_dir = core.root_project().path
   self.items = {}
   self.cache = {}
 
@@ -287,10 +287,10 @@ function TodoTreeView:get_cached(filename)
     t = {}
     t.expanded = config.plugins.todotreeview.todo_expanded
     t.filename = filename
-    t.abs_filename = system.absolute_path(filename)
+    t.abs_filename = core.project_absolute_path(filename)
     t.type = "file"
     t.todos = {}
-    find_file_todos(t.todos, t.filename)
+    find_file_todos(t.todos, t.abs_filename)
     if #t.todos > 0 then
       self.cache[t.filename] = t
     end
@@ -503,7 +503,7 @@ core.add_thread(function()
   while true do
     if not view.updating_cache then
       if
-        core.project_dir ~= view.current_project_dir
+        core.root_project().path ~= view.current_project_dir
         or
         last_mode ~= config.plugins.todotreeview.todo_mode
       then
@@ -587,4 +587,3 @@ command.add(nil, {
 keymap.add { ["ctrl+shift+t"] = "todotreeview:toggle" }
 keymap.add { ["ctrl+shift+e"] = "todotreeview:expand-items" }
 keymap.add { ["ctrl+shift+h"] = "todotreeview:hide-items" }
-

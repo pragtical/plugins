@@ -11,7 +11,7 @@ local function exec(cmd)
 end
 
 local function get_cmd_text(cmd, doc)
-  local active_filename = doc and system.absolute_path(doc.filename or "")
+  local active_filename = doc and core.project_absolute_path(doc.abs_filename or "")
   return exec(string.format("%s %s", cmd, active_filename))
 end
 

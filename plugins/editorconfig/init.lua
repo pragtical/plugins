@@ -1,4 +1,4 @@
--- mod-version:3
+-- mod-version:3.1
 --
 -- EditorConfig plugin for Pragtical
 -- @copyright Jefferson Gonzalez <jgmdev@gmail.com>
@@ -41,7 +41,7 @@ local project_configs = {}
 ---Keep track of main project directory so when changed we can assign a new
 ---.editorconfig object if neccesary.
 ---@type string
-local main_project = core.project_dir
+local main_project = core.root_project().path
 
 ---Functionality that will be exposed by the plugin.
 ---@class plugins.editorconfig
@@ -156,9 +156,9 @@ local function recursive_get_config(file_path)
   end
 
   if project_dir == "" then
-    for _, project in ipairs(core.project_directories) do
-      if common.path_belongs_to(file_path, project.name) then
-        project_dir = project.name
+    for _, project in ipairs(core.projects) do
+      if common.path_belongs_to(file_path, project.path) then
+        project_dir = project.path
         break
       end
     end
@@ -318,9 +318,9 @@ core.add_thread(function()
   local loaded = false
 
   -- scan all opened project directories
-  if core.project_directories then
-    for i=1, #core.project_directories do
-      local found = editorconfig.load(core.project_directories[i].name)
+  if core.projects then
+    for i=1, #core.projects do
+      local found = editorconfig.load(core.projects[i].path)
       if found then loaded = true end
     end
   end
@@ -334,25 +334,29 @@ end)
 --------------------------------------------------------------------------------
 -- Override various core project loading functions for .editorconfig scanning
 --------------------------------------------------------------------------------
-local core_open_folder_project = core.open_folder_project
-function core.open_folder_project(directory)
-  core_open_folder_project(directory)
+local core_open_project = core.open_project
+function core.open_project(project)
+  core_open_project(project)
   if project_configs[main_project] then project_configs[main_project] = nil end
-  main_project = core.project_dir
+  main_project = core.root_project().path
   editorconfig.load(main_project)
 end
 
-local core_remove_project_directory = core.remove_project_directory
-function core.remove_project_directory(path)
-  local out = core_remove_project_directory(path)
+local core_remove_project = core.remove_project
+function core.remove_project(project, force)
+  local out = core_remove_project(project, force)
+  local path = project
+  if type(project) ~= "string" then
+    path = project.path
+  end
   if project_configs[path] then project_configs[path] = nil end
   return out
 end
 
-local core_add_project_directory = core.add_project_directory
-function core.add_project_directory(directory)
-  local out = core_add_project_directory(directory)
-  editorconfig.load(directory)
+local core_add_project = core.add_project
+function core.add_project(project)
+  local out = core_add_project(project)
+  editorconfig.load(out.path)
   return out
 end
 
@@ -418,9 +422,9 @@ function Doc:save(...)
 
   if common.basename(self.abs_filename) == ".editorconfig" then
     -- blindlessly reload related project .editorconfig options
-    for _, project in ipairs(core.project_directories) do
-      if common.path_belongs_to(self.abs_filename, project.name) then
-        editorconfig.load(project.name)
+    for _, project in ipairs(core.projects) do
+      if common.path_belongs_to(self.abs_filename, project.path) then
+        editorconfig.load(project.path)
         break
       end
     end

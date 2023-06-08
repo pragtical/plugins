@@ -1,4 +1,4 @@
--- mod-version:3
+-- mod-version:3.1
 local core = require "core"
 local common = require "core.common"
 local config = require "core.config"
@@ -47,7 +47,7 @@ local git = {
 }
 
 local function exec(cmd)
-  local proc = process.start(cmd)
+  local proc = process.start(cmd, {cwd = core.root_project().path})
   -- Don't use proc:wait() here - that will freeze the app.
   -- Instead, rely on the fact that this is only called within
   -- a coroutine, and yield for a fraction of a second, allowing
@@ -82,11 +82,11 @@ core.add_thread(function()
       -- forget the old state
       cached_color_for_item = {}
 
-      local folder = core.project_dir
+      local folder = core.root_project().path
       for line in string.gmatch(diff, "[^\n]+") do
         local submodule = line:match("^Entering '(.+)'$")
         if submodule then
-          folder = core.project_dir .. PATHSEP .. submodule
+          folder = core.root_project().path .. PATHSEP .. submodule
         else
           local ins, dels, path = line:match("(%d+)%s+(%d+)%s+(.+)")
           if path then

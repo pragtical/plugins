@@ -157,10 +157,10 @@
     },
     {
       "description": "[EditorConfig](https://editorconfig.org/) implementation for Lite XL",
-      "version": "0.1",
+      "version": "0.2",
       "path": "plugins/editorconfig",
       "id": "editorconfig",
-      "mod_version": "3"
+      "mod_version": "3.1"
     },
     {
       "checksum": "e3607f5107f4e42fd99006289b8214a473824c6973b8e9c637b4657eba763650",
@@ -270,17 +270,17 @@
     },
     {
       "description": "Open project files that are in a git commit (default=HEAD)",
-      "version": "0.1",
+      "version": "0.2",
       "path": "plugins/gitopen.lua",
       "id": "gitopen",
-      "mod_version": "3"
+      "mod_version": "3.1"
     },
     {
       "description": "Displays git branch and insert/delete count in status bar *([screenshot](https://user-images.githubusercontent.com/3920290/81107223-bcea3080-8f0e-11ea-8fc7-d03173f42e33.png))*",
-      "version": "0.1",
+      "version": "0.2",
       "path": "plugins/gitstatus.lua",
       "id": "gitstatus",
-      "mod_version": "3"
+      "mod_version": "3.1"
     },
     {
       "description": "Auto-formats the current go file, adds the missing imports and the missing return cases",
@@ -1169,10 +1169,10 @@
     },
     {
       "description": "Opens the selected filename or path in project. Useful to open imports.",
-      "version": "0.1",
+      "version": "0.2",
       "path": "plugins/smartopenselected.lua",
       "id": "smartopenselected",
-      "mod_version": "3"
+      "mod_version": "3.1"
     },
     {
       "description": "Smooth caret animation *([gif](https://user-images.githubusercontent.com/20792268/139006049-a0ba6559-88cb-49a7-8077-4822445b4a1f.gif))*",
@@ -1271,9 +1271,9 @@
     },
     {
       "description": "Todo tree viewer for annotations in code like `TODO`, `BUG`, `FIX`, `IMPROVEMENT`",
-      "version": "0.2",
+      "version": "0.3",
       "path": "plugins/todotreeview.lua",
-      "mod_version": "3",
+      "mod_version": "3.1",
       "id": "todotreeview"
     },
     {

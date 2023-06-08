@@ -1,11 +1,11 @@
--- mod-version:3
+-- mod-version:3.1
 local core = require "core"
 local command = require "core.command"
 local common = require "core.common"
 
 
 local function exec(cmd)
-  local proc = process.start(cmd)
+  local proc = process.start(cmd, {cwd = core.root_project().path})
   while proc:running() do
     coroutine.yield(0.1)
   end
@@ -25,10 +25,9 @@ local function git_find_files_and_open(commit)
     git_files[git_root .. PATHSEP .. str] = true
   end
 
-  for dir, item in core.get_project_files() do
-    local key = dir .. PATHSEP .. item.filename
-    if git_files[key] then
-      core.root_view:open_doc(core.open_doc(item.filename))
+  for file, flag in pairs(git_files) do
+    if system.get_file_info(file) then
+      core.root_view:open_doc(core.open_doc(file))
     end
   end
 end
