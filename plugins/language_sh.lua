@@ -12,7 +12,10 @@ local string_interpolation_syntax = { patterns = {}, symbols = {} }
 
 local sh_syntax = {
   name = "Shell script",
-  files = { "%.sh$", "%.bash$", "/%.bashrc$", "/%.bash_profile$", "/%.profile$" },
+  files = {
+    "%.sh$", "%.bash$", PATHSEP .. "%.bashrc$",
+    PATHSEP .. "%.bash_profile$", PATHSEP .. "%.profile$"
+  },
   headers = "^#!.*bin.*sh\n",
   comment = "#",
   patterns = {
