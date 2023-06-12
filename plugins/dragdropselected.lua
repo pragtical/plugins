@@ -1,4 +1,4 @@
--- mod-version:3
+-- mod-version:3.1
 --[[
   dragdropselected.lua
   provides basic drag and drop of selected text (in same document)
@@ -159,7 +159,7 @@ end -- DocView:on_mouse_released
 
 -- override DocView:draw_caret()
 local draw_caret = DocView.draw_caret
-function DocView:draw_caret(x, y)
+function DocView:draw_caret(x, y, line, col)
   if self.bClickedIntoSelection then
     local iLine, iCol = self:resolve_screen_position(x, y)
     -- don't show carets inside selections
@@ -173,5 +173,5 @@ function DocView:draw_caret(x, y)
       return
     end
   end
-  draw_caret(self, x, y)
+  draw_caret(self, x, y, line, col)
 end -- DocView:draw_caret()

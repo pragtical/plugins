@@ -1,4 +1,4 @@
--- mod-version:3
+-- mod-version:3.1
 local core = require "core"
 local config = require "core.config"
 local common = require "core.common"
@@ -30,8 +30,13 @@ config.plugins.motiontrail = common.merge({
   }
 }, config.plugins.motiontrail)
 
-local cc_installed = pcall(require, 'plugins.custom_caret')
-local cc_conf = config.plugins.custom_caret
+local cc_installed = false
+local cc_conf = nil
+
+core.add_thread(function()
+  cc_installed = config.plugins.custom_caret and true or false
+  cc_conf = config.plugins.custom_caret
+end)
 
 local function get_caret_size(dv, i)
   local line, col = dv.doc:get_selection_idx(i)
@@ -39,7 +44,10 @@ local function get_caret_size(dv, i)
   local w = style.caret_width
   local h = dv:get_line_height()
 
-  if cc_installed then
+  if dv.doc.overwrite then
+    w = chw
+    h = style.caret_width * 2
+  elseif cc_installed then
     local cc_shape = cc_conf.shape
     if cc_shape == "underline" or dv.doc.overwrite then
       w = chw
@@ -80,9 +88,9 @@ function DocView:draw()
 end
 
 local dv_draw_caret = DocView.draw_caret
-function DocView:draw_caret(x, y)
+function DocView:draw_caret(x, y, line, col)
   if not config.plugins.motiontrail.enabled or self ~= core.active_view then
-    dv_draw_caret(self, x, y)
+    dv_draw_caret(self, x, y, line, col)
     return
   end
 
@@ -90,7 +98,7 @@ function DocView:draw_caret(x, y)
   self.last_doc_pos[caret_idx] = self.last_doc_pos[caret_idx] or {}
   local line, col = self.doc:get_selection_idx(caret_idx)
 
-  if self.draws <= 1 then
+  if self.draws and self.draws <= 1 then
     local lsx, lsy = self.last_pos[caret_idx][1] or x, self.last_pos[caret_idx][2] or y
     local lsl, lsc = self.last_doc_pos[caret_idx][1], self.last_doc_pos[caret_idx][2]
     local w, h = get_caret_size(self, caret_idx)
@@ -125,5 +133,5 @@ function DocView:draw_caret(x, y)
   self.last_doc_pos[caret_idx][1], self.last_doc_pos[caret_idx][2] = line, col
   caret_idx = caret_idx + 1
   self.draws = 0
-  dv_draw_caret(self, x, y)
+  dv_draw_caret(self, x, y, line, col)
 end

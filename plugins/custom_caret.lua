@@ -1,4 +1,4 @@
--- mod-version:3
+-- mod-version:3.1
 
 --[[
   Author: techie-guy
@@ -104,11 +104,17 @@ function DocView:update()
   caret_idx = 1
 end
 
-function DocView:draw_caret(x, y)
+function DocView:draw_caret(x, y, line, col)
   local caret_width = style.caret_width
   local caret_height = self:get_line_height()
   local current_caret_shape = conf.shape
   local caret_color = conf.custom_color and conf.caret_color or style.caret
+
+  if self.doc.overwrite then
+    local w = self:get_font():get_width(self.doc:get_char(line, col))
+    renderer.draw_rect(x, y + caret_height, w, style.caret_width * 2, caret_color)
+    return
+  end
 
   local font = self:get_font()
   local line, col = self.doc:get_selection_idx(caret_idx)

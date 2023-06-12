@@ -1,4 +1,4 @@
--- mod-version:3
+-- mod-version:3.1
 local core = require "core"
 local config = require "core.config"
 local style = require "core.style"
@@ -102,14 +102,16 @@ function DocView:update()
 end
 
 local docview_draw_caret = DocView.draw_caret
-function DocView:draw_caret(x, y)
+function DocView:draw_caret(x, y, line, col)
   if not config.plugins.smoothcaret.enabled then
-    docview_draw_caret(self, x, y)
+    docview_draw_caret(self, x, y, line, col)
     return
   end
 
   local c = self.visible_carets[caret_idx] or { current = { x = x, y = y } }
-  docview_draw_caret(self, c.current.x - self.scroll.x, c.current.y - self.scroll.y)
+  docview_draw_caret(
+    self, c.current.x - self.scroll.x, c.current.y - self.scroll.y, line, col
+  )
 
   caret_idx = caret_idx + 1
 end
