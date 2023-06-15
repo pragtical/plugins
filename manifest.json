@@ -1089,8 +1089,8 @@
       "mod_version": "3"
     },
     {
-      "description": "Adds the ability to profile lite-xl with the [lua-profiler](https://github.com/charlesmallah/lua-profiler)",
-      "version": "0.1",
+      "description": "Adds the ability to profile Pragtical.",
+      "version": "0.2",
       "path": "plugins/profiler",
       "id": "profiler",
       "mod_version": "3"
