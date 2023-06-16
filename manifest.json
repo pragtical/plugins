@@ -371,7 +371,7 @@
     },
     {
       "description": "Syntax for the Caddyfile used on the [Caddy](https://caddyserver.com/) web server",
-      "version": "0.2",
+      "version": "0.3",
       "path": "plugins/language_caddyfile.lua",
       "id": "language_caddyfile",
       "mod_version": "3.1"
