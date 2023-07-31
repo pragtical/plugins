@@ -86,9 +86,9 @@
     },
     {
       "description": "A console for running external commands and capturing their output *([gif](https://user-images.githubusercontent.com/3920290/81343656-49325a00-90ad-11ea-8647-ff39d8f1d730.gif))*",
-      "version": "0.1",
-      "remote": "https://github.com/pragtical/console:86b877d293174266bb03f0787511b635bfae27c7",
-      "mod_version": "3",
+      "version": "0.2",
+      "remote": "https://github.com/pragtical/console:79178f0f190ffd66654330ca8e3a707131402b96",
+      "mod_version": "3.1",
       "id": "console"
     },
     {
@@ -956,9 +956,9 @@
     },
     {
       "description": "Provides code completion (also known as IntelliSense) using the Language Server Protocol",
-      "version": "0.4",
-      "remote": "https://github.com/pragtical/lsp:2a9d63f2c35bc57681f1eaff78278a932eb4e3b6",
-      "mod_version": "3",
+      "version": "0.5",
+      "remote": "https://github.com/pragtical/lsp:bb5d9db22e839ebdc08acfdd45778ffe61eddb85",
+      "mod_version": "3.1",
       "id": "lsp"
     },
     {
@@ -1141,10 +1141,10 @@
     {
       "name": "Source Control Management",
       "description": "Extensible source control management plugin with git and fossil backends.",
-      "version": "0.2",
-      "remote": "https://github.com/pragtical/scm:365f46f9430be299a4cc388c727883c6587e7a25",
+      "version": "0.3",
+      "remote": "https://github.com/pragtical/scm:8cfa2b958c3fa877959fad58462866e25149bb5b",
       "id": "scm",
-      "mod_version": "3"
+      "mod_version": "3.1"
     },
     {
       "description": "Select a color theme, like VScode, Sublime Text.(plugin saves changes)",
