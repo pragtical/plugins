@@ -1239,6 +1239,13 @@
       "mod_version": "3"
     },
     {
+      "description": "An integrated terminal for pragtical.",
+      "version": "0.9",
+      "id": "terminal",
+      "mod_version": "3",
+      "remote": "https://github.com/pragtical/terminal.git:ed1e63bb99c5c30a57dfb1159aa382cf905ad2c4"
+    },
+    {
       "description": "Compile Tex files into PDF",
       "version": "0.1",
       "path": "plugins/texcompile.lua",
