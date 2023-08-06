@@ -95,7 +95,14 @@ command.add("core.docview!", {
             end
             post = string.format("\n%s%s", current_indent, close)
           elseif col < #doc.lines[line] then
-            post = string.format("\n%s", current_indent)
+            post = ""
+            if close then
+              close = str and close:gsub("$TEXT", str) or close
+              -- Insert newline and extra indentation if followed by close
+              if remainder:find(close, 1, true) == 1 then
+                post = string.format("\n%s", current_indent)
+              end
+            end
           end
           break
         end
