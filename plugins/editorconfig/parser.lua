@@ -412,8 +412,6 @@ function Parser:read()
           value = true
         elseif value == "false" then
           value = false
-        elseif math.tointeger and math.tointeger(value) then
-          value = math.tointeger(value)
         elseif tonumber(value) then
           value = tonumber(value)
         end

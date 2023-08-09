@@ -157,7 +157,7 @@
     },
     {
       "description": "[EditorConfig](https://editorconfig.org/) implementation for Lite XL",
-      "version": "0.2",
+      "version": "0.3",
       "path": "plugins/editorconfig",
       "id": "editorconfig",
       "mod_version": "3.1"
