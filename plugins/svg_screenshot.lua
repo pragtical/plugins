@@ -47,7 +47,7 @@ local extract = function( v, from, width )
   if LUAJIT then
     return bit.band(bit.rshift(v, from), (bit.lshift(1, width) - 1))
   end
-  return load("( v >> from ) & ((1 << width) - 1)")()
+  return load("return ( v >> from ) & ((1 << width) - 1)")()
 end
 
 
