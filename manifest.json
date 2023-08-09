@@ -1246,6 +1246,14 @@
       "remote": "https://github.com/pragtical/terminal.git:ed1e63bb99c5c30a57dfb1159aa382cf905ad2c4"
     },
     {
+      "description": "Allows you to play tetris directly in the editor.",
+      "version": "0.1",
+      "path": "plugins/tetris.lua",
+      "id": "tetris",
+      "tags": ["game"],
+      "mod_version": 3
+    },
+    {
       "description": "Compile Tex files into PDF",
       "version": "0.1",
       "path": "plugins/texcompile.lua",
