@@ -1247,7 +1247,7 @@
       "mod_version": "3"
     },
     {
-      "description": "Displays tab numbers from 1–9 next to their names \\*([screenshot](https://user-images.githubusercontent.com/16415678/101285362-007a8500-37e5-11eb-869b-c10eb9d9d902.png))",
+      "description": "Displays tab numbers from 1–9 next to their names *([screenshot](https://user-images.githubusercontent.com/16415678/101285362-007a8500-37e5-11eb-869b-c10eb9d9d902.png))*",
       "version": "0.1",
       "path": "plugins/tabnumbers.lua",
       "id": "tabnumbers",
