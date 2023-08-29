@@ -1255,7 +1255,7 @@
     },
     {
       "description": "An integrated terminal for pragtical.",
-      "version": "0.9",
+      "version": "1.0",
       "id": "terminal",
       "mod_version": "3",
       "remote": "https://github.com/pragtical/terminal.git:master"
