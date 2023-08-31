@@ -1112,7 +1112,7 @@
     },
     {
       "description": "Adds the ability to profile Pragtical.",
-      "version": "0.3",
+      "version": "0.4",
       "path": "plugins/profiler",
       "id": "profiler",
       "mod_version": "3"
