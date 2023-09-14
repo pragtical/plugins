@@ -1125,6 +1125,13 @@
       "mod_version": "3"
     },
     {
+      "description": "Saves recently opened files for easy access from command menu.",
+      "version": "0.1",
+      "path": "plugins/recentfiles.lua",
+      "id": "recentfiles",
+      "mod_version": "3.1"
+    },
+    {
       "description": "Allows for you to write a regex and its replacement in one go, and live preview the results.",
       "version": "0.2",
       "path": "plugins/regexreplacepreview.lua",
