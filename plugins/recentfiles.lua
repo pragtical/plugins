@@ -97,7 +97,12 @@ command.add(function() return #recent_files > 0 end, {
         return common.fuzzy_match(recent_files, text, true)
       end,
     })
-  end
+  end,
+
+  ["core:open-recent-file-clear"] = function()
+    recent_files = {}
+    os.remove(recent_files_path)
+  end,
 })
 
 keymap.add({
