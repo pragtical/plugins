@@ -17,12 +17,14 @@ function core.log_quiet(format, ...)
   print(string.format(format, ...))
 end
 
--- check if --parsers flag was given to only output the path expressions and
--- their conversion into regular expressions.
-local PARSERS = false
-for _, argument in ipairs(ARGS) do
-  if argument == "--parsers" then
-    PARSERS = true
+-- if --parsers flag was not given run the full tests otherwise only output
+-- the path expressions and their conversion into regular expressions.
+local PARSERS = rawget(_G, "PARSERS") or false
+if MOD_VERSION_MAJOR == 3 and MOD_VERSION_MINOR < 2 then
+  for _, argument in ipairs(ARGS) do
+    if argument == "--parsers" then
+      PARSERS = true
+    end
   end
 end
 
