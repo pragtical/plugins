@@ -256,8 +256,8 @@
     },
     {
       "description": "formatters for various languages",
-      "version": "0.1",
-      "remote": "https://github.com/vincens2005/lite-formatters:7e017080a967c01d437e484247a90c1ff52e8ef8",
+      "version": "0.2",
+      "remote": "https://github.com/pragtical/formatter:c21518597feda3a5a9edaf7ab95d65f53a38e3b5",
       "mod_version": "3",
       "id": "formatter"
     },
