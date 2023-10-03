@@ -256,8 +256,8 @@
     },
     {
       "description": "formatters for various languages",
-      "version": "0.2",
-      "remote": "https://github.com/pragtical/formatter:c21518597feda3a5a9edaf7ab95d65f53a38e3b5",
+      "version": "0.3",
+      "remote": "https://github.com/pragtical/formatter:41245ac7e10f2021eca196207e96c48ed9d85bb1",
       "mod_version": "3",
       "id": "formatter"
     },
