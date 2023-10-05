@@ -1005,8 +1005,8 @@
     },
     {
       "description": "Adds LSP snippets support to the snippets plugin",
-      "version": "1",
-      "remote": "https://github.com/vqns/lite-xl-snippets:37a24d0970668e39ef571e607281e61135f7a504",
+      "version": "1.0.1",
+      "remote": "https://github.com/vqns/lite-xl-snippets:f4acc8b760d7a65152d1aaa0dc1010c407c33a72",
       "id": "lsp_snippets",
       "mod_version": "3"
     },
@@ -1211,8 +1211,8 @@
     },
     {
       "description": "Provides code snippets support",
-      "version": "1",
-      "remote": "https://github.com/vqns/lite-xl-snippets:37a24d0970668e39ef571e607281e61135f7a504",
+      "version": "1.0.1",
+      "remote": "https://github.com/vqns/lite-xl-snippets:f4acc8b760d7a65152d1aaa0dc1010c407c33a72",
       "id": "snippets",
       "mod_version": "3"
     },
