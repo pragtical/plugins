@@ -321,7 +321,7 @@ function DocView:on_mouse_pressed(button, x, y, clicks, ...)
     return old_mouse_pressed(self, button, x, y, clicks, ...)
   end
 
-  local clicked_line = data.sticky_lines[#data.sticky_lines - (y - self.position.y) // lh]
+  local clicked_line = data.sticky_lines[#data.sticky_lines - math.floor((y - self.position.y) / lh)]
   local col = self:get_x_offset_col(clicked_line, x - rl_x)
   self:scroll_to_make_visible(clicked_line, col)
   self.doc:set_selection(clicked_line, col)
@@ -351,7 +351,7 @@ function DocView:on_mouse_moved(x, y, ...)
   end
 
   self.cursor = "hand"
-  data.hovered_sticky_scroll_line = data.sticky_lines[#data.sticky_lines - (y - self.position.y) // lh]
+  data.hovered_sticky_scroll_line = data.sticky_lines[#data.sticky_lines - math.floor((y - self.position.y) / lh)]
   return true
 end
 
