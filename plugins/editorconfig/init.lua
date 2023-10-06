@@ -439,10 +439,60 @@ end
 --------------------------------------------------------------------------------
 -- Run the test suite if requested on CLI with: pragtical test editorconfig
 --------------------------------------------------------------------------------
-for i, argument in ipairs(ARGS) do
-  if argument == "test" and ARGS[i+1] == "editorconfig" then
-    require "plugins.editorconfig.runtest"
-    os.exit()
+if (MOD_VERSION_MAJOR == 3 and MOD_VERSION_MINOR >= 2) or MOD_VERSION_MAJOR > 3 then
+  local cli = require "core.cli"
+
+  ---@type core.cli.command
+  local editorconfig_test = {
+    command = "editorconfig",
+    description = "Run the editorconfig tests",
+    max_arguments = 0,
+    flags = {
+      {
+        name = "parsers",
+        short_name = "p",
+        description = "Only output the path expressions and their conversion into regular expressions",
+      }
+    },
+    execute = function(flags)
+      rawset(_G, "PARSERS", false)
+      for _, flag in ipairs(flags) do
+        if flag.name == "parsers" then
+          rawset(_G, "PARSERS", true)
+          break
+        end
+      end
+      require "plugins.editorconfig.runtest"
+    end
+  }
+
+  if not cli.commands["test"] then
+    cli.register {
+      command = "test",
+      description = "Run application or plugin tests.",
+      usage = "[<test_name>]",
+      execute = function()
+        print(cli.colorize("Available tests:", "yellow"))
+        print ""
+        for _, subcommand in ipairs(cli.commands["test"].subcommands) do
+          print(
+            cli.colorize(subcommand.command, "green")
+            .. "  "
+            .. (subcommand.description or "")
+          )
+        end
+      end
+    }
+  end
+
+  cli.commands["test"].subcommands = cli.commands["test"].subcommands or {}
+  table.insert(cli.commands["test"].subcommands, editorconfig_test)
+else
+  for i, argument in ipairs(ARGS) do
+    if argument == "test" and ARGS[i+1] == "editorconfig" then
+      require "plugins.editorconfig.runtest"
+      os.exit()
+    end
   end
 end
 
