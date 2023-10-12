@@ -1,4 +1,4 @@
--- mod-version:3
+-- mod-version:3.1
 
 local core = require("core")
 local command = require("core.command")
@@ -67,7 +67,7 @@ command.add(nil, {
 				return
 			end
 
-			if abs_path == core.project_dir then
+			if abs_path == core.root_project().path then
 				return
 			end
 			os.execute(string.format("%q %q", EXEFILE, abs_path))
@@ -103,11 +103,11 @@ command.add(nil, {
 				return
 			end
 
-			if abs_path == core.project_dir then
+			if abs_path == core.root_project().path then
 				return
 			end
 			core.confirm_close_docs(core.docs, function(dirpath)
-				core.open_folder_project(dirpath)
+				core.open_project(dirpath)
 			end, abs_path)
 		end)
 	end,
@@ -141,10 +141,10 @@ command.add(nil, {
 				return
 			end
 
-			if abs_path == core.project_dir then
+			if abs_path == core.root_project().path then
 				return
 			end
-			core.add_project_directory(system.absolute_path(abs_path))
+			core.add_project(system.absolute_path(abs_path))
 		end)
 	end,
 })
