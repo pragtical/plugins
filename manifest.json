@@ -604,6 +604,14 @@
       "tags": ["language"]
     },
     {
+      "description": "Syntax for the [CUE](http://cuelang.org) definition and validation programming language",
+      "version": "0.1",
+      "path": "plugins/language_cue.lua",
+      "id": "language_cue",
+      "mod_version": "3",
+      "tags": ["language"]
+    },
+    {
       "description": "Syntax for the [D](https://dlang.org/) programming language",
       "version": "0.2",
       "path": "plugins/language_d.lua",
@@ -624,6 +632,14 @@
       "version": "0.1",
       "path": "plugins/language_diff.lua",
       "id": "language_diff",
+      "mod_version": "3",
+      "tags": ["language"]
+    },
+    {
+      "description": "Syntax for [FreeFEM++](http://freefem.org) programming language",
+      "version": "0.1",
+      "path": "plugins/language_edp.lua",
+      "id": "language_edp",
       "mod_version": "3",
       "tags": ["language"]
     },
@@ -866,6 +882,14 @@
       "path": "plugins/language_make.lua",
       "id": "language_make",
       "mod_version": "3.1",
+      "tags": ["language"]
+    },
+    {
+      "description": "Syntax for [MARTe2](https://vcis.f4e.europa.eu/marte2-docs/master/html/index.html) configuration language",
+      "version": "0.1",
+      "path": "plugins/language_marte.lua",
+      "id": "language_marte",
+      "mod_version": "3",
       "tags": ["language"]
     },
     {
