@@ -86,6 +86,9 @@ config.plugins.centerdoc.config_spec = {
     on_apply = function(enabled)
       if on_startup then
         core.add_thread(function()
+          previous_win_status = system.get_window_mode()
+          previous_treeview_status = treeview.visible
+          previous_statusbar_status = core.status_view.visible
           toggle_zen_mode(enabled)
         end)
         on_startup = false

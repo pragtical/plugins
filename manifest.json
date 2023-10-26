@@ -225,7 +225,7 @@
     },
     {
       "description": "Centers document's content on the screen and adds zen mode support *([screenshot](https://user-images.githubusercontent.com/3920290/82127896-bf6e4500-97ae-11ea-97fc-ba9a552bc9a4.png))*",
-      "version": "0.1",
+      "version": "0.2",
       "path": "plugins/centerdoc.lua",
       "id": "centerdoc",
       "mod_version": "3"
