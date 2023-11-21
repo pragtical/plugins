@@ -117,7 +117,9 @@ function OpenExtView:on_mouse_pressed(button, x, y, clicks)
   if OpenExtView.super.on_mouse_pressed(self, button, x, y, clicks) then return end
   if self.hovered then
     opt_actions[self.hovered](self)
+    return true
   end
+  return false
 end
 
 

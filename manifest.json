@@ -1383,7 +1383,7 @@
     },
     {
       "description": "Automatically prompts you if you tried to open a binary file in the editor",
-      "version": "0.1",
+      "version": "0.1.1",
       "path": "plugins/open_ext.lua",
       "id": "open_ext",
       "mod_version": "3"
