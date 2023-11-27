@@ -1201,7 +1201,7 @@
     },
     {
       "description": "Syntax for the [V](https://vlang.io/) programming language",
-      "version": "0.1",
+      "version": "0.2",
       "path": "plugins/language_v.lua",
       "id": "language_v",
       "mod_version": "3",
