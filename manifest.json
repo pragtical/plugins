@@ -1274,9 +1274,9 @@
     },
     {
       "description": "Provides code completion (also known as IntelliSense) using the Language Server Protocol",
-      "version": "0.6",
-      "remote": "https://github.com/pragtical/lsp:2d6bd0c038f16f560f6620f3c1ae894c7e27322c",
-      "mod_version": "3.1",
+      "version": "0.7",
+      "remote": "https://github.com/pragtical/lsp:3bf10721c2776883055debe5ecfbf4faef3addbb",
+      "mod_version": "3.3.1",
       "id": "lsp"
     },
     {
