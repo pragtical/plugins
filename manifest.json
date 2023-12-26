@@ -1739,8 +1739,8 @@
     },
     {
       "description": "Extend Lite XL's treeview menu *([screenshot](https://raw.githubusercontent.com/juliardi/lite-xl-treeview-extender/main/screenshot.png))*",
-      "version": "1.0.0",
-      "remote": "https://github.com/juliardi/lite-xl-treeview-extender:c6583c3b7f726b08f98c1282d03408facd4cbc91",
+      "version": "1.0.1",
+      "remote": "https://github.com/juliardi/lite-xl-treeview-extender:6163ffb90a8187c8ee1bd24a7da5b6145b06d2e8",
       "mod_version": "3",
       "id": "treeview-extender",
       "replaces": ["treeview-menu-extender"]
