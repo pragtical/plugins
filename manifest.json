@@ -368,7 +368,7 @@
     },
     {
       "description": "Adds Treesitter syntax highlighting support",
-      "version": "0.2",
+      "version": "0.2.1",
       "remote": "https://github.com/pragtical/evergreen:master",
       "mod_version": "3",
       "id": "evergreen",
