@@ -1260,8 +1260,8 @@
     },
     {
       "description": "Discord rich presence for Lite XL (display file editing in Discord)",
-      "version": "0.1",
-      "remote": "https://github.com/TorchedSammy/Litepresence:1985e8a59feaaea5085a5add2521293a11f6d376",
+      "version": "0.1.1",
+      "remote": "https://github.com/TorchedSammy/litepresence:7072763d51ff449c9af03e99484292ecdc0626b9",
       "mod_version": "3",
       "id": "litepresence"
     },
