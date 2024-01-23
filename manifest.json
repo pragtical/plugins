@@ -1473,8 +1473,8 @@
     {
       "name": "Source Control Management",
       "description": "Extensible source control management plugin with git and fossil backends.",
-      "version": "0.3",
-      "remote": "https://github.com/pragtical/scm:8cfa2b958c3fa877959fad58462866e25149bb5b",
+      "version": "0.3.1",
+      "remote": "https://github.com/pragtical/scm:0c30d75e3431dd2956aef8611d07b6a98e113394",
       "id": "scm",
       "mod_version": "3.1"
     },
