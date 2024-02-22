@@ -434,7 +434,7 @@
     {
       "description": "Code formatter for various languages",
       "version": "0.4",
-      "remote": "https://github.com/pragtical/formatter:4cd966a60fac9dfba9ae31d4323252503d7a7eb2",
+      "remote": "https://github.com/pragtical/formatter:7fd84645fd47c6a7917324d40980843c528f79fe",
       "mod_version": "3",
       "id": "formatter"
     },
