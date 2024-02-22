@@ -432,9 +432,9 @@
       "mod_version": "3"
     },
     {
-      "description": "formatters for various languages",
-      "version": "0.3",
-      "remote": "https://github.com/pragtical/formatter:41245ac7e10f2021eca196207e96c48ed9d85bb1",
+      "description": "Code formatter for various languages",
+      "version": "0.4",
+      "remote": "https://github.com/pragtical/formatter:4cd966a60fac9dfba9ae31d4323252503d7a7eb2",
       "mod_version": "3",
       "id": "formatter"
     },
