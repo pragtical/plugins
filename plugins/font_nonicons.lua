@@ -392,18 +392,7 @@ local utf8 = setmetatable({}, {
   __index = function(t, k)
     local cp = codepoints[k]
     if not cp then return nil end
-
-    local res
-    if cp < 0x0080 then
-      res = cp
-    elseif cp < 0x0800 then
-      res = string.char(bit.bor(0xC0, bit.rshift(cp, 6)), bit.bor(0x80, bit.band(cp, 0x3F)))
-    elseif cp < 0x10000 then
-      res = string.char(bit.bor(0xE0, bit.rshift(cp, 12)), bit.bor(0x80, bit.band(bit.rshift(cp, 6), 0x3F)), bit.bor(0x80, bit.band(cp, 0x3F)))
-    else
-      res = string.char(bit.bor(0xF0, bit.rshift(cp, 18)), bit.bor(0x80, bit.band(bit.rshift(cp, 12), 0x3F)), bit.bor(0x80, bit.band(bit.rshift(cp, 6), 0x3F)), bit.bor(0x80, bit.band(cp, 0x3F)))
-    end
-
+    local res = utf8extra.char(cp)
     t[k] = res
     return res
   end
