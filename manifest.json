@@ -298,8 +298,8 @@
       "description": "Icons font for the devicons plugin.",
       "id": "font_devicons",
       "mod_version": "3",
-      "type": "font",
       "remote": "https://github.com/PerilousBooklet/lite-xl-devicons:e78f2374a1f4de5d0f324af46a07c2f9ffa7ccef",
+      "type": "font",
       "version": "1.0.0"
     },
     {
@@ -318,10 +318,10 @@
     },
     {
       "description": "Automatically displays a font with increasing sizes in a new view.",
-      "version": "0.1",
-      "path": "plugins/fontpreview.lua",
       "id": "fontpreview",
-      "mod_version": "3"
+      "mod_version": "3",
+      "path": "plugins/fontpreview.lua",
+      "version": "0.1"
     },
     {
       "description": "Debug Lite-XL's Lua VM interactively, if you're running it from a terminal. Warning: Will significantly slow down Lite-XL if installed.",
@@ -905,7 +905,7 @@
       "description": "Syntax for the [fortran](https://fortran-lang.org/) programming language",
       "id": "language_fortran",
       "mod_version": "3",
-      "remote":"https://github.com/RohanVashisht1234/fortran_syntax_highlighter_lite-xl:2bf91dd7a50f1ba7c8847532084448a9d2d88456",
+      "remote": "https://github.com/RohanVashisht1234/fortran_syntax_highlighter_lite-xl:2bf91dd7a50f1ba7c8847532084448a9d2d88456",
       "tags": [
         "language"
       ],
@@ -1427,7 +1427,7 @@
       "description": "Syntax for the [Swift](https://developer.apple.com/swift/) programming language",
       "id": "language_swift",
       "mod_version": "3",
-      "remote":"https://github.com/RohanVashisht1234/swift_syntax_highlighting_lite-xl:4211079ced99ed693b5c8acad61f3a27a511919d",
+      "remote": "https://github.com/RohanVashisht1234/swift_syntax_highlighting_lite-xl:4211079ced99ed693b5c8acad61f3a27a511919d",
       "tags": [
         "language"
       ],
