@@ -1034,7 +1034,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for the [Hare](https://harelang.org) programming language",
