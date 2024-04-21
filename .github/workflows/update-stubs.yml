@@ -13,4 +13,4 @@ jobs:
         run: |
           git config --global user.name "Github Actions" && git config --global user.email "<>"
           wget https://github.com/pragtical/plugin-manager/releases/download/latest/ppm.x86_64-linux -O ppm && chmod +x ppm
-          ./ppm --plugin https://raw.githubusercontent.com/adamharrison/lite-xl-maintenance/latest/lpm-plugins/gh.lua gh check-stubs-update-pr --staging .
+          ./ppm --plugin https://raw.githubusercontent.com/adamharrison/lite-xl-maintenance/latest/lpm-plugins/gh.lua gh check-stubs-update-pr --staging . --remotes
