@@ -315,4 +315,5 @@ to follow with `extra.follow_branch`.*
 | [`tree-sitter-lua`](https://github.com/pragtical/evergreen)\*                            | Treesitter parser for Lua                                                                |
 | [`tree-sitter-rust`](https://github.com/pragtical/evergreen)\*                           | Treesitter parser for Rust                                                               |
 | [`tree-sitter-zig`](https://github.com/pragtical/evergreen)\*                            | Treesitter parser for Zig                                                                |
+| [`Tree-sitter`](https://github.com/xcb-xwii/lite-xl-tree-sitter)\*                       | Tree-sitter bindings based on `lua-tree-sitter`                                          |
 | [`www`](https://github.com/adamharrison/lite-xl-www.git)\*                               | A simple library that provides a web client to fetch, and submit data via HTTP requests. |
