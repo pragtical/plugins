@@ -600,6 +600,14 @@
       "version": "21.0.2"
     },
     {
+      "description": "rxi JSON library with error handling and other modifications.",
+      "id": "jsonmod",
+      "mod_version": "3",
+      "path": "plugins/jsonmod.lua",
+      "type": "library",
+      "version": "1.0"
+    },
+    {
       "description": "Exports the keymap to a JSON file.",
       "id": "keymap_export",
       "mod_version": "3",
@@ -2289,11 +2297,14 @@
       "version": "0.1"
     },
     {
+      "dependencies": {
+        "jsonmod": {}
+      },
       "description": "Automatically checks for updates and notifies you",
       "id": "updatechecker",
       "mod_version": "3",
-      "remote": "https://github.com/vincens2005/lite-xl-updatechecker:3478abd43618da857d4315bcc8fddf08c27e1150",
-      "version": "0.1"
+      "path": "plugins/updatechecker.lua",
+      "version": "0.1.1"
     },
     {
       "description": "VI(vim?) bindings with a hint of DOOM Emacs, for lite-xl",
