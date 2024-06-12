@@ -5,7 +5,10 @@ local syntax = require "core.syntax"
 
 syntax.add {
   name = "Nginx",
-  files = { "%.conf$" },
+  files = {
+    PATHSEP .. "nginx%.conf$",
+    PATHSEP .. "nginx" .. PATHSEP .. ".*%.conf$"
+  },
   comment = "#",
   patterns = {
     { pattern = "#.*",             type = "comment"  },
@@ -13,7 +16,7 @@ syntax.add {
     { pattern = { "'", "'", },     type = "string"   },
     { pattern = "[0-9]",           type = "number"   },
     { pattern = "[%a_][%w_]*",     type = "symbol"   },
-    { pattern = "%$%w+",           type = "keyword2" }
+    { pattern = "%$[%w_]+",        type = "keyword2" }
   },
   symbols = {
     -- constant.language.module.events

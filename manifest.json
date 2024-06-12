@@ -1305,7 +1305,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.1.1"
     },
     {
       "description": "Syntax for the [Nim](https://nim-lang.org) programming language",
