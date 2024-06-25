@@ -10,7 +10,7 @@ jobs:
   reorganize:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Generate table with `ppm`
         run: |
           wget https://github.com/pragtical/plugin-manager/releases/download/latest/ppm.x86_64-linux -O ppm-latest && chmod +x ppm-latest
