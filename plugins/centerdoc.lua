@@ -13,6 +13,14 @@ config.plugins.centerdoc = common.merge({
   zen_mode = false
 }, config.plugins.centerdoc)
 
+local function set_window_mode(mode)
+  if core.window then
+    return system.set_window_mode(core.window, mode)
+  else
+    return system.set_window_mode(mode)
+  end
+end
+
 local draw_line_gutter = DocView.draw_line_gutter
 local get_gutter_width = DocView.get_gutter_width
 
@@ -41,7 +49,7 @@ function DocView:get_gutter_width()
 end
 
 
-local previous_win_status = system.get_window_mode()
+local previous_win_status = system.get_window_mode(core.window)
 local previous_treeview_status = treeview.visible
 local previous_statusbar_status = core.status_view.visible
 
@@ -49,17 +57,17 @@ local function toggle_zen_mode(enabled)
   config.plugins.centerdoc.zen_mode = enabled
 
   if config.plugins.centerdoc.zen_mode then
-    previous_win_status = system.get_window_mode()
+    previous_win_status = system.get_window_mode(core.window)
     previous_treeview_status = treeview.visible
     previous_statusbar_status = core.status_view.visible
 
     config.plugins.centerdoc.enabled = true
-    system.set_window_mode("fullscreen")
+    set_window_mode("fullscreen")
     treeview.visible = false
     command.perform "status-bar:hide"
   else
     config.plugins.centerdoc.enabled = false
-    system.set_window_mode(previous_win_status)
+    set_window_mode(previous_win_status)
     treeview.visible = previous_treeview_status
     core.status_view.visible = previous_statusbar_status
   end
@@ -86,7 +94,7 @@ config.plugins.centerdoc.config_spec = {
     on_apply = function(enabled)
       if on_startup then
         core.add_thread(function()
-          previous_win_status = system.get_window_mode()
+          previous_win_status = system.get_window_mode(core.window)
           previous_treeview_status = treeview.visible
           previous_statusbar_status = core.status_view.visible
           toggle_zen_mode(enabled)

@@ -243,7 +243,7 @@
       "id": "centerdoc",
       "mod_version": "3",
       "path": "plugins/centerdoc.lua",
-      "version": "0.2"
+      "version": "0.2.1"
     },
     {
       "description": "Hides the treeview at start if no arguments passed to the executable are directories. Compatible with lite.",
@@ -1913,7 +1913,7 @@
       "id": "opacity",
       "mod_version": "3",
       "path": "plugins/opacity.lua",
-      "version": "0.1"
+      "version": "0.1.1"
     },
     {
       "description": "Automatically prompts you if you tried to open a binary file in the editor",

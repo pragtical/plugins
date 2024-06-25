@@ -11,10 +11,18 @@ local opacity_steps = 0.05
 local default_opacity = 1
 local current_opacity = default_opacity
 
+local function set_window_opacity(opacity)
+  if core.window then
+    system.set_window_opacity(core.window, opacity) -- use newer api
+  else
+    system.set_window_opacity(opacity) -- older api
+  end
+end
+
 local function set_opacity(opacity)
   if not opacity_on then return end
   current_opacity = common.clamp(opacity, 0.2, 1)
-  system.set_window_opacity(current_opacity)
+  set_window_opacity(current_opacity)
 end
 
 local on_mouse_wheel = RootView.on_mouse_wheel
@@ -32,10 +40,10 @@ local function tog_opacity()
   opacity_on = not opacity_on
   if opacity_on then
     core.log("Opacity: on")
-    system.set_window_opacity(current_opacity)
+    set_window_opacity(current_opacity)
   else
     core.log("Opacity: off")
-    system.set_window_opacity(default_opacity)
+    set_window_opacity(default_opacity)
   end
 end
 
