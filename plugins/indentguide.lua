@@ -7,6 +7,7 @@ local DocView = require "core.docview"
 config.plugins.indentguide = common.merge({
   enabled = true,
   highlight = true,
+  highlight_distance = 3000,
   -- The config specification used by the settings gui
   config_spec = {
     name = "Indent Guide",
@@ -23,6 +24,14 @@ config.plugins.indentguide = common.merge({
       path = "highlight",
       type = "toggle",
       default = true
+    },
+    {
+      label = "Maximum Highlight Distance",
+      description = "A high value can cause performance issues on documents with tens of thousands of lines.",
+      path = "highlight_distance",
+      type = "number",
+      min = 100,
+      default = 3000
     }
   }
 }, config.plugins.indentguide)
@@ -87,8 +96,18 @@ function DocView:update()
     self.indentguide_indents[i] = get_line_indent_guide_spaces(self.doc, i)
   end
 
-  local _, indent_size = get_indent_info(self.doc)
-  for _,line in self.doc:get_selections() do
+  local max_distance = config.plugins.indentguide.highlight_distance
+  local line = self.doc:get_selection()
+
+  if
+    config.plugins.indentguide.highlight
+    and
+    (line > minline or minline-line < max_distance)
+    and
+    (line < maxline or line-maxline < max_distance)
+  then
+    self.indent_guide_show = true
+    local _, indent_size = get_indent_info(self.doc)
     local lvl = get_indent(line)
     local top, bottom
 
@@ -125,6 +144,8 @@ function DocView:update()
         until i > maxline
       end
     end
+  else
+    self.indent_guide_show = false
   end
 end
 
@@ -140,11 +161,11 @@ function DocView:draw_line_text(line, x, y)
     local space_sz = font:get_width(" ")
     for i = 0, spaces - 1, indent_size do
       local color = style.guide or style.selection
-      local active_lvl = self.indentguide_indent_active[line] or -1
-      if i < active_lvl 
-      and i + indent_size >= active_lvl
-      and config.plugins.indentguide.highlight then
-        color = style.guide_highlight or style.accent
+      if self.indent_guide_show then
+        local active_lvl = self.indentguide_indent_active[line] or -1
+        if i < active_lvl and i + indent_size >= active_lvl then
+          color = style.guide_highlight or style.accent
+        end
       end
       local sw = space_sz * i
       renderer.draw_rect(math.ceil(x + sw), y, w, h, color)
