@@ -1747,8 +1747,8 @@
       "description": "Provides code completion (also known as IntelliSense) using the Language Server Protocol",
       "id": "lsp",
       "mod_version": "3.4.0",
-      "remote": "https://github.com/pragtical/lsp:4662b7337f087cb06f98098e09c46962cda9d1b6",
-      "version": "0.9.2"
+      "remote": "https://github.com/pragtical/lsp:452a08edc072c064acbafbb7ed5437a17baf3b14",
+      "version": "0.9.3"
     },
     {
       "description": "Automatic configuration/binary download for LSP completion for C/C++ with clangd.",
