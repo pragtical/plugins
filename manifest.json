@@ -2303,14 +2303,14 @@
       "version": "0.1.0"
     },
     {
-      "description": "Extend Lite XL's treeview menu *([screenshot](https://raw.githubusercontent.com/juliardi/lite-xl-treeview-extender/main/screenshot.png))*",
+      "description": "Extend Pragtical's treeview menu *([screenshot](https://raw.githubusercontent.com/juliardi/pragtical-treeview-extender/main/screenshot.png))*",
       "id": "treeview-extender",
       "mod_version": "3",
-      "remote": "https://github.com/juliardi/lite-xl-treeview-extender:6163ffb90a8187c8ee1bd24a7da5b6145b06d2e8",
+      "remote": "https://github.com/juliardi/pragtical-treeview-extender:a14b7438982a1d91906553b537b8097f0cce1ca7",
       "replaces": [
         "treeview-menu-extender"
       ],
-      "version": "1.0.1"
+      "version": "1.1.0"
     },
     {
       "description": "Displays your current typing speed in characters and words per minute in the status bar",
