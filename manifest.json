@@ -2023,8 +2023,8 @@
       "id": "scm",
       "mod_version": "3.1",
       "name": "Source Control Management",
-      "remote": "https://github.com/pragtical/scm:90a6bc86486f83c0a3529e17cdb20722ed4d7684",
-      "version": "0.4.4"
+      "remote": "https://github.com/pragtical/scm:3a69a081966e6e69cdb996cd90e9f943ce35b2b3",
+      "version": "0.4.5"
     },
     {
       "description": "Select a color theme, like VScode, Sublime Text.(plugin saves changes)",
