@@ -26,6 +26,7 @@ local Scrollbar = require "core.scrollbar"
 config.plugins.minimap = common.merge({
   enabled = true,
   width = 100,
+  status = "expanded",
   instant_scroll = false,
   syntax_highlight = true,
   scale = 1,
@@ -62,6 +63,17 @@ config.plugins.minimap = common.merge({
       default = 100,
       min = 50,
       max = 1000
+    },
+    {
+      label = "Status",
+      description = "Default state for the minimap.",
+      path = "status",
+      type = "selection",
+      default = "expanded",
+      values = {
+        {"Auto", "auto"},
+        {"Expanded", "expanded"}
+      }
     },
     {
       label = "Instant Scroll",
@@ -306,16 +318,17 @@ end
 
 function MiniMap:swap_to_status()
   local enabled = self:is_minimap_enabled()
-  if not enabled and self.was_enabled then
-    self.force_status = self.original_force_status
-    self.expanded_size = self.original_expanded_size
-    self.expanded_margin = self.original_expanded_margin
-    self.was_enabled = false
-  elseif enabled and not self.was_enabled then
+  local status = config.plugins.minimap.status
+  if enabled and (status == "expanded" or not self.was_enabled) then
     self.force_status = "expanded"
     self.expanded_size = cached_settings.width
     self.expanded_margin = 0
     self.was_enabled = true
+  elseif not enabled and self.was_enabled then
+    self.force_status = self.original_force_status
+    self.expanded_size = self.original_expanded_size
+    self.expanded_margin = self.original_expanded_margin
+    self.was_enabled = false
   end
 end
 
