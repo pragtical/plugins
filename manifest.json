@@ -2337,11 +2337,11 @@
       "version": "0.1.1"
     },
     {
-      "description": "VI(vim?) bindings with a hint of DOOM Emacs, for lite-xl",
+      "description": "VI(vim?) bindings with a hint of DOOM Emacs, for pragtical",
       "id": "vibe",
       "mod_version": "3",
-      "remote": "https://github.com/eugenpt/lite-xl-vibe:651c4fc55a285eeacbf5992b355d9c80f4fc78cb",
-      "version": "0.1"
+      "remote": "https://github.com/pragtical/vibe:5517e374f8e4083a8a30b69ccd45fb8773542cdf",
+      "version": "0.1.1"
     },
     {
       "description": "Audio visualizer for Lite XL",
