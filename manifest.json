@@ -1314,7 +1314,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.1.1"
     },
     {
       "description": "Syntax for [Nginx](https://www.nginx.com/) config files",
