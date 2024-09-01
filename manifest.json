@@ -1860,7 +1860,7 @@
       "id": "markers",
       "mod_version": "3",
       "path": "plugins/markers.lua",
-      "version": "0.1"
+      "version": "0.1.1"
     },
     {
       "description": "Show memory usage in the status view",
@@ -1874,7 +1874,7 @@
       "id": "minimap",
       "mod_version": "3",
       "path": "plugins/minimap.lua",
-      "version": "0.2.1"
+      "version": "0.2.2"
     },
     {
       "description": "Adds a motion-trail to the caret *([gif](https://user-images.githubusercontent.com/3920290/83256814-085ccb00-a1ab-11ea-9e35-e6633cbed1a9.gif))*",
@@ -2087,7 +2087,7 @@
       "id": "spellcheck",
       "mod_version": "3.1",
       "path": "plugins/spellcheck.lua",
-      "version": "0.3"
+      "version": "0.3.1"
     },
     {
       "description": "Displays the current date and time in the corner of the status view",
@@ -2355,7 +2355,7 @@
       "id": "wordcount",
       "mod_version": "3",
       "path": "plugins/wordcount.lua",
-      "version": "0.1"
+      "version": "0.1.1"
     },
     {
       "description": "A simple library that provides a web client to fetch, and submit data via HTTP requests.",

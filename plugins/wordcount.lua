@@ -5,7 +5,6 @@ local StatusView = require "core.statusview"
 local CommandView = require "core.commandview"
 local DocView = require "core.docview"
 local Doc = require "core.doc"
-local keymap = require "core.keymap"
 
 
 local words = setmetatable({}, { __mode = "k" })
@@ -67,6 +66,12 @@ local old_doc_new = Doc.new
 function Doc:new(...)
   old_doc_new(self, ...)
   words[self] = compute_words(self)
+end
+
+local old_doc_on_close = Doc.on_close
+function Doc:on_close()
+  old_doc_on_close(self)
+  if words[self] then words[self] = nil end
 end
 
 local cached_word_length, cached_word_count

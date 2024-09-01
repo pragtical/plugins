@@ -4,6 +4,7 @@ local command = require "core.command"
 local common = require "core.common"
 local config = require "core.config"
 local style = require "core.style"
+local Doc = require "core.doc"
 local DocView = require "core.docview"
 local Highlighter = require "core.doc.highlighter"
 local Object = require "core.object"
@@ -600,6 +601,15 @@ function DocView:new(doc)
   old_docview_new(self, doc)
   if self:is(DocView) then
     self.v_scrollbar = MiniMap(self, self.v_scrollbar)
+  end
+end
+
+
+local old_doc_on_close = Doc.on_close
+function Doc:on_close()
+  old_doc_on_close(self)
+  if highlighter_cache[self.highlighter] then
+    highlighter_cache[self.highlighter] = nil
   end
 end
 

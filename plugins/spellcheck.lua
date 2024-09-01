@@ -226,16 +226,9 @@ end
 local doc_on_close = Doc.on_close
 function Doc:on_close()
   doc_on_close(self)
-  if not self.filename then return end
-  core.add_background_thread(function()
-    if
-      #core.get_views_referencing_doc(self) == 0
-      and
-      spell_cache[self.highlighter]
-    then
-      spell_cache[self.highlighter] = nil
-    end
-  end)
+  if spell_cache[self.highlighter] then
+    spell_cache[self.highlighter] = nil
+  end
 end
 
 
