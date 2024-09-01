@@ -50,6 +50,14 @@ function Doc:raw_remove(line1, col1, line2, col2, ...)
 end
 
 
+local on_close = Doc.on_close
+
+function Doc:on_close()
+  on_close(self)
+  if cache[self] then cache[self] = nil end
+end
+
+
 local draw_line_gutter = DocView.draw_line_gutter
 
 function DocView:draw_line_gutter(line, x, y, width)
