@@ -595,6 +595,13 @@
       "version": "0.3"
     },
     {
+      "description": "Generates input latency stats by measuring time taken from key press to rendering.",
+      "id": "input_latency",
+      "mod_version": "3",
+      "path": "plugins/input_latency.lua",
+      "version": "0.1"
+    },
+    {
       "description": "Production and Early-Access OpenJDK Builds, from Oracle.",
       "id": "jdk",
       "mod_version": "3",
