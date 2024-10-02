@@ -469,13 +469,6 @@
       "version": "0.1"
     },
     {
-      "description": "Adds support for fallback fonts *([gif](https://raw.githubusercontent.com/takase1121/lite-fallback-fonts/master/assets/Iw18fI57J0.gif))*",
-      "id": "fallbackfonts",
-      "mod_version": "3",
-      "remote": "https://github.com/takase1121/lite-fallback-fonts:281cafc014f7931f041046f76496797695678bb4",
-      "version": "0.1"
-    },
-    {
       "description": "[Nonicons](https://github.com/yamatsum/nonicons/) font with mapping",
       "files": [
         {
