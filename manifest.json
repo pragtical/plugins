@@ -358,16 +358,25 @@
     },
     {
       "description": "Provides drag and drop of selected text (in same document)",
-      "version": "20230616.094245",
-      "path": "plugins/dragdropselected.lua",
-      "id": "dragdropselected",
-      "mod_version": "3.1",
-      "name": "Drag n' Drop Selected",
-      "tags": [ "DnD", "mouse", "copy", "duplicate", "move", "selection", "drag", "drop" ],
       "extra": {
         "author": "SwissalpS",
         "license": "MIT"
-      }
+      },
+      "id": "dragdropselected",
+      "mod_version": "3.1",
+      "name": "Drag n' Drop Selected",
+      "path": "plugins/dragdropselected.lua",
+      "tags": [
+        "DnD",
+        "mouse",
+        "copy",
+        "duplicate",
+        "move",
+        "selection",
+        "drag",
+        "drop"
+      ],
+      "version": "20230616.094245"
     },
     {
       "description": "Adds a popup that displays the curve of Penner-styled easing functions.",
@@ -2031,8 +2040,8 @@
       "version": "0.1"
     },
     {
-      "id": "previewer",
       "description": "Preview files and doc before before opening them",
+      "id": "previewer",
       "mod_version": "3",
       "remote": "https://codeberg.org/Mandarancio/lite-previewer:39c6c4667009f669bdc84a99360455c8e384bd4d",
       "type": "plugin",
