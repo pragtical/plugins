@@ -284,7 +284,17 @@ function editorconfig.apply(doc)
     end
 
     if options.charset then
-      doc.encoding = string.upper(options.charset)
+      local charset, add_bom = options.charset, false
+      if charset:find("%-bom$") then
+        charset = charset:sub(1, -5)
+        add_bom = true
+      end
+      doc.encoding = string.upper(charset)
+      if add_bom then
+        doc.bom = encoding.get_charset_bom(doc.encoding)
+      else
+        doc.bom = nil
+      end
     end
 
     if
