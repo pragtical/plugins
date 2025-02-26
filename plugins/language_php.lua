@@ -155,6 +155,150 @@ syntax.add {
     -- Comments
     { pattern = "//.-\n",                    type = "comment"  },
     { pattern = "#.-\n",                     type = "comment"  },
+    { pattern = { '/%*%*%s+', '%*/'}, -- Subsyntax for Doc comments
+      syntax = {
+        patterns = {
+          { pattern = "@author%s+()[%w%d%s%._]+()%s+%b<>",
+            type = { "annotation", "annotation.literal", "annotation.string" }
+          },
+          { pattern = "@author%s+()[%w%d%s%._]+",
+            type = { "annotation", "annotation.literal" }
+          },
+          { pattern = "@category%s+()%S+",
+            type = { "annotation", "annotation.string" }
+          },
+          { pattern = "@deprecated%s+()%d+[%d%.]*()%s+.*",
+            type = { "annotation", "annotation.number", "comment" }
+          },
+          { pattern = "@example%s+()%S+()%s+%d+()%s+%d+",
+            type = {
+              "annotation", "annotation.string",
+              "annotation.number", "annotation.number"
+            }
+          },
+          { pattern = "@example%s+()%S+()%s+%d+",
+            type = { "annotation", "annotation.string", "annotation.number" }
+          },
+          { pattern = "@example%s+()%S+",
+            type = { "annotation", "annotation.string" }
+          },
+          { pattern = "@global%s+()%S+()%s+%S+",
+            type = { "annotation", "annotation.literal", "annotation.keyword2" }
+          },
+          { pattern = "@global%s+()%S+",
+            type = { "annotation", "annotation.literal" }
+          },
+          { pattern = "@license%s+()%S+()%s.*",
+            type = { "annotation", "annotation.string", "annotation.literal" }
+          },
+          { pattern = "@link%s+()%S+()%s.*",
+            type = { "annotation", "annotation.string", "annotation.literal" }
+          },
+          { pattern = "@package%s+()%S+",
+            type = { "annotation", "annotation.literal" }
+          },
+          { pattern = "@param%s+()%S+()%s+%$%S+",
+            type = { "annotation", "annotation.literal", "annotation.keyword2" }
+          },
+          { pattern = "@param%s+()%$%S+",
+            type = { "annotation", "annotation.keyword2" }
+          },
+          { regex = "@property(?:\\-read|\\-write)?\\s+()[^\\s]+()\\s+\\$[^\\s]+",
+            type = { "annotation", "annotation.literal", "annotation.keyword2" }
+          },
+          { regex = "@property(?:\\-read|\\-write)?\\s+()\\$[^\\s]+",
+            type = { "annotation", "annotation.keyword2" }
+          },
+          { regex = "@property(?:\\-read|\\-write)?\\s+()[^\\s]+",
+            type = { "annotation", "annotation.literal" }
+          },
+          { pattern = "@return%s+()%S+",
+            type = { "annotation", "annotation.literal" }
+          },
+          { pattern = "@see%s+()%S+()%s.*",
+            type = { "annotation", "annotation.literal", "comment" }
+          },
+          { pattern = "@since%s+()%d+[%d%.]*()%s+.*",
+            type = { "annotation", "annotation.number", "comment" }
+          },
+          { pattern = "@source%s+()%d+()%s+%d+",
+            type = { "annotation", "annotation.number", "annotation.number" }
+          },
+          { pattern = "@source%s+()%d+",
+            type = { "annotation", "annotation.number" }
+          },
+          { pattern = "@subpackage%s+()%S+",
+            type = { "annotation", "annotation.literal" }
+          },
+          { pattern = "@throws%s+()%S+",
+            type = { "annotation", "annotation.literal" }
+          },
+          { pattern = "@uses?%s+()%S+()%s.*",
+            type = { "annotation", "annotation.literal", "comment" }
+          },
+          { pattern = "@used%-by%s+()%S+()%s.*",
+            type = { "annotation", "annotation.literal", "comment" }
+          },
+          { pattern = "@var%s+()%S+()%s+%$%S+",
+            type = { "annotation", "annotation.literal", "annotation.keyword2" }
+          },
+          { pattern = "@var%s+()%$%S+",
+            type = { "annotation", "annotation.keyword2" }
+          },
+          { pattern = "@var%s+()%S+",
+            type = { "annotation", "annotation.literal" }
+          },
+          { pattern = "@version%s+()%d+[%d%.]*()%s.*",
+            type = { "annotation", "annotation.number", "comment" }
+          },
+          { pattern = "@version%s+()%S+: %b$$",
+            type = { "annotation", "annotation.number" }
+          },
+          { pattern = "@version%s+()%b@@",
+            type = { "annotation", "annotation.number" }
+          },
+          { pattern = "@version%s+()%b$$",
+            type = { "annotation", "annotation.number" }
+          },
+          { pattern = "@[%a]+[%w%-]*",  type = "comment" },
+          { pattern = ".",              type = "comment" }
+        },
+        symbols = {
+          ["@api"] = "annotation",
+          ["@author"] = "annotation",
+          ["@category"] = "annotation",
+          ["@copyright"] = "annotation",
+          ["@deprecated"] = "annotation",
+          ["@example"] = "annotation",
+          ["@filesource"] = "annotation",
+          ["@final"] = "annotation",
+          ["@global"] = "annotation",
+          ["@ignore"] = "annotation",
+          ["@internal"] = "annotation",
+          ["@license"] = "annotation",
+          ["@link"] = "annotation",
+          ["@method"] = "annotation",
+          ["@property"] = "annotation",
+          ["@property-read"] = "annotation",
+          ["@property-write"] = "annotation",
+          ["@see"] = "annotation",
+          ["@since"] = "annotation",
+          ["@source"] = "annotation",
+          ["@subpackage"] = "annotation",
+          ["@package"] = "annotation",
+          ["@param"] = "annotation",
+          ["@return"] = "annotation",
+          ["@throws"] = "annotation",
+          ["@todo"] = "annotation",
+          ["@use"] = "annotation",
+          ["@uses"] = "annotation",
+          ["@used-by"] = "annotation",
+          ["@version"] = "annotation",
+          ["@var"] = "annotation"
+        }
+      },
+      type = "comment"
+    },
     { pattern = { "/%*", "%*/" },            type = "comment"  },
     -- Single quote string
     { pattern = { "'", "'", '\\' },          type = "string"   },

@@ -1430,7 +1430,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for [Pico-8](https://www.lexaloffle.com/pico-8.php) cartridge files",
