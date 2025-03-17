@@ -1,6 +1,7 @@
 -- mod-version:3
 local core = require "core"
 local command = require "core.command"
+local config = require "core.config"
 local keymap = require "core.keymap"
 local common = require "core.common"
 local DocView = require "core.docview"
@@ -54,6 +55,32 @@ end
 
 local tab_switcher = {}
 
+--
+-- Tab Switcher Plugin Configuration
+--
+
+---Configuration options for the tab switcher plugin.
+---@class config.plugins.tab_switcher
+---@field selection_label "name" | "filename" How to display the tab label in the switcher
+config.plugins.tab_switcher = common.merge({
+  selection_label = "name",
+  -- Configuration specification used by the settings GUI
+  config_spec = {
+    name = "Tab Switcher",
+    {
+      label = "Selection Label",
+      description = "How to display the tab label in the switcher",
+      path = "selection_label",
+      type = "selection",
+      default = "name",
+      values = {
+        { "Name", "name" },
+        { "Filename", "filename" },
+      },
+    },
+  }
+}, config.plugins.tab_switcher)
+
 ---@class tab_switcher.tab_item
 ---@field text string The tab name
 ---@field view core.view
@@ -71,7 +98,7 @@ function tab_switcher.get_tab_list(base_node)
   for _,v in pairs(raw_list) do
     if v:is(DocView) then
       table.insert(list, setmetatable({
-        text = v:get_name(),
+        text = (config.plugins.tab_switcher.selection_label == "filename") and v:get_filename() or v:get_name(),
         view = v
       }, mt))
     end
