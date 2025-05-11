@@ -1159,7 +1159,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.1.1"
     },
     {
       "description": "Syntax for [ini](https://en.wikipedia.org/wiki/INI_file) files",
@@ -1169,7 +1169,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1.2"
+      "version": "0.1.3"
     },
     {
       "description": "Syntax for the [Java](https://en.wikipedia.org/wiki/Java_\\(programming_language\\)) programming language",
@@ -1320,7 +1320,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.2"
+      "version": "0.2.1"
     },
     {
       "description": "Syntax for the [MiniScript](https://miniscript.org) programming language",
@@ -1541,7 +1541,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.2"
+      "version": "0.2.1"
     },
     {
       "description": "Syntax for the [Rust](https://rust-lang.org/) programming language",

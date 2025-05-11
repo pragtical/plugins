@@ -3,7 +3,7 @@ local syntax = require "core.syntax"
 
 syntax.add {
   name = "Meson",
-  files = { PATHSEP .. "meson%.build$", PATHSEP .. "meson_options%.txt$" },
+  files = { PATHSEP .. "meson%.build$", PATHSEP .. "meson%.options$", PATHSEP .. "meson_options%.txt$" },
   comment = "#",
   patterns = {
     { pattern = { "#", "\n" },            type = "comment"  },
