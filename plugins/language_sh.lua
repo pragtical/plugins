@@ -13,8 +13,10 @@ local string_interpolation_syntax = { patterns = {}, symbols = {} }
 local sh_syntax = {
   name = "Shell script",
   files = {
-    "%.sh$", "%.bash$", "%.zsh$", "%.fish$", PATHSEP .. "%.bashrc$",
-    PATHSEP .. "%.bash_profile$", PATHSEP .. "%.profile$",
+    "%.sh$", "%.bash$",
+    PATHSEP .. "%.bashrc$", PATHSEP .. "%.bash_profile$", PATHSEP .. "%.profile$",
+    "%.zsh$", "%.fish$",
+    PATHSEP .. "APKBUILD$",
   },
   headers = "^#!.*bin.*sh\n",
   comment = "#",

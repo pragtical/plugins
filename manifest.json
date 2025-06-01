@@ -1107,7 +1107,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.2"
+      "version": "0.2.1"
     },
     {
       "description": "Syntax for the [Hare](https://harelang.org) programming language",
@@ -1599,7 +1599,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.3"
+      "version": "0.2.3"
     },
     {
       "description": "Syntax for ssh & sshd config files",
