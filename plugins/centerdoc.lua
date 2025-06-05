@@ -13,14 +13,6 @@ config.plugins.centerdoc = common.merge({
   zen_mode = false
 }, config.plugins.centerdoc)
 
-local function set_window_mode(mode)
-  if core.window then
-    return system.set_window_mode(core.window, mode)
-  else
-    return system.set_window_mode(mode)
-  end
-end
-
 local draw_line_gutter = DocView.draw_line_gutter
 local get_gutter_width = DocView.get_gutter_width
 
@@ -62,12 +54,20 @@ local function toggle_zen_mode(enabled)
     previous_statusbar_status = core.status_view.visible
 
     config.plugins.centerdoc.enabled = true
-    set_window_mode("fullscreen")
+    if previous_win_status ~= "fullscreen" then
+      command.perform "core:toggle-fullscreen"
+    end
     treeview.visible = false
     command.perform "status-bar:hide"
   else
     config.plugins.centerdoc.enabled = false
-    set_window_mode(previous_win_status)
+    if
+      previous_win_status ~= "fullscreen"
+      and
+      system.get_window_mode(core.window) == "fullscreen"
+    then
+      command.perform "core:toggle-fullscreen"
+    end
     treeview.visible = previous_treeview_status
     core.status_view.visible = previous_statusbar_status
   end
