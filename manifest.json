@@ -423,46 +423,12 @@
       "version": "0.2"
     },
     {
-      "dependencies": {
-        "tree-sitter-c": {
-          "optional": true
-        },
-        "tree-sitter-cpp": {
-          "optional": true
-        },
-        "tree-sitter-d": {
-          "optional": true
-        },
-        "tree-sitter-diff": {
-          "optional": true
-        },
-        "tree-sitter-go": {
-          "optional": true
-        },
-        "tree-sitter-go-mod": {
-          "optional": true
-        },
-        "tree-sitter-javascript": {
-          "optional": true
-        },
-        "tree-sitter-julia": {
-          "optional": true
-        },
-        "tree-sitter-lua": {
-          "optional": true
-        },
-        "tree-sitter-rust": {
-          "optional": true
-        },
-        "tree-sitter-zig": {
-          "optional": true
-        }
-      },
-      "description": "Adds Treesitter syntax highlighting support",
+      "description": "🌳 Treesitter support for Pragtical.",
       "id": "evergreen",
       "mod_version": "3",
-      "remote": "https://github.com/pragtical/evergreen:master",
-      "version": "0.2.1"
+      "name": "Evergreen.lxl",
+      "remote": "https://github.com/Evergreen-lxl/Evergreen.lxl.git:7856f897c044e86ab93e27a60e9da8f490a47e4e",
+      "version": "0.3.1"
     },
     {
       "description": "Runs selected text through shell command and replaces with result",
@@ -2309,111 +2275,12 @@
       "version": "0.1"
     },
     {
-      "description": "Treesitter parser for C",
-      "id": "tree-sitter-c",
-      "mod_version": "3",
-      "name": "tree-sitter-c",
-      "remote": "https://github.com/pragtical/evergreen:master",
-      "type": "library",
-      "version": "0.1"
-    },
-    {
-      "description": "Treesitter parser for C++",
-      "id": "tree-sitter-cpp",
-      "mod_version": "3",
-      "name": "tree-sitter-cpp",
-      "remote": "https://github.com/pragtical/evergreen:master",
-      "type": "library",
-      "version": "0.1"
-    },
-    {
-      "description": "Treesitter parser for D",
-      "id": "tree-sitter-d",
-      "mod_version": "3",
-      "name": "tree-sitter-d",
-      "remote": "https://github.com/pragtical/evergreen:master",
-      "type": "library",
-      "version": "0.1"
-    },
-    {
-      "description": "Treesitter parser for diff",
-      "id": "tree-sitter-diff",
-      "mod_version": "3",
-      "name": "tree-sitter-diff",
-      "remote": "https://github.com/pragtical/evergreen:master",
-      "type": "library",
-      "version": "0.1"
-    },
-    {
-      "description": "Treesitter parser for Go",
-      "id": "tree-sitter-go",
-      "mod_version": "3",
-      "name": "tree-sitter-go",
-      "remote": "https://github.com/pragtical/evergreen:master",
-      "type": "library",
-      "version": "0.1"
-    },
-    {
-      "description": "Treesitter parser for Go mods",
-      "id": "tree-sitter-go-mod",
-      "mod_version": "3",
-      "name": "tree-sitter-go-mod",
-      "remote": "https://github.com/pragtical/evergreen:master",
-      "type": "library",
-      "version": "0.1"
-    },
-    {
-      "description": "Treesitter parser for JavaScript",
-      "id": "tree-sitter-javascript",
-      "mod_version": "3",
-      "name": "tree-sitter-javascript",
-      "remote": "https://github.com/pragtical/evergreen:master",
-      "type": "library",
-      "version": "0.1"
-    },
-    {
-      "description": "Treesitter parser for Julia",
-      "id": "tree-sitter-julia",
-      "mod_version": "3",
-      "name": "tree-sitter-julia",
-      "remote": "https://github.com/pragtical/evergreen:master",
-      "type": "library",
-      "version": "0.1"
-    },
-    {
-      "description": "Treesitter parser for Lua",
-      "id": "tree-sitter-lua",
-      "mod_version": "3",
-      "name": "tree-sitter-lua",
-      "remote": "https://github.com/pragtical/evergreen:master",
-      "type": "library",
-      "version": "0.1"
-    },
-    {
-      "description": "Treesitter parser for Rust",
-      "id": "tree-sitter-rust",
-      "mod_version": "3",
-      "name": "tree-sitter-rust",
-      "remote": "https://github.com/pragtical/evergreen:master",
-      "type": "library",
-      "version": "0.1"
-    },
-    {
-      "description": "Treesitter parser for Zig",
-      "id": "tree-sitter-zig",
-      "mod_version": "3",
-      "name": "tree-sitter-zig",
-      "remote": "https://github.com/pragtical/evergreen:master",
-      "type": "library",
-      "version": "0.1"
-    },
-    {
       "description": "Tree-sitter bindings based on `lua-tree-sitter`",
       "id": "tree_sitter",
       "name": "Tree-sitter",
-      "remote": "https://github.com/xcb-xwii/lite-xl-tree-sitter:702a76c51f19c6f6818c342f688368e2e8ec8e56",
+      "remote": "https://github.com/Evergreen-lxl/lite-xl-tree-sitter.git:b5a1445b037cd093536ff6d869f82014ffdf9a45",
       "type": "library",
-      "version": "0.1.0"
+      "version": "0.1.1"
     },
     {
       "description": "Extend Pragtical's treeview menu *([screenshot](https://raw.githubusercontent.com/juliardi/pragtical-treeview-extender/main/screenshot.png))*",
