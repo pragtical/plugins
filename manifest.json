@@ -110,6 +110,7 @@
         "language_htaccess": {},
         "language_ignore": {},
         "language_ini": {},
+        "language_iss": {},
         "language_java": {},
         "language_jiyu": {},
         "language_json": {},
@@ -133,6 +134,7 @@
         "language_objc": {},
         "language_odin": {},
         "language_openscad": {},
+        "language_pascal": {},
         "language_perl": {},
         "language_php": {},
         "language_pico8": {},
@@ -1146,6 +1148,16 @@
       "version": "0.1.3"
     },
     {
+      "description": "Syntax for [Inno Setup Script](https://jrsoftware.org/ishelp/) files",
+      "id": "language_iss",
+      "mod_version": "3",
+      "path": "plugins/language_iss.lua",
+      "tags": [
+        "language"
+      ],
+      "version": "0.1"
+    },
+    {
       "description": "Syntax for the [Java](https://en.wikipedia.org/wiki/Java_\\(programming_language\\)) programming language",
       "id": "language_java",
       "mod_version": "3",
@@ -1381,6 +1393,16 @@
       "id": "language_openscad",
       "mod_version": "3",
       "path": "plugins/language_openscad.lua",
+      "tags": [
+        "language"
+      ],
+      "version": "0.1"
+    },
+    {
+      "description": "Syntax for [Pascal](https://en.wikipedia.org/wiki/Pascal_(programming_language)) programming language",
+      "id": "language_pascal",
+      "mod_version": "3",
+      "path": "plugins/language_pascal.lua",
       "tags": [
         "language"
       ],
