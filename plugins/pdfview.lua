@@ -20,7 +20,7 @@ command.add("core.docview!", {
 -- Construct the PDF file name out of the (La)Tex filename
     local pdffile = "\"" .. string.gsub(texfile, ".tex", ".pdf") .. "\""
 -- PDF viewer - is there any provided by the environment
-    local pdfcmd = os.getenv("LITE_PDF_VIEWER")
+    local pdfcmd = os.getenv("PRAGTICAL_PDF_VIEWER")
 
     core.log("Opening pdf preview for \"%s\"", texfile)
 

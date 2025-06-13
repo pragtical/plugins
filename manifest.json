@@ -193,14 +193,14 @@
       "id": "autosave",
       "mod_version": "3",
       "path": "plugins/autosave.lua",
-      "version": "0.2"
+      "version": "0.2.1"
     },
     {
       "description": "Automatically saves files that were changed when the main window loses focus by switching to another application",
       "id": "autosaveonfocuslost",
       "mod_version": "3",
       "path": "plugins/autosaveonfocuslost.lua",
-      "version": "0.2"
+      "version": "0.2.1"
     },
     {
       "description": "Automatically hardwraps lines when typing",
@@ -341,7 +341,7 @@
       "id": "lite-debugger",
       "mod_version": "3",
       "path": "plugins/lite-debugger.lua",
-      "version": "0.1"
+      "version": "0.1.1"
     },
     {
       "description": "Provides a debugger integration, with pluggable backends. Currently supports only gdb. *([screenshot](https://raw.githubusercontent.com/adamharrison/lite-xl-ide/main/screenshots/debugger.png))*",
@@ -624,7 +624,7 @@
       "id": "keymap_export",
       "mod_version": "3",
       "path": "plugins/keymap_export.lua",
-      "version": "0.1"
+      "version": "0.1.1"
     },
     {
       "dependencies": {
@@ -2053,7 +2053,7 @@
       "id": "pdfview",
       "mod_version": "3",
       "path": "plugins/pdfview.lua",
-      "version": "0.1"
+      "version": "0.1.1"
     },
     {
       "description": "A plugin manager view for pragtical that provides GUI access to `ppm`",
