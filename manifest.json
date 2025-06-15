@@ -2059,8 +2059,8 @@
       "description": "A plugin manager view for pragtical that provides GUI access to `ppm`",
       "id": "plugin_manager",
       "mod_version": "3",
-      "remote": "https://github.com/pragtical/plugin-manager.git:4503b8fe9c2c6ae99bfe92de745a8d92b3cee2af",
-      "version": "0.1"
+      "remote": "https://github.com/pragtical/plugin-manager.git:c038e63b64db6dd67b7ea14fb5888d99b0ef2342",
+      "version": "0.1.1"
     },
     {
       "description": "Preview files and doc before before opening them",
