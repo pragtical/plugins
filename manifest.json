@@ -2021,11 +2021,11 @@
       "version": "0.4.1"
     },
     {
-      "description": "Change the opaqueness/transparency of `lite-xl` using shift+mousewheel or a command.",
+      "description": "Change the opaqueness/transparency of `pragtical` using shift+alt+mousewheel or a command.",
       "id": "opacity",
       "mod_version": "3",
       "path": "plugins/opacity.lua",
-      "version": "0.1.1"
+      "version": "0.1.2"
     },
     {
       "description": "Automatically prompts you if you tried to open a binary file in the editor",

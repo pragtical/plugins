@@ -28,7 +28,9 @@ end
 local on_mouse_wheel = RootView.on_mouse_wheel
 
 function RootView:on_mouse_wheel(d, ...)
-  if keymap.modkeys["shift"] and use_mousewheel then
+  if
+    use_mousewheel and keymap.modkeys["shift"] and keymap.modkeys["alt"]
+  then
     if d < 0 then command.perform "opacity:decrease" end
     if d > 0 then command.perform "opacity:increase" end
   else
@@ -67,9 +69,9 @@ command.add(nil, {
   ["opacity:toggle mouse wheel use"] = function()
     use_mousewheel = not use_mousewheel
     if use_mousewheel then
-      core.log("Opacity (shift + mouse wheel): on")
+      core.log("Opacity (shift + alt + mouse wheel): on")
     else
-      core.log("Opacity (shift + mouse wheel): off")
+      core.log("Opacity (shift + alt + mouse wheel): off")
     end
   end,
 })
