@@ -2346,11 +2346,11 @@
       "version": "0.1.1"
     },
     {
-      "description": "Audio visualizer for Lite XL",
+      "description": "Audio visualizer for Pragtical using cava",
       "id": "visu",
       "mod_version": "3",
-      "remote": "https://github.com/TorchedSammy/Visu:782c7b1ebde38dad2c3c6a1c1dee6761230dea16",
-      "version": "0.1"
+      "path": "plugins/visu.lua",
+      "version": "0.2"
     },
     {
       "description": "Adds in a word count to the statusview.",
