@@ -133,6 +133,7 @@ Visu.byteMax = 65535
 Visu.confFormat = [[
 [general]
 bars = %d
+framerate = 60
 
 [output]
 method = raw
@@ -197,8 +198,9 @@ function Visu:start(bars, fetchMode, workers)
             local newBarsInfo = self:getLatestInfo()
             if newBarsInfo ~= nil then
               self.barsInfo = newBarsInfo
+              core.redraw = true -- wakeup rendering after no sound
             end
-            coroutine.yield(0)
+            coroutine.yield(0.005) -- 200 times/s
           end
         end)
         core.threads[wid].visu = true
