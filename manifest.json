@@ -396,6 +396,13 @@
       "version": "0.5"
     },
     {
+      "description": "Make sure the file ends with one blank line.",
+      "id": "eofnewline",
+      "mod_version": "3",
+      "url": "plugins/eofnewline.lua",
+      "version": "0.1"
+    },
+    {
       "description": "Preview tabs. Opening a doc will replace the contents of the preview tab. Marks tabs as non-preview on any change or tab double clicking.",
       "id": "ephemeral_tabs",
       "mod_version": "3",
