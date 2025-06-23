@@ -18,6 +18,8 @@ config.plugins.visu = common.merge({
   enabled = true,
   fetchMode = "workers", -- workers, ondraw, both
   workers = 1,
+  pollRate = 60,
+  cavaFrameRate = 60,
   barsNumber = 10,
   barsCustomColor = false,
   barsColor = table.pack(table.unpack(style.text)),
@@ -33,11 +35,7 @@ config.plugins.visu = common.merge({
       on_apply = function(enabled)
         if not visu_initialized then return end
         if enabled then
-          visu:start(
-            config.plugins.visu.barsNumber,
-            config.plugins.visu.fetchMode,
-            config.plugins.visu.workers
-          )
+          visu:start()
         else
           visu:stop()
         end
@@ -59,34 +57,46 @@ config.plugins.visu = common.merge({
       },
       on_apply = function(mode)
         if not visu_initialized then return end
-        if config.plugins.visu.enabled then
-          visu:start(
-            config.plugins.visu.barsNumber,
-            mode,
-            config.plugins.visu.workers
-          )
-        else
-          visu:stop()
-        end
+        if visu.started then visu:start(nil, mode) end
       end
     },
     {
       label = "Workers",
       description = "On 'workers' mode this is the amount of co-routines to "
-        .. "scan the spectrum data from cava.",
+        .. "scan the spectrum data from cava (should be left at 1).",
       path = "workers",
       type = "NUMBER",
       default = 1,
       min = 1,
       on_apply = function(value)
         if not visu_initialized then return end
-        if config.plugins.visu.enabled then
-          visu:start(
-            config.plugins.visu.barsNumber,
-            config.plugins.visu.fetchMode,
-            value
-          )
-        end
+        if visu.started then visu:start(nil, nil, value) end
+      end
+    },
+    {
+      label = "Poll Rate",
+      description = "How many times per second to retrieve data from cava on "
+        .. "workers mode. If visualization is out of sync try increasing this "
+        .. "value to be higher than the cava frame rate.",
+      path = "pollRate",
+      type = "NUMBER",
+      default = 60,
+      min = 1,
+      on_apply = function()
+        if not visu_initialized then return end
+        if visu.started then visu:start() end
+      end
+    },
+    {
+      label = "Cava Frame Rate",
+      description = "Amount of frames per second that cava will generate.",
+      path = "cavaFrameRate",
+      type = "NUMBER",
+      default = 60,
+      min = 1,
+      on_apply = function()
+        if not visu_initialized then return end
+        if visu.started then visu:start() end
       end
     },
     {
@@ -99,13 +109,7 @@ config.plugins.visu = common.merge({
       step = 2,
       on_apply = function(value)
         if not visu_initialized then return end
-        if config.plugins.visu.enabled then
-          visu:start(
-            value,
-            config.plugins.visu.fetchMode,
-            config.plugins.visu.workers
-          )
-        end
+        if visu.started then visu:start(value) end
       end
     },
     {
@@ -133,7 +137,7 @@ Visu.byteMax = 65535
 Visu.confFormat = [[
 [general]
 bars = %d
-framerate = 60
+framerate = %d
 
 [output]
 method = raw
@@ -151,6 +155,8 @@ function Visu:new()
   self.chunkSize = 0
   self.bars = 1
   self.barsInfo = nil
+  self.started = false
+  self.pollRate = 1 / 200
 end
 
 ---@param bars? integer
@@ -159,13 +165,16 @@ end
 function Visu:start(bars, fetchMode, workers)
   self:stop()
 
-  bars = bars or 10
-  workers = workers or 1
+  bars = bars or config.plugins.visu.barsNumber
+  workers = workers or config.plugins.visu.workers
+  fetchMode = fetchMode or config.plugins.visu.fetchMode
   self.bars = bars
-  self.fetchMode = fetchMode or "workers"
+  self.fetchMode = fetchMode
   self.chunkSize = 2 * bars
 
-  local cavaConf = Visu.confFormat:format(bars, '/dev/stdout', '16bit')
+  local cavaConf = Visu.confFormat:format(
+    bars, config.plugins.visu.cavaFrameRate, '/dev/stdout', '16bit'
+  )
   local tmp = core.temp_filename('cavaconf', '/tmp')
   self.tmpConfFile = tmp
 
@@ -189,18 +198,26 @@ function Visu:start(bars, fetchMode, workers)
       return
     end
 
+    self.started = true
+    self.pollRate = 1 / config.plugins.visu.pollRate
     self.barsInfo = self:getLatestInfo()
 
     if self.fetchMode == "workers" or self.fetchMode == "both" then
       for _ = 1, workers do
         local wid = core.add_thread(function()
           while true do
-            local newBarsInfo = self:getLatestInfo()
+            local tmpInfo = self:getLatestInfo()
+            local newBarsInfo = tmpInfo
+            -- skip missed frames to prevent out of sync
+            while tmpInfo ~= nil do
+              tmpInfo = self:getLatestInfo()
+              if tmpInfo then newBarsInfo = tmpInfo end
+            end
             if newBarsInfo ~= nil then
               self.barsInfo = newBarsInfo
               core.redraw = true -- wakeup rendering after no sound
             end
-            coroutine.yield(0.005) -- 200 times/s
+            coroutine.yield(self.pollRate)
           end
         end)
         core.threads[wid].visu = true
@@ -227,6 +244,7 @@ function Visu:stop()
     os.remove(self.tmpConfFile)
     self.tmpConfFile = nil
   end
+  self.started = false
 end
 
 ---@return table<integer,number> | nil
@@ -247,7 +265,9 @@ function Visu:getLatestInfo()
 end
 
 function Visu:render(rootview)
-  if not config.plugins.visu.enabled or not self.proc then return end
+  if (not config.plugins.visu.enabled and not self.started) or not self.proc then
+    return
+  end
 
   if core.active_view == core.command_view then return end
   local w = 10 * SCALE
@@ -306,8 +326,8 @@ core.add_thread(function()
       config.plugins.visu.fetchMode,
       config.plugins.visu.workers
     )
-    visu_initialized = true
   end
+  visu_initialized = true
 end)
 
 local RootView_draw = RootView.draw
