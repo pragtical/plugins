@@ -150,7 +150,7 @@ function Visu:new()
   Visu.super.new(self)
   self.proc = nil
   self.fetchMode = "workers"
-  self.workers = {}
+  self.workers = false
   self.tmpConfFile = nil
   self.chunkSize = 0
   self.bars = 1
@@ -221,20 +221,20 @@ function Visu:start(bars, fetchMode, workers)
           end
         end)
         core.threads[wid].visu = true
-        table.insert(self.workers, wid)
       end
+      self.workers = true
     end
   end
 end
 
 function Visu:stop()
-  if #self.workers > 0 then
-    for _, wid in ipairs(self.workers) do
-      if core.threads[wid] and core.threads[wid].visu then
-        core.threads[wid].cr = coroutine.create(function() end)
+  if self.workers then
+    for _, thread in ipairs(core.threads) do
+      if thread.visu then
+        thread.cr = coroutine.create(function() end)
       end
     end
-    self.workers = {}
+    self.workers = false
   end
   if self.proc then
     self.proc:terminate()

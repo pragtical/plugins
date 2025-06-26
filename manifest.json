@@ -2286,7 +2286,7 @@
       "id": "todotreeview",
       "mod_version": "3.1",
       "path": "plugins/todotreeview.lua",
-      "version": "0.3.1"
+      "version": "0.3.2"
     },
     {
       "description": "Toggles symbols between `snake_case` and `camelCase`",
@@ -2349,7 +2349,7 @@
       "id": "visu",
       "mod_version": "3",
       "path": "plugins/visu.lua",
-      "version": "0.2.2"
+      "version": "0.2.3"
     },
     {
       "description": "Adds in a word count to the statusview.",

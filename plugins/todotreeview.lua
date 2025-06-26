@@ -176,7 +176,7 @@ function TodoTreeView:new()
   self.visible = true
   self.cache = {}
   self.init_size = true
-  self.co_id = 0
+  self.co_running = false
   self.current_mode = config.plugins.todotreeview.todo_mode
   self.current_project_dir = ""
   self.scroll_width = 0
@@ -267,17 +267,18 @@ function TodoTreeView:refresh_cache()
   local prev_mode = self.current_mode
   local current_mode = config.plugins.todotreeview.todo_mode
 
-  if
-    self.updating_cache
-    and
-    core.threads[self.co_id] and core.threads[self.co_id].todotreeview
-  then
-    core.threads[self.co_id].cr = coroutine.create(function() end)
+  if self.updating_cache and self.co_running then
+    for _, thread in ipairs(core.threads) do
+      if thread.todotreeview then
+        thread.cr = coroutine.create(function() end)
+      end
+    end
   end
 
   self.updating_cache = true
+  self.co_running = true
 
-  self.co_id = core.add_thread(function()
+  local co_idx = core.add_thread(function()
     self.items = items
     self.current_mode = current_mode
     local count = 0
@@ -351,9 +352,11 @@ function TodoTreeView:refresh_cache()
     if self.visible then
       core.redraw = true
     end
+
+    self.co_running = false
   end, self)
 
-  core.threads[self.co_id].todotreeview = true
+  core.threads[co_idx].todotreeview = true
 end
 
 
