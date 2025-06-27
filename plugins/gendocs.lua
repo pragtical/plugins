@@ -633,14 +633,14 @@ cli.register({
     {
       name = "output",
       short_name = "o",
-      description = "Path to store the documentation (default: output)",
+      description = "Path to store the documentation",
       type = "string",
       value = "output"
     },
     {
       name = "keep",
       short_name = "k",
-      description = "Keep language server generated files (default: false)"
+      description = "Keep language server generated files"
     }
   },
   execute = function(flags, arguments)
@@ -717,7 +717,7 @@ cli.register({
           .. "\""..DATADIR..PATHSEP..name..".lua".."\" "
           .. "\""..output_dir..PATHSEP..name..".lua".."\""
         )
-        if not succ or exitcode > 0 then
+        if not succ then
           print ""
           print(
             cli.colorize("Error: ", "red")
