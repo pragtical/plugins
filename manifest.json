@@ -2027,6 +2027,13 @@
       "version": "0.4.1"
     },
     {
+      "description": "Number stepping plugin for Pragtical",
+      "id": "numstep",
+      "mod_version": "3",
+      "path": "plugins/numstep.lua",
+      "version": "0.1"
+    },
+    {
       "description": "Change the opaqueness/transparency of `pragtical` using shift+alt+mousewheel or a command.",
       "id": "opacity",
       "mod_version": "3",
