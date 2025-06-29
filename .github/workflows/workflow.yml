@@ -3,6 +3,7 @@ name: Update README
 on:
   push:
     branches: [master]
+  workflow_dispatch:
 
 permissions: write-all
 
@@ -17,11 +18,13 @@ jobs:
           # Remove everything after the --- so we can regenerate it.
           perl -pi -e 'exit(0) if $_ =~ m/^\-\-\-/' README.md && echo -e "---" >> README.md
           echo -e "\n## Plugins\n" >> README.md
-          export TABLE_COLUMNS='{{string.format("[`%s`](%s)", addon.id, (addon.extra and addon.extra.url or addon.url)) .. ((addon.extra and addon.extra.url or addon.url:find("http")) and "*" or "")}},description'
+          export TABLE_COLUMNS='{{not addon and "plugin" or string.format("[`%s`](%s)", addon.id, (addon.extra and addon.extra.url or addon.url)) .. ((addon.extra and addon.extra.url or (addon.url and addon.url:find("http"))) and "*" or "")}},description'
           ./ppm-latest init none --userdir . && ./ppm-latest add . --userdir .
-          ./ppm-latest list --table "$TABLE_COLUMNS" --header Plugin,Description --type plugin --tag '!language' --status '!core' --userdir . >> README.md
+          #./ppm-latest list --table "$TABLE_COLUMNS" --header Plugin,Description --type plugin --tag '!language' --status '!core' --userdir . >> README.md
+          ./ppm-latest list --table "$TABLE_COLUMNS" --header Plugin,Description --type plugin --status '!core' --userdir . | grep -v "language_" >> README.md
           echo -e "\n## Languages\n" >> README.md
-          ./ppm-latest list --table "$TABLE_COLUMNS" --header Language,Description --type plugin --tag 'language' --userdir .  >> README.md
+          # ./ppm-latest list --table "$TABLE_COLUMNS" --header Language,Description --type plugin --tag 'language' --userdir .  >> README.md
+          ./ppm-latest list --table "$TABLE_COLUMNS" --header Language,Description --type plugin --status '!core' --userdir . | grep -P "(language_|\| Language|\| \-\-)" >> README.md
           echo -e "\n## Libraries\n" >> README.md
           ./ppm-latest list --table "$TABLE_COLUMNS" --header Library,Description --type library --userdir .  >> README.md
           ./ppm-latest exec 'common.write("manifest.json", json.encode(json.decode(common.read("manifest.json")), { pretty = true }) .. "\n")' --userdir .
