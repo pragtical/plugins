@@ -283,7 +283,7 @@
       "description": "A console for running external commands and capturing their output *([gif](https://user-images.githubusercontent.com/3920290/81343656-49325a00-90ad-11ea-8647-ff39d8f1d730.gif))*",
       "id": "console",
       "mod_version": "3.1",
-      "remote": "https://github.com/pragtical/console:07f3c0cd73be42700c9c62b41a05a11a3daec8a0",
+      "remote": "https://github.com/pragtical/console:c336d57cd5fa353068ad5335644a6a390f7b7e68",
       "version": "0.2.2"
     },
     {
