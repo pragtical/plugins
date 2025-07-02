@@ -48,8 +48,10 @@ local order_counter = 0
 
 local core_set_active_view = core.set_active_view
 function core.set_active_view(view)
-  nodes_visit_order[view] = order_counter
-  order_counter = order_counter + 1
+  if view then
+    nodes_visit_order[view] = order_counter
+    order_counter = order_counter + 1
+  end
   return core_set_active_view(view)
 end
 
