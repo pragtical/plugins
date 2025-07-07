@@ -151,10 +151,12 @@ function Visu:new()
   self.proc = nil
   self.fetchMode = "workers"
   self.workers = false
+  self.redraw = false
   self.tmpConfFile = nil
   self.chunkSize = 0
   self.bars = 1
   self.barsInfo = nil
+  self.noSoundCounter = 0
   self.started = false
   self.pollRate = 1 / 200
 end
@@ -213,11 +215,24 @@ function Visu:start(bars, fetchMode, workers)
               tmpInfo = self:getLatestInfo()
               if tmpInfo then newBarsInfo = tmpInfo end
             end
+            self.redraw = false
             if newBarsInfo ~= nil then
+              self.noSoundCounter = 0
               self.barsInfo = newBarsInfo
-              core.redraw = true -- wakeup rendering after no sound
+              for i = 1, self.bars do
+                local h = ((self.barsInfo[i] * 239)) * SCALE
+                -- wakeup rendering after no sound
+                if h > 0 then core.redraw = true self.redraw = true break end
+              end
+            else
+              self.noSoundCounter = self.noSoundCounter + 1
             end
-            coroutine.yield(self.pollRate)
+            if self.noSoundCounter < 1000 then
+              coroutine.yield(self.pollRate)
+            else
+              self.noSoundCounter = 1000
+              coroutine.yield(2)
+            end
           end
         end)
         core.threads[wid].visu = true
@@ -280,7 +295,7 @@ function Visu:render(rootview)
     end
   end
 
-  if self.barsInfo ~= nil then
+  if self.redraw == true then
     for i = 1, self.bars do
       local h = ((self.barsInfo[i] * 239)) * SCALE
       if h > 0 then
