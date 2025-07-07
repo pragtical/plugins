@@ -1,6 +1,7 @@
 -- mod-version:3
 local config = require "core.config"
 local common = require "core.common"
+local command = require "core.command"
 local DocView = require "core.docview"
 
 
@@ -86,3 +87,9 @@ function DocView:draw_line_text(line, x, y)
   end
   return lh
 end
+
+command.add(nil, {
+  ["color-preview:toggle"] = function()
+    config.plugins.colorpreview.enabled = not config.plugins.colorpreview.enabled
+  end
+})
