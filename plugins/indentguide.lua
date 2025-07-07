@@ -85,13 +85,13 @@ function DocView:update()
   self.indentguide_indents = {}
   self.indentguide_indent_active = {}
 
-  if not config.plugins.indentguide.highlight then
-    return
-  end
-
   local minline, maxline = self:get_visible_line_range()
   for i = minline, maxline do
     self.indentguide_indents[i] = indentguide.get_line_indent_guide_spaces(self.doc, i)
+  end
+
+  if not config.plugins.indentguide.highlight then
+    return
   end
 
   local max_distance = config.plugins.indentguide.highlight_distance
