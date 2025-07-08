@@ -6,10 +6,11 @@ local ColorPickerDialog = require "widget.colorpickerdialog"
 
 ---Supported color formats
 local color_patterns = {
-  { pattern = "#%x%x%x%x%x%x%x%x", type = "html_opacity" },
+  { pattern = "#%x%x%x%x%x%x%x%x", type = "html" },
   { pattern = "#%x%x%x%x%x%x", type = "html" },
   { pattern = "#%x%x%x", type = "html" },
-  { pattern = "rgba?%((%d+)%D+(%d+)%D+(%d+)[%s,]-([%.%d]-)%s-%)", type = "rgb" }
+  { pattern = "rgba?%(%s*(%d+)%D+(%d+)%D+(%d+)[%s,]-([%.%d]-)%s-%)", type = "rgb" },
+  { pattern = "hsla?%(%s*(%d+)%D+(%d+)%%%D+(%d+)%%[%s,]-([%.%d]-)%s-%)", type = "hsl" }
 }
 
 ---Get color information from given cursor position.
@@ -55,12 +56,26 @@ command.add("core.docview!", {
     local picker = ColorPickerDialog(nil, color)
     function picker:on_apply(c)
       local value
+      local no_opacity = c[4] >= 255
       if type == "html" then
-        value = string.format("#%02X%02X%02X", c[1], c[2], c[3])
-      elseif type == "html_opacity" then
-        value = string.format("#%02X%02X%02X%02X", c[1], c[2], c[3], c[4])
+        if no_opacity then
+          value = string.format("#%02X%02X%02X", c[1], c[2], c[3])
+        else
+          value = string.format("#%02X%02X%02X%02X", c[1], c[2], c[3], c[4])
+        end
       elseif type == "rgb" then
-        value = string.format("rgba(%d, %d, %d, %.2f)", c[1], c[2], c[3], c[4]/255)
+        if no_opacity then
+          value = string.format("rgb(%d, %d, %d)", c[1], c[2], c[3])
+        else
+          value = string.format("rgba(%d, %d, %d, %.2f)", c[1], c[2], c[3], c[4]/255)
+        end
+      elseif type == "hsl" then
+        local c = self.picker.rgb_to_hsl(c)
+        if no_opacity then
+          value = string.format("hsl(%d, %d%%, %d%%)", c[1]*360, c[2]*100, c[3]*100)
+        else
+          value = string.format("hsla(%d, %d%%, %d%%, %.2f)", c[1]*360, c[2]*100, c[3]*100, c[4])
+        end
       end
       doc:text_input(value)
     end

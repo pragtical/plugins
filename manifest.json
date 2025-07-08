@@ -266,11 +266,11 @@
       "version": "1.0"
     },
     {
-      "description": "Color picker dialog that supports html and rgb notations.",
+      "description": "Color picker dialog that supports html, rgb and hsl notations.",
       "id": "colorpicker",
       "mod_version": "3",
       "path": "plugins/colorpicker.lua",
-      "version": "0.2.1"
+      "version": "0.2.2"
     },
     {
       "description": "Underlays color values (eg. `#ff00ff` or `rgb(255, 0, 255)`) with their resultant color. *([screenshot](https://user-images.githubusercontent.com/3920290/80743752-731bd780-8b15-11ea-97d3-847db927c5dc.png))*",
