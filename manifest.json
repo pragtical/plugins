@@ -270,7 +270,7 @@
       "id": "colorpicker",
       "mod_version": "3",
       "path": "plugins/colorpicker.lua",
-      "version": "0.2"
+      "version": "0.2.1"
     },
     {
       "description": "Underlays color values (eg. `#ff00ff` or `rgb(255, 0, 255)`) with their resultant color. *([screenshot](https://user-images.githubusercontent.com/3920290/80743752-731bd780-8b15-11ea-97d3-847db927c5dc.png))*",

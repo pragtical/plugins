@@ -22,16 +22,21 @@ local color_patterns = {
 ---@return table<integer,integer> selection
 local function get_color_type(doc, line, col)
   local col1, col2 = 1, 1
+  ---@type string
   local text = doc.lines[line]
+  local ccol = 1
   repeat
     for _, pattern in ipairs(color_patterns) do
-      col1, col2 = text:find(pattern.pattern, col2)
+      col1, col2 = text:find(pattern.pattern, ccol)
       if col1 and col2 then
         if col >= col1 and col <= col2+1 then
           return
             doc:get_text(line, col1, line, col2+1),
             pattern.type,
             {line, col1, line, col2+1}
+        else
+          ccol = ccol + 1
+          break
         end
       end
     end
@@ -62,7 +67,7 @@ command.add("core.docview!", {
     local on_close = picker.on_close
     function picker:on_close()
       on_close(self)
-      core.active_view = dv
+      core.set_active_view(dv)
     end
     picker:show()
     picker:centered()
