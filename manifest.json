@@ -273,11 +273,11 @@
       "version": "0.2.2"
     },
     {
-      "description": "Underlays color values (eg. `#ff00ff` or `rgb(255, 0, 255)`) with their resultant color. *([screenshot](https://user-images.githubusercontent.com/3920290/80743752-731bd780-8b15-11ea-97d3-847db927c5dc.png))*",
+      "description": "Underlays color values (eg. `#ff00ff`, `rgb(255, 0, 255)` or hsl(300, 100%, 50%)) with their resultant color. *([screenshot](https://user-images.githubusercontent.com/3920290/80743752-731bd780-8b15-11ea-97d3-847db927c5dc.png))*",
       "id": "colorpreview",
       "mod_version": "3",
       "path": "plugins/colorpreview.lua",
-      "version": "0.2.1"
+      "version": "0.3"
     },
     {
       "description": "A console for running external commands and capturing their output *([gif](https://user-images.githubusercontent.com/3920290/81343656-49325a00-90ad-11ea-8647-ff39d8f1d730.gif))*",
