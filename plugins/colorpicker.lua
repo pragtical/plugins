@@ -31,10 +31,14 @@ local function get_color_type(doc, line, col)
   local col1, col2 = 1, 1
   ---@type string
   local text = doc.lines[line]:sub(scol1, scol2)
+  local text_len = #text
   local ccol = 1
   repeat
     for _, pattern in ipairs(color_patterns) do
-      col1, col2 = text:find(pattern.pattern, ccol)
+      _, col2 = text:find("^%s*", ccol) -- skip spaces for faster checking
+      if col2 then ccol = col2 + 1 end
+
+      col1, col2 = text:find("^"..pattern.pattern, ccol)
       if col1 and col2 then
         local acol1, acol2 = scol1 + col1 - 1, scol1 + col2
         if col >= acol1 and col <= acol2 then
@@ -42,12 +46,11 @@ local function get_color_type(doc, line, col)
             doc:get_text(line, acol1, line, acol2),
             pattern.type,
             {line, acol1, line, acol2}
-        else
-          ccol = ccol + 1
-          break
         end
       end
     end
+    ccol = ccol + 1
+    if ccol < text_len then col1 = 0 end
   until not col1
   return "", "html", {line, col, line, col}
 end
