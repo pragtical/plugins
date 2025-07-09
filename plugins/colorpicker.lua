@@ -6,9 +6,9 @@ local ColorPickerDialog = require "widget.colorpickerdialog"
 
 ---Supported color formats
 local color_patterns = {
-  { pattern = "#%x%x%x%x%x%x%x%x", type = "html" },
-  { pattern = "#%x%x%x%x%x%x", type = "html" },
-  { pattern = "#%x%x%x", type = "html" },
+  { pattern = "#%x%x%x%x%x%x%x%x%f[%W]", type = "html" },
+  { pattern = "#%x%x%x%x%x%x%f[%W]", type = "html" },
+  { pattern = "#%x%x%x%f[%W]", type = "html" },
   { pattern = "rgba?%(%s*(%d+)%D+(%d+)%D+(%d+)[%s,]-([%.%d]-)%s-%)", type = "rgb" },
   { pattern = "hsla?%(%s*(%d+)%D+(%d+)%%%D+(%d+)%%[%s,]-([%.%d]-)%s-%)", type = "hsl" }
 }
