@@ -2201,7 +2201,7 @@
       "id": "spellcheck",
       "mod_version": "3.1",
       "path": "plugins/spellcheck.lua",
-      "version": "0.3.1"
+      "version": "0.4"
     },
     {
       "description": "Displays the current date and time in the corner of the status view",

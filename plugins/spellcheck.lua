@@ -34,9 +34,39 @@ local forced_spellcheck = false
 local user_dictionary = USERDIR .. PATHSEP .. "user_dictionary.txt"
 
 local spell_cache = setmetatable({}, { __mode = "k" })
+local pos_cache = setmetatable({}, { __mode = "k" })
 local font_canary
 local font_size_canary
 
+
+local get_visible_cols_range = DocView.get_visible_cols_range
+if not get_visible_cols_range then
+  ---Get an estimated range of visible columns. It is an estimate because fonts
+  ---and their fallbacks may not be monospaced or may differ in size.
+  ---@param self core.docview
+  ---@param line integer
+  ---@param extra_cols integer Amount of columns to deduce on col1 and include on col2
+  ---@return integer col1
+  ---@return integer col2
+  get_visible_cols_range = function(self, line, extra_cols)
+    extra_cols = extra_cols or 100
+    local gw = self:get_gutter_width()
+    local line_x = self.position.x + gw
+    local x = -self.scroll.x + self.position.x + gw
+
+    local non_visible_x = common.clamp(line_x - x, 0, math.huge)
+    local char_width = self:get_font():get_width("W")
+    local non_visible_chars_left = math.floor(non_visible_x / char_width)
+    local visible_chars_right = math.floor((self.size.x - gw) / char_width)
+    local line_len = #self.doc.lines[line]
+
+    if non_visible_chars_left > line_len then return 0, 0 end
+
+    return
+      math.max(1, non_visible_chars_left - extra_cols),
+      math.min(line_len, non_visible_chars_left + visible_chars_right + extra_cols)
+  end
+end
 
 local function reset_cache(fully)
   for highlighter in pairs(spell_cache) do
@@ -44,9 +74,11 @@ local function reset_cache(fully)
       local cache = spell_cache[highlighter]
       for j=1, #cache do
         cache[j] = false
+        pos_cache[highlighter][j] = -1
       end
     else
       spell_cache[highlighter] = nil
+      pos_cache[highlighter] = nil
     end
   end
 end
@@ -153,13 +185,15 @@ local function reset_cache_line(self, line, n, splice)
   if check_doc(self.doc) or spell_cache[self] then
     if not spell_cache[self] then
       spell_cache[self] = {}
+      pos_cache[self] = {}
     end
     if splice then
       common.splice(spell_cache[self], line, n)
+      common.splice(pos_cache[self], line, n)
     end
     if n > 0 then
       for i=line, #self.doc.lines do
-        if spell_cache[self][i] then spell_cache[self][i] = false end
+        if spell_cache[self][i] then spell_cache[self][i] = false pos_cache[self][i] = -1 end
       end
     end
   end
@@ -199,8 +233,10 @@ function Highlighter:tokenize_line(idx, state, ...)
   then
     if not spell_cache[self] then
       spell_cache[self] = {}
+      pos_cache[self] = {}
     end
     spell_cache[self][idx] = false
+    pos_cache[self][idx] = -1
   end
   return res
 end
@@ -228,6 +264,7 @@ function Doc:on_close()
   doc_on_close(self)
   if spell_cache[self.highlighter] then
     spell_cache[self.highlighter] = nil
+    pos_cache[self.highlighter] = nil
   end
 end
 
@@ -240,6 +277,7 @@ function DocView:draw_line_text(idx, x, y)
 
   if not spell_cache[self.doc.highlighter] then
     spell_cache[self.doc.highlighter] = {}
+    pos_cache[self.doc.highlighter] = {}
   end
 
   if font_canary ~= style.code_font
@@ -251,23 +289,33 @@ function DocView:draw_line_text(idx, x, y)
     self.old_wrapped_lines = self.wrapped_lines
     reset_cache()
   end
-  if not spell_cache[self.doc.highlighter][idx] then
+  if
+    dictionaries_loading < 1 and (
+      not spell_cache[self.doc.highlighter][idx]
+      or pos_cache[self.doc.highlighter][idx] ~= x
+    )
+  then
+    pos_cache[self.doc.highlighter][idx] = x
+
     local calculated = {}
+    local vs, ve = get_visible_cols_range(self, idx, 50)
     local s, e, us, ue = 0, 0, 0, 0
-    local text = self.doc.lines[idx]
+    local text = self.doc.lines[idx]:usub(vs, ve)
+    vs = utf8extra.charpos(self.doc.lines[idx], vs)
+    ve = utf8extra.charpos(self.doc.lines[idx], ve)
 
     while true do
       us, ue = text:ufind(word_pattern, ue + 1)
       if not us then break end
       local word = text:usub(us, ue):ulower()
-      s = utf8extra.charpos(text, nil, us) - 1
-      e = utf8extra.charpos(text, nil, ue) - 1
-      if not words[word] and not active_word(self.doc, idx, e) then
-        x, y = self:get_line_screen_position(idx, s)
-        table.insert(calculated,  x - self.position.x - self:get_gutter_width())
+      s = utf8extra.charpos(text, us)
+      e = utf8extra.charpos(text, ue)
+      if not words[word] and not active_word(self.doc, idx, vs + e) then
+        x, y = self:get_line_screen_position(idx, vs + s - 1)
+        table.insert(calculated,  x - self.position.x - self:get_gutter_width() + self.scroll.x)
         table.insert(calculated, y - self.position.y + self.scroll.y)
-        x, y = self:get_line_screen_position(idx, e + 1)
-        table.insert(calculated, x - self.position.x - self:get_gutter_width())
+        x, y = self:get_line_screen_position(idx, vs + e)
+        table.insert(calculated, x - self.position.x - self:get_gutter_width() + self.scroll.x)
         table.insert(calculated, y - self.position.y + self.scroll.y)
       end
     end
@@ -275,20 +323,22 @@ function DocView:draw_line_text(idx, x, y)
     spell_cache[self.doc.highlighter][idx] = calculated
   end
 
-  local color = style.spellcheck_error or style.syntax.keyword2
-  local h = math.ceil(1 * SCALE)
-  local slh = self:get_line_height() - h
-  local calculated = spell_cache[self.doc.highlighter][idx]
-  local gw = self:get_gutter_width()
-  for i=1,#calculated,4 do
-    local x1, y1, x2, y2 = calculated[i], calculated[i+1], calculated[i+2], calculated[i+3]
-    renderer.draw_rect(
-      (self.position.x + gw + x1) - self.scroll.x,
-      (self.position.y + y1 + slh) - self.scroll.y,
-      x2 - x1,
-      h,
-      color
-    )
+  if spell_cache[self.doc.highlighter][idx] then
+    local color = style.spellcheck_error or style.syntax.keyword2
+    local h = math.ceil(1 * SCALE)
+    local slh = self:get_line_height() - h
+    local pos = spell_cache[self.doc.highlighter][idx]
+    local gw = self:get_gutter_width()
+    for i=1,#pos,4 do
+      local x1, y1, x2, y2 = pos[i], pos[i+1], pos[i+2], pos[i+3]
+      renderer.draw_rect(
+        (self.position.x + gw + x1) - self.scroll.x,
+        (self.position.y + y1 + slh) - self.scroll.y,
+        x2 - x1,
+        h,
+        color
+      )
+    end
   end
   return lh
 end
@@ -340,6 +390,19 @@ config.plugins.spellcheck.config_spec = {
   }
 }
 
+local function get_valid_utf8_range(line, col, padding)
+  local c = line:sub(1, col):ulen(nil, nil, true)
+  local s, e = math.max(1, c - padding), math.min(line:ulen(), c + padding)
+
+  local bs = utf8extra.charpos(line, s)
+  local be = utf8extra.charpos(line, e)
+
+  while not bs do s = s - 1 bs = utf8extra.charpos(line, s) end
+  while not be do e = e + 1 be = utf8extra.charpos(line, e) end
+
+  return bs, be, line:sub(bs, be)
+end
+
 --
 -- Register Commands and ContextMenu entries
 --
@@ -352,13 +415,18 @@ local function get_current_word(from_cursor)
     l, c = core.active_view:resolve_screen_position(cursor_x, cursor_y)
   end
   local s, e, us, ue = 0, 0, 0, 0
-  local text = doc.lines[l]
+  local ss, se, text = get_valid_utf8_range(doc.lines[l], c, 50)
   while true do
     us, ue = text:ufind(word_pattern, ue + 1)
-    s = utf8extra.charpos(text, nil, us) - 1
-    e = utf8extra.charpos(text, nil, ue) - 1
-    if c >= s and c <= e + 1 then
-      return text:usub(us, ue):ulower(), s, e
+    if us then
+      s = utf8extra.charpos(text, us)
+      e = utf8extra.charpos(text, ue)
+      local as, ae = ss + s - 1, ss + e
+      if c >= as and c <= ae then
+        return text:usub(us, ue):ulower(), as, ae - 1
+      end
+    else
+      break
     end
   end
 end
@@ -368,29 +436,64 @@ local function compare_words(word1, word2)
   local res = 0
   local len1, len2 = word1:ulen(), word2:ulen()
   local wi1, wi2 = 1, 1
-  local max_len = math.max(word1:ulen(), word2:ulen())
-  for i = 1, max_len do
-    local byte1, byte2 = word1:ubyte(wi1), word2:ubyte(wi2)
-    if byte1 ~= byte2 then
-      if
-        len1 > len2 and i+2 < max_len and word1:ubyte(wi1+1) == byte2
-        and
-        word1:ubyte(wi1+2) == word2:ubyte(wi2+1)
-      then
+  local max_len = math.max(len1, len2)
+  while wi1 <= len1 and wi2 <= len2 do
+    local b1, b2 = word1:ubyte(wi1), word2:ubyte(wi2)
+    if b1 == b2 then
+      wi1 = wi1 + 1
+      wi2 = wi2 + 1
+    else
+      local matched = false
+      -- Handle insertion/deletion
+      if wi1+1 <= len1 and word1:ubyte(wi1+1) == b2 then
         wi1 = wi1 + 1
-      elseif
-        len2 > len1 and i+2 < max_len and word2:ubyte(wi2+1) == byte1
-        and
-        word2:ubyte(wi2+2) == word1:ubyte(wi1+1)
-      then
+        matched = true
+      elseif wi2+1 <= len2 and word2:ubyte(wi2+1) == b1 then
         wi2 = wi2 + 1
-      else
+        matched = true
+      -- Handle transposition (swap of adjacent characters)
+      elseif
+        wi1+1 <= len1 and wi2+1 <= len2 and
+        word1:ubyte(wi1) == word2:ubyte(wi2+1) and
+        word1:ubyte(wi1+1) == word2:ubyte(wi2)
+      then
+        wi1 = wi1 + 2
+        wi2 = wi2 + 2
+        matched = true
+      end
+      if not matched then
         res = res + 1
+        wi1 = wi1 + 1
+        wi2 = wi2 + 1
       end
     end
-    wi1 = wi1 + 1
-    wi2 = wi2 + 1
   end
+  -- prioritize words that start the same
+  local starts_same = false
+  for i=1, len1 do
+    if word1:ubyte(i) == word2:ubyte(i) then
+      res = res - 1
+      starts_same = true
+    else
+      if i == 1 then res = res + 1 end
+      break
+    end
+  end
+  -- prioritize words that end the same if starts the same
+  if starts_same then
+    local eidx = 0
+    for i=len1, 1 do
+      if word1:ubyte(i) == word2:ubyte(len2-eidx) then
+        res = res - 1
+      else
+        if eidx == 0 then res = res + 1 end
+        break
+      end
+      eidx = eidx + 1
+    end
+  end
+  -- Add penalty for leftover characters
+  res = res + (len1 - wi1 + 1) + (len2 - wi2 + 1)
   return res
 end
 
@@ -423,7 +526,7 @@ local function spellcheck_replace(dv, from_cursor)
   for w in pairs(words or {}) do
     if math.abs(w:ulen() - word_len) <= 2 then
       local diff = compare_words(word, w)
-      if diff < word_len * 0.5 or (word_len < 3 and diff < word_len) then
+      if (word_len <= 3 and diff < 2) or (word_len > 3 and diff < 2) then
         table.insert(suggestions, { diff = diff, text = w })
       end
     end
