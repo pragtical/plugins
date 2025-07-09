@@ -13,6 +13,11 @@ local color_patterns = {
   { pattern = "hsla?%(%s*(%d+)%D+(%d+)%%%D+(%d+)%%[%s,]-([%.%d]-)%s-%)", type = "hsl" }
 }
 
+local function get_sane_col_range(doc, line, col)
+  local line_len = #doc.lines[line]
+  return math.max(1, col - 50), math.min(line_len, col + 50)
+end
+
 ---Get color information from given cursor position.
 ---@param doc core.doc
 ---@param line integer
@@ -22,19 +27,21 @@ local color_patterns = {
 ---@return "html" | "html_opacity" | "rgb" type
 ---@return table<integer,integer> selection
 local function get_color_type(doc, line, col)
+  local scol1, scol2 = get_sane_col_range(doc, line, col)
   local col1, col2 = 1, 1
   ---@type string
-  local text = doc.lines[line]
+  local text = doc.lines[line]:sub(scol1, scol2)
   local ccol = 1
   repeat
     for _, pattern in ipairs(color_patterns) do
       col1, col2 = text:find(pattern.pattern, ccol)
       if col1 and col2 then
-        if col >= col1 and col <= col2+1 then
+        local acol1, acol2 = scol1 + col1 - 1, scol1 + col2
+        if col >= acol1 and col <= acol2 then
           return
-            doc:get_text(line, col1, line, col2+1),
+            doc:get_text(line, acol1, line, acol2),
             pattern.type,
-            {line, col1, line, col2+1}
+            {line, acol1, line, acol2}
         else
           ccol = ccol + 1
           break
