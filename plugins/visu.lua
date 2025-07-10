@@ -295,7 +295,7 @@ function Visu:render(rootview)
     end
   end
 
-  if self.redraw == true then
+  if self.redraw == true and self.barsInfo then
     for i = 1, self.bars do
       local h = ((self.barsInfo[i] * 239)) * SCALE
       if h > 0 then
