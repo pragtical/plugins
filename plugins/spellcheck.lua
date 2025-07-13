@@ -48,23 +48,40 @@ if not get_visible_cols_range then
   ---@param extra_cols integer Amount of columns to deduce on col1 and include on col2
   ---@return integer col1
   ---@return integer col2
+  ---@return integer ucol1
+  ---@return integer ucol2
   get_visible_cols_range = function(self, line, extra_cols)
     extra_cols = extra_cols or 100
+
+    local text = self.doc.lines[line]
+    local line_len = #text
+    if line_len == 1 then return 1, 1, 1, 1 end
+
     local gw = self:get_gutter_width()
     local line_x = self.position.x + gw
     local x = -self.scroll.x + self.position.x + gw
-
-    local non_visible_x = common.clamp(line_x - x, 0, math.huge)
     local char_width = self:get_font():get_width("W")
+    local non_visible_x = common.clamp(line_x - x, 0, math.huge)
+
     local non_visible_chars_left = math.floor(non_visible_x / char_width)
     local visible_chars_right = math.floor((self.size.x - gw) / char_width)
-    local line_len = #self.doc.lines[line]
 
-    if non_visible_chars_left > line_len then return 0, 0 end
+    if non_visible_chars_left > line_len then return 0, 0, 0, 0 end
 
-    return
-      math.max(1, non_visible_chars_left - extra_cols),
-      math.min(line_len, non_visible_chars_left + visible_chars_right + extra_cols)
+    local col1 = math.max(1, non_visible_chars_left - extra_cols)
+    local col2 = math.min(line_len, non_visible_chars_left + (visible_chars_right*2) + extra_cols)
+    local ucol1, ucol2 = col1, col2
+
+    -- if line shorter than estimate then handle utf8 stuff
+    local ulen = text:ulen(nil, nil, true)
+    if ulen < line_len then
+      ucol1 = text:ulen(1, col1, true)
+      ucol2 = text:ulen(1, col2, true)
+      col1 = text:ucharpos(ucol1)
+      col2 = text:ucharpos(ucol2)
+    end
+
+    return col1, col2, ucol1, ucol2
   end
 end
 
@@ -273,7 +290,7 @@ local draw_line_text = DocView.draw_line_text
 function DocView:draw_line_text(idx, x, y)
   local lh = draw_line_text(self, idx, x, y)
 
-  if not check_doc(self.doc, idx) then return lh end
+  if not check_doc(self.doc, idx) or dictionaries_loading > 0 then return lh end
 
   if not spell_cache[self.doc.highlighter] then
     spell_cache[self.doc.highlighter] = {}
@@ -290,26 +307,22 @@ function DocView:draw_line_text(idx, x, y)
     reset_cache()
   end
   if
-    dictionaries_loading < 1 and (
-      not spell_cache[self.doc.highlighter][idx]
-      or pos_cache[self.doc.highlighter][idx] ~= x
-    )
+    not spell_cache[self.doc.highlighter][idx]
+    or pos_cache[self.doc.highlighter][idx] ~= x
   then
     pos_cache[self.doc.highlighter][idx] = x
 
     local calculated = {}
-    local vs, ve = get_visible_cols_range(self, idx, 50)
+    local vs, ve, uvs, uve = get_visible_cols_range(self, idx, 50)
     local s, e, us, ue = 0, 0, 0, 0
-    local text = self.doc.lines[idx]:usub(vs, ve)
-    vs = utf8extra.charpos(self.doc.lines[idx], vs)
-    ve = utf8extra.charpos(self.doc.lines[idx], ve)
+    local text = self.doc.lines[idx]:usub(uvs, uve)
 
     while true do
       us, ue = text:ufind(word_pattern, ue + 1)
       if not us then break end
       local word = text:usub(us, ue):ulower()
-      s = utf8extra.charpos(text, us)
-      e = utf8extra.charpos(text, ue)
+      s = text:ucharpos(us)
+      e = text:ucharpos(ue)
       if not words[word] and not active_word(self.doc, idx, vs + e) then
         x, y = self:get_line_screen_position(idx, vs + s - 1)
         table.insert(calculated,  x - self.position.x - self:get_gutter_width() + self.scroll.x)
@@ -394,11 +407,11 @@ local function get_valid_utf8_range(line, col, padding)
   local c = line:sub(1, col):ulen(nil, nil, true)
   local s, e = math.max(1, c - padding), math.min(line:ulen(), c + padding)
 
-  local bs = utf8extra.charpos(line, s)
-  local be = utf8extra.charpos(line, e)
+  local bs = line:ucharpos(s)
+  local be = line:ucharpos(e)
 
-  while not bs do s = s - 1 bs = utf8extra.charpos(line, s) end
-  while not be do e = e + 1 be = utf8extra.charpos(line, e) end
+  while not bs do s = s - 1 bs = line:ucharpos(s) end
+  while not be do e = e + 1 be = line:ucharpos(e) end
 
   return bs, be, line:sub(bs, be)
 end
@@ -419,8 +432,8 @@ local function get_current_word(from_cursor)
   while true do
     us, ue = text:ufind(word_pattern, ue + 1)
     if us then
-      s = utf8extra.charpos(text, us)
-      e = utf8extra.charpos(text, ue)
+      s = text:ucharpos(us)
+      e = text:ucharpos(ue)
       local as, ae = ss + s - 1, ss + e
       if c >= as and c <= ae then
         return text:usub(us, ue):ulower(), as, ae - 1
