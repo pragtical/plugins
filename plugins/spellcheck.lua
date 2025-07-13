@@ -591,9 +591,17 @@ end
 command.add("core.docview", {
   ["spell-check:toggle"] = function()
     config.plugins.spellcheck.enabled = not config.plugins.spellcheck.enabled
+    core.log(
+      "Spell Check: %s",
+      config.plugins.spellcheck.enabled and "Enabled" or "Disabled"
+    )
   end,
   ["spell-check:toggle-forced-checking"] = function()
     forced_spellcheck = not forced_spellcheck
+    core.log(
+      "Spell Check Forced Check: %s",
+      forced_spellcheck and "Enabled" or "Disabled"
+    )
   end,
   ["spell-check:add-to-dictionary"] = function()
     add_to_dictionary()

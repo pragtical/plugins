@@ -7,6 +7,7 @@
 --]]
 local core = require "core"
 local common = require "core.common"
+local command = require "core.command"
 local config = require "core.config"
 local scale = require "plugins.scale"
 local StatusView = require "core.statusview"
@@ -50,5 +51,15 @@ core.status_view:add_item({
   separator = core.status_view.separator2
 })
 
-return true
+command.add(nil, {
+  ['scale-status:toggle'] = function()
+    config.plugins.scalestatus.enabled = not config.plugins.scalestatus.enabled
+    if config.plugins.scalestatus.enabled then
+      core.status_view:get_item("status:scale"):show()
+    else
+      core.status_view:get_item("status:scale"):hide()
+    end
+  end,
+})
 
+return true

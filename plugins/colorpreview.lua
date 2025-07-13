@@ -1,4 +1,5 @@
 -- mod-version:3
+local core = require "core"
 local config = require "core.config"
 local common = require "core.common"
 local command = require "core.command"
@@ -157,15 +158,22 @@ end
 command.add(nil, {
   ["color-preview:toggle"] = function()
     config.plugins.colorpreview.enabled = not config.plugins.colorpreview.enabled
-  end
-})
+    core.log(
+      "Color Preview: %s",
+      config.plugins.colorpreview.enabled and "Enabled" or "Disabled"
+    )
+  end,
 
-command.add(nil, {
   ["color-preview:toggle-mode"] = function()
     if config.plugins.colorpreview.mode == "background" then
       config.plugins.colorpreview.mode = "underline"
     else
       config.plugins.colorpreview.mode = "background"
     end
+    core.log(
+      "Color Preview Mode: %s",
+      config.plugins.colorpreview.mode == "underline"
+        and "Underline" or "Background"
+    )
   end
 })

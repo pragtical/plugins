@@ -277,7 +277,7 @@
       "id": "colorpreview",
       "mod_version": "3",
       "path": "plugins/colorpreview.lua",
-      "version": "0.3.1"
+      "version": "0.3.2"
     },
     {
       "description": "A console for running external commands and capturing their output *([gif](https://user-images.githubusercontent.com/3920290/81343656-49325a00-90ad-11ea-8647-ff39d8f1d730.gif))*",
@@ -592,7 +592,7 @@
       "id": "indentguide",
       "mod_version": "3",
       "path": "plugins/indentguide.lua",
-      "version": "0.4.1"
+      "version": "0.4.2"
     },
     {
       "description": "Generates input latency stats by measuring time taken from key press to rendering.",
@@ -1957,7 +1957,7 @@
       "id": "memoryusage",
       "mod_version": "3",
       "path": "plugins/memoryusage.lua",
-      "version": "0.1"
+      "version": "0.1.1"
     },
     {
       "description": "Shows a minimap on the right-hand side of the docview. Taken from [@andsve](https://github.com/andsve/lite-plugins/tree/minimap-plugin), and improved upon.",
@@ -2102,7 +2102,7 @@
       "id": "rainbowparen",
       "mod_version": "3",
       "path": "plugins/rainbowparen.lua",
-      "version": "0.1.1"
+      "version": "0.1.2"
     },
     {
       "description": "Saves recently opened files for easy access from command menu.",
@@ -2130,7 +2130,7 @@
       "id": "scalestatus",
       "mod_version": "3",
       "path": "plugins/scalestatus.lua",
-      "version": "0.1"
+      "version": "0.1.1"
     },
     {
       "description": "Extensible source control management plugin with git and fossil backends.",
@@ -2201,7 +2201,7 @@
       "id": "spellcheck",
       "mod_version": "3.1",
       "path": "plugins/spellcheck.lua",
-      "version": "0.4.1"
+      "version": "0.4.2"
     },
     {
       "description": "Displays the current date and time in the corner of the status view",
@@ -2363,7 +2363,7 @@
       "id": "visu",
       "mod_version": "3",
       "path": "plugins/visu.lua",
-      "version": "0.2.5"
+      "version": "0.2.6"
     },
     {
       "description": "Adds in a word count to the statusview.",

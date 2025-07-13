@@ -354,6 +354,7 @@ end
 command.add(nil, {
   ['visu:stop'] = function()
     visu:stop()
+    core.log("Audio Visualizer: Stopped")
   end,
 
   ['visu:start'] = function()
@@ -361,6 +362,19 @@ command.add(nil, {
       config.plugins.visu.barsNumber,
       config.plugins.visu.fetchMode,
       config.plugins.visu.workers
+    )
+    core.log("Audio Visualizer: Started")
+  end,
+
+  ['visu:toggle'] = function()
+    if visu.started then
+      visu:stop()
+    else
+      visu:start()
+    end
+    core.log(
+      "Audio Visualizer: %s",
+      visu.started and "Started" or "Stopped"
     )
   end,
 })

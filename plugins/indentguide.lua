@@ -1,7 +1,9 @@
 -- mod-version:3
-local style = require "core.style"
-local config = require "core.config"
+local core = require "core"
+local command = require "core.command"
 local common = require "core.common"
+local config = require "core.config"
+local style = require "core.style"
 local DocView = require "core.docview"
 
 config.plugins.indentguide = common.merge({
@@ -170,5 +172,24 @@ function DocView:draw_line_text(line, x, y)
   end
   return draw_line_text(self, line, x, y)
 end
+
+
+command.add(nil, {
+  ["indent-guide:toggle"] = function()
+    config.plugins.indentguide.enabled = not config.plugins.indentguide.enabled
+    core.log(
+      "Indent Guide: %s",
+      config.plugins.indentguide.enabled and "Enabled" or "Disabled"
+    )
+  end,
+
+  ["indent-guide:toggle-highlight"] = function()
+    config.plugins.indentguide.highlight = not config.plugins.indentguide.highlight
+    core.log(
+      "Indent Guide Highlight: %s",
+      config.plugins.indentguide.highlight and "Enabled" or "Disabled"
+    )
+  end
+})
 
 return indentguide
