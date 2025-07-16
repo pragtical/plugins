@@ -708,6 +708,7 @@ cli.register({
         "system",
         "thread",
         "utf8extra",
+        "repl",
       }
       -- we need to parse C Lua libs first to prevent issues
       -- so we copy them to output, parse and then delete
