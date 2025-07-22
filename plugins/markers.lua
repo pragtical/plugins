@@ -3,6 +3,7 @@
 -- original implementation by Petri Häkkinen
 
 local core = require "core"
+local config = require "core.config"
 local command = require "core.command"
 local keymap = require "core.keymap"
 local style = require "core.style"
@@ -63,7 +64,18 @@ local draw_line_gutter = DocView.draw_line_gutter
 function DocView:draw_line_gutter(line, x, y, width)
   if cache[self.doc] and cache[self.doc][line] then
     local h = self:get_line_height()
-    renderer.draw_rect(x, y, style.padding.x * 0.4, h, style.selection)
+    local ax = x
+    if type(config.show_line_numbers) == "boolean" then
+      if config.show_line_numbers then
+        local gw, gpad = self:get_gutter_width()
+        local colw = self:get_font():get_width(#self.doc.lines)
+        ax = x + gw - colw - gpad
+      else
+        local lx = self:get_line_screen_position(line, 1)
+        ax = lx - style.padding.x
+      end
+    end
+    renderer.draw_rect(ax, y, style.padding.x * 0.4, h, style.selection)
   end
   return draw_line_gutter(self, line, x, y, width)
 end

@@ -11,7 +11,8 @@ local DocView = require "core.docview"
 config.plugins.centerdoc = common.merge({
   enabled = true,
   zen_mode = false,
-  zen_mode_hide_tabs = true
+  zen_mode_hide_tabs = true,
+  zen_mode_hide_line_numbers = true
 }, config.plugins.centerdoc)
 
 local draw_line_gutter = DocView.draw_line_gutter
@@ -23,8 +24,16 @@ function DocView:draw_line_gutter(line, x, y, width)
   if not config.plugins.centerdoc.enabled then
     lh = draw_line_gutter(self, line, x, y, width)
   else
-    local real_gutter_width = self:get_font():get_width(#self.doc.lines)
-    local offset = self:get_gutter_width() - real_gutter_width * 2 - style.padding.x
+    local real_gutter_width
+    if type(config.show_line_numbers) == "boolean" then
+      real_gutter_width = config.show_line_numbers
+        and self:get_font():get_width(#self.doc.lines)
+        or self:get_gutter_width()
+    else
+      real_gutter_width = self:get_font():get_width(#self.doc.lines)
+    end
+    local offset = self:get_gutter_width() - real_gutter_width * 2
+    offset = offset - style.padding.x / 2
     lh = draw_line_gutter(self, line, x + offset, y, real_gutter_width)
   end
   return lh
@@ -49,12 +58,15 @@ local previous_treeview_status
 local previous_statusbar_status
 ---@type boolean
 local previous_tabs_status
+---@type boolean
+local previous_line_numbers_status
 
 local function save_previous_status()
   previous_win_status = system.get_window_mode(core.window)
   previous_treeview_status = treeview.visible
   previous_statusbar_status = core.status_view.visible
   previous_tabs_status = config.hide_tabs
+  previous_line_numbers_status = config.show_line_numbers
 end
 
 local function toggle_zen_mode(enabled)
@@ -72,6 +84,11 @@ local function toggle_zen_mode(enabled)
     if config.plugins.centerdoc.zen_mode_hide_tabs then
       config.hide_tabs = true
     end
+    if config.plugins.centerdoc.zen_mode_hide_line_numbers then
+      if type(config.show_line_numbers) == "boolean" then
+        config.show_line_numbers = false
+      end
+    end
   else
     config.plugins.centerdoc.enabled = false
     if
@@ -85,6 +102,9 @@ local function toggle_zen_mode(enabled)
     core.status_view.visible = previous_statusbar_status
     if config.plugins.centerdoc.zen_mode_hide_tabs then
       config.hide_tabs = previous_tabs_status
+    end
+    if config.plugins.centerdoc.zen_mode_hide_line_numbers then
+      config.show_line_numbers = previous_line_numbers_status
     end
   end
 end
@@ -129,6 +149,20 @@ config.plugins.centerdoc.config_spec = {
     on_apply = function(enabled)
       if config.plugins.centerdoc.zen_mode then
         config.hide_tabs = enabled
+      end
+    end
+  },
+  {
+    label = "Hide Line Numbers on Zen Mode",
+    description = "Creates a more inmmersive experience (requires pragtical >= v3.7.0).",
+    path = "zen_mode_hide_line_numbers",
+    type = "toggle",
+    default = true,
+    on_apply = function(enabled)
+      if config.plugins.centerdoc.zen_mode then
+        if type(config.show_line_numbers) == "boolean" then
+          config.show_line_numbers = enabled
+        end
       end
     end
   }

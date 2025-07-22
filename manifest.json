@@ -249,7 +249,7 @@
       "id": "centerdoc",
       "mod_version": "3",
       "path": "plugins/centerdoc.lua",
-      "version": "0.2.3"
+      "version": "0.2.4"
     },
     {
       "description": "Hides the treeview at start if no arguments passed to the executable are directories. Compatible with lite.",
@@ -1778,7 +1778,7 @@
       "id": "linenumbers",
       "mod_version": "3",
       "path": "plugins/linenumbers.lua",
-      "version": "0.2"
+      "version": "0.2.1"
     },
     {
       "description": "Detects and underlines URLs in files, and enables a context menu entry and a hotkey to open them in the default browser.",
@@ -1950,7 +1950,7 @@
       "id": "markers",
       "mod_version": "3",
       "path": "plugins/markers.lua",
-      "version": "0.1.1"
+      "version": "0.1.2"
     },
     {
       "description": "Show memory usage in the status view",
@@ -2137,8 +2137,8 @@
       "id": "scm",
       "mod_version": "3.1",
       "name": "Source Control Management",
-      "remote": "https://github.com/pragtical/scm:16f9873f818e957e306d808e8b132b7a4b020efe",
-      "version": "0.5.2"
+      "remote": "https://github.com/pragtical/scm:b4d93ac413b29a9d83bbb4056b201603486e5c7d",
+      "version": "0.5.3"
     },
     {
       "description": "Select a color theme, like VScode, Sublime Text.(plugin saves changes)",
