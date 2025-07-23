@@ -1964,7 +1964,7 @@
       "id": "minimap",
       "mod_version": "3",
       "path": "plugins/minimap.lua",
-      "version": "0.2.2"
+      "version": "0.2.3"
     },
     {
       "description": "Fully customizable modal editing for Lite XL",

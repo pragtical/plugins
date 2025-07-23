@@ -439,6 +439,8 @@ function MiniMap:draw()
   local line_selection_offset = line_spacing - char_height
   y = y - y_offset + line_selection_offset
 
+  core.push_clip_rect(x, y, w, h)
+
   -- highlight the selected lines, and the line with the caret on it
   local selection_color = config.plugins.minimap.selection_color or style.dim
   local caret_color = config.plugins.minimap.caret_color or style.caret
@@ -593,6 +595,8 @@ function MiniMap:draw()
     end
     line_y = line_y + line_spacing
   end
+
+  core.pop_clip_rect()
 end
 
 
