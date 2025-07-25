@@ -11,6 +11,7 @@ local DocView = require "core.docview"
 config.plugins.centerdoc = common.merge({
   enabled = true,
   zen_mode = false,
+  zen_mode_hide_status_bar = true,
   zen_mode_hide_tabs = true,
   zen_mode_hide_line_numbers = true
 }, config.plugins.centerdoc)
@@ -80,7 +81,9 @@ local function toggle_zen_mode(enabled)
       command.perform "core:toggle-fullscreen"
     end
     treeview.visible = false
-    command.perform "status-bar:hide"
+    if config.plugins.centerdoc.zen_mode_hide_status_bar then
+      core.status_view.visible = false
+    end
     if config.plugins.centerdoc.zen_mode_hide_tabs then
       config.hide_tabs = true
     end
@@ -99,7 +102,9 @@ local function toggle_zen_mode(enabled)
       command.perform "core:toggle-fullscreen"
     end
     treeview.visible = previous_treeview_status
-    core.status_view.visible = previous_statusbar_status
+    if config.plugins.centerdoc.zen_mode_hide_status_bar then
+      core.status_view.visible = previous_statusbar_status
+    end
     if config.plugins.centerdoc.zen_mode_hide_tabs then
       config.hide_tabs = previous_tabs_status
     end
@@ -137,6 +142,18 @@ config.plugins.centerdoc.config_spec = {
         on_startup = false
       else
         toggle_zen_mode(enabled)
+      end
+    end
+  },
+  {
+    label = "Hide Status Bar on Zen Mode",
+    description = "HIde or show the status bar when using zen mode.",
+    path = "zen_mode_hide_status_bar",
+    type = "toggle",
+    default = true,
+    on_apply = function(enabled)
+      if config.plugins.centerdoc.zen_mode then
+        core.status_view.visible = not enabled
       end
     end
   },
