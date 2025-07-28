@@ -697,6 +697,7 @@ cli.register({
       system_libs = {
         "bit",
         "dirmonitor",
+        "diff",
         "encoding",
         "globals",
         "process",
