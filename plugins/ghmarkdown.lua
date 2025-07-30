@@ -9,36 +9,21 @@ local common = require "core.common"
 
 
 config.plugins.ghmarkdown = common.merge({
-  -- string.format pattern to use for system.exec
-  exec_format = PLATFORM == "Windows" and "start %s" or "xdg-open %q",
   -- the url to send POST request to
   url = "https://api.github.com/markdown/raw",
+  -- Find information on how to generate your own token at
+  -- https://docs.github.com/en/rest/markdown/markdown?apiVersion=2022-11-28#render-a-markdown-document-in-raw-mode
+  github_token = "",
    -- The config specification used by the settings gui
   config_spec = {
     name = "Github Markdown Preview",
-    {
-      label = "Exec Pattern",
-      description = "The string.format() pattern to pass to system.exec.",
-      path = "exec_format",
-      type = "string",
-      default = PLATFORM == "Windows" and "start %s" or "xdg-open %q"
-    },
     {
       label = "URL",
       description = "The URL to POST the request to for formatting.",
       path = "url",
       type = "string",
       default = "https://api.github.com/markdown/raw"
-    }
-  }
-}, config.plugins.ghmarkdown)
-
-config.plugins.ghmarkdown = common.merge({
-  -- Find information on how to generate your own token at
-  -- https://docs.github.com/en/rest/markdown/markdown?apiVersion=2022-11-28#render-a-markdown-document-in-raw-mode
-  github_token = "",
-  config_spec = {
-    name = "GHMarkdown",
+    },
     {
       label = "GitHub token",
       description = "Enter your personal GitHub token",
@@ -48,6 +33,25 @@ config.plugins.ghmarkdown = common.merge({
     }
   }
 }, config.plugins.ghmarkdown)
+
+local open_link
+if common.open_in_system then
+  open_link = common.open_in_system
+else -- backward compatibility with older Pragtical versions
+  config.plugins.ghmarkdown.exec_format = PLATFORM == "Windows" and 'start "" %q' or "xdg-open %q"
+
+  table.insert(config.plugins.ghmarkdown, {
+    label = "Exec Pattern",
+    description = "The string.format() pattern to pass to system.exec.",
+    path = "exec_format",
+    type = "string",
+    default = PLATFORM == "Windows" and 'start "" %q' or "xdg-open %q"
+  })
+
+  open_link = function(file)
+    system.exec(string.format(config.plugins.ghmarkdown.exec_format, file))
+  end
+end
 
 local html = [[
 <html>
@@ -109,7 +113,7 @@ command.add("core.docview!", {
     fp:close()
 
     core.log("Opening markdown preview for \"%s\"", dv:get_name())
-    system.exec(string.format(config.plugins.ghmarkdown.exec_format, htmlfile))
+    open_link(htmlfile)
 
     core.add_thread(function()
       coroutine.yield(5)

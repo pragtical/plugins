@@ -6,30 +6,38 @@ local common = require "core.common"
 local config = require "core.config"
 local contextmenu = require "plugins.contextmenu"
 
+local open_external
+if common.open_in_system then
+  open_external = common.open_in_system
+else -- backward compatibility with older Pragtical versions
+  local platform_filelauncher
+  if PLATFORM == "Windows" then
+    platform_filelauncher = 'start ""'
+  elseif PLATFORM == "Mac OS X" then
+    platform_filelauncher = "open"
+  else
+    platform_filelauncher = "xdg-open"
+  end
 
-local platform_filelauncher
-if PLATFORM == "Windows" then
-  platform_filelauncher = "start"
-elseif PLATFORM == "Mac OS X" then
-  platform_filelauncher = "open"
-else
-  platform_filelauncher = "xdg-open"
-end
-
-config.plugins.openselected = common.merge({
-  filelauncher = platform_filelauncher,
-  -- The config specification used by the settings gui
-  config_spec = {
-    name = "Open Selected Text",
-    {
-      label = "File Launcher",
-      description = "Command used to open the selected path or link externally.",
-      path = "filelauncher",
-      type = "string",
-      default = platform_filelauncher
+  config.plugins.openselected = common.merge({
+    filelauncher = platform_filelauncher,
+    -- The config specification used by the settings gui
+    config_spec = {
+      name = "Open Selected Text",
+      {
+        label = "File Launcher",
+        description = "Command used to open the selected path or link externally.",
+        path = "filelauncher",
+        type = "string",
+        default = platform_filelauncher
+      }
     }
-  }
-}, config.plugins.openselected)
+  }, config.plugins.openselected)
+
+  open_external = function(text)
+    system.exec(config.plugins.openselected.filelauncher .. " " .. text)
+  end
+end
 
 command.add("core.docview!", {
   ["open-selected:open-selected"] = function(dv)
@@ -51,7 +59,7 @@ command.add("core.docview!", {
 
     core.log("Opening %s...", text)
 
-    system.exec(config.plugins.openselected.filelauncher .. " " .. text)
+    open_external(text)
   end,
 })
 
@@ -63,4 +71,3 @@ contextmenu:register("core.docview", {
 
 
 keymap.add { ["ctrl+alt+o"] = "open-selected:open-selected" }
-

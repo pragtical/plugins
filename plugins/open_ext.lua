@@ -1,7 +1,7 @@
 -- mod-version:3
 
 -- The general idea is to check if the file opened is valid utf-8
--- since lite-xl only supports UTF8 text, others can be safely assumed
+-- since pragtical only supports UTF8 text, others can be safely assumed
 -- to be binary
 local core = require "core"
 local common = require "core.common"
@@ -43,13 +43,21 @@ end
 
 
 local msg = "This file is not displayed because it is either binary or uses an unsupported text encoding."
-local cmd -- here's evil code again...
-if PLATFORM == "Windows" then
-  cmd = "start %q"
-elseif PLATFORM == "Linux" then
-  cmd = "xdg-open %q"
-else
-  cmd = "open %q"
+
+local function open_external(resource)
+  if common.open_in_system then
+    common.open_in_system(resource)
+  else -- backward compatibility with older Pragtical versions
+    local cmd -- here's evil code again...
+    if PLATFORM == "Windows" then
+      cmd = 'start "" %q'
+    elseif PLATFORM == "Linux" then
+      cmd = "xdg-open %q"
+    else
+      cmd = "open %q"
+    end
+    system.exec(string.format(cmd, resource))
+  end
 end
 
 local opt = { "Open anyway", "Open with other program", "Close" }
@@ -63,7 +71,7 @@ local opt_actions = {
     -- open externally
     local node = core.root_view.root_node:get_node_for_view(self)
     node:close_view(core.root_view.root_node, self)
-    system.exec(string.format(cmd, self.filename))
+    open_external(self.filename)
   end,
   function(self)
     local node = core.root_view.root_node:get_node_for_view(self)
