@@ -4,9 +4,6 @@ local command = require "core.command"
 local common = require "core.common"
 local config = require "core.config"
 local keymap = require "core.keymap"
-local config = require "core.config"
-local common = require "core.common"
-
 
 config.plugins.ghmarkdown = common.merge({
   -- the url to send POST request to
@@ -109,16 +106,20 @@ command.add("core.docview!", {
 
     local htmlfile = core.temp_filename(".html")
     local fp = io.open(htmlfile, "w")
-    fp:write(text)
-    fp:close()
+    if fp then
+      fp:write(text)
+      fp:close()
 
-    core.log("Opening markdown preview for \"%s\"", dv:get_name())
-    open_link(htmlfile)
+      core.log("Opening markdown preview for \"%s\"", dv:get_name())
+      open_link(htmlfile)
 
-    core.add_thread(function()
-      coroutine.yield(5)
-      os.remove(htmlfile)
-    end)
+      core.add_thread(function()
+        coroutine.yield(5)
+        os.remove(htmlfile)
+      end)
+    else
+      core.error("Could not generate markdown preview for \"%s\"", dv:get_name())
+    end
   end
 })
 
