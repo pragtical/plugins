@@ -12,26 +12,9 @@ local common = require "core.common"
 local command = require "core.command"
 local json = require "libraries.jsonmod"
 
-local function launcher_fix_path(path)
-  if not io.open(path, "rb") then
-    path = common.basename(path)
-  end
-  return path
-end
-
-local platform_url_launcher
-if PLATFORM == "Windows" then
-  platform_url_launcher = "start"
-elseif PLATFORM == "Mac OS X" then
-  platform_url_launcher = "open"
-else
-  platform_url_launcher = "xdg-open"
-end
-
 config.plugins.updatechecker = common.merge({
   timeout = 3, -- increase this value if you get json.lua errors
   check_on_startup = true,
-  url_launcher = platform_url_launcher,
   config_spec = {
     name = "Update Checker",
     {
@@ -49,18 +32,48 @@ config.plugins.updatechecker = common.merge({
       default = 3,
       min = 3,
       max = 10
-    },
-    {
-      label = "URL Launcher",
-      description = "Command used to open the release page.",
-      path = "url_launcher",
-      type = "file",
-      default = platform_url_launcher,
-      get_value = launcher_fix_path,
-      set_value = launcher_fix_path
     }
   }
 }, config.plugins.updatechecker)
+
+local open_link
+if common.open_in_system then
+  open_link = common.open_in_system
+else -- backward compatibility with older Pragtical versions
+  local function launcher_fix_path(path)
+    if not io.open(path, "rb") then
+      path = common.basename(path)
+    end
+    return path
+  end
+
+  local platform_url_launcher
+  if PLATFORM == "Windows" then
+    platform_url_launcher = 'start ""'
+  elseif PLATFORM == "Mac OS X" then
+    platform_url_launcher = "open"
+  else
+    platform_url_launcher = "xdg-open"
+  end
+
+  config.plugins.updatechecker.url_launcher = platform_url_launcher
+
+  table.insert(config.plugins.updatechecker.config_spec, {
+    label = "URL Launcher",
+    description = "Command used to open the release page.",
+    path = "url_launcher",
+    type = "file",
+    default = platform_url_launcher,
+    get_value = launcher_fix_path,
+    set_value = launcher_fix_path
+  })
+
+  open_link = function(resource)
+    system.exec(
+      config.plugins.updatechecker.url_launcher .. " " .. resource
+    )
+  end
+end
 
 -- stolen from git status
 local function exec(cmd, wait)
@@ -128,11 +141,9 @@ local function check_updates()
     },
     function(item)
       if item.text == "View Release" then
-        core.log("opening in browser..." .. config.plugins.updatechecker.url_launcher)
+        core.log("opening in browser...")
         core.add_thread(function()
-          system.exec(
-            config.plugins.updatechecker.url_launcher .. " " .. data.html_url
-          )
+          open_link(data.html_url)
         end)
       end
     end
@@ -141,7 +152,7 @@ end
 
 core.add_thread(function()
   if config.plugins.updatechecker.check_on_startup then
-    -- TODO: store last check timestamp to determine if check is neccesary
+    -- TODO: store last check timestamp to determine if check is necessary
     check_updates()
   end
 end)

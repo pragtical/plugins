@@ -513,7 +513,7 @@
       "id": "ghmarkdown",
       "mod_version": "3",
       "path": "plugins/ghmarkdown.lua",
-      "version": "0.3"
+      "version": "0.3.1"
     },
     {
       "description": "Shows \"git blame\" information of a line *([screenshot](https://raw.githubusercontent.com/juliardi/lite-xl-gitblame/main/screenshot_1.png))*",
@@ -2045,21 +2045,21 @@
       "id": "open_ext",
       "mod_version": "3",
       "path": "plugins/open_ext.lua",
-      "version": "0.1.1"
+      "version": "0.1.2"
     },
     {
       "description": "Opens the parent directory of the current file in the file manager",
       "id": "openfilelocation",
       "mod_version": "3",
       "path": "plugins/openfilelocation.lua",
-      "version": "0.1"
+      "version": "0.1.1"
     },
     {
       "description": "Opens the selected filename or url",
       "id": "openselected",
       "mod_version": "3",
       "path": "plugins/openselected.lua",
-      "version": "0.1"
+      "version": "0.1.1"
     },
     {
       "description": "PDF preview for TeX files",
@@ -2349,7 +2349,7 @@
       "id": "updatechecker",
       "mod_version": "3",
       "path": "plugins/updatechecker.lua",
-      "version": "0.1.1"
+      "version": "0.1.2"
     },
     {
       "description": "VI(vim?) bindings with a hint of DOOM Emacs, for pragtical",
