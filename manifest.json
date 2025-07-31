@@ -2062,13 +2062,6 @@
       "version": "0.1.1"
     },
     {
-      "description": "PDF preview for TeX files",
-      "id": "pdfview",
-      "mod_version": "3",
-      "path": "plugins/pdfview.lua",
-      "version": "0.1.1"
-    },
-    {
       "description": "A plugin manager view for pragtical that provides GUI access to `ppm`",
       "id": "plugin_manager",
       "mod_version": "3",
@@ -2268,11 +2261,11 @@
       "dependencies": {
         "console": {}
       },
-      "description": "Compile Tex files into PDF",
+      "description": "Compile Tex files into PDF and preview them",
       "id": "texcompile",
       "mod_version": "3",
       "path": "plugins/texcompile.lua",
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Theme manager with base16 themes",
