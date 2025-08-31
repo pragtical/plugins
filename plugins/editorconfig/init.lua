@@ -19,8 +19,10 @@ local Parser = require "plugins.editorconfig.parser"
 
 ---@class config.plugins.editorconfig
 ---@field debug boolean
+---@field fallback_path string
 config.plugins.editorconfig = common.merge({
   debug = false,
+	fallback_path = nil,
   -- The config specification used by the settings gui
   config_spec = {
     name = "EditorConfig",
@@ -30,6 +32,13 @@ config.plugins.editorconfig = common.merge({
       path = "debug",
       type = "toggle",
       default = false
+    },
+    {
+      label = "Fallback Config Path",
+      description = "Path to a fallback .editorconfig if none is found in the project.",
+      path = "fallback_path",
+      type = "file",
+      default = nil
     }
   }
 }, config.plugins.editorconfig)
@@ -145,9 +154,11 @@ local function recursive_get_config(file_path)
   local project_dir = ""
 
   local root_config
+	local has_config = false
   for path, editor_config in pairs(project_configs) do
     if common.path_belongs_to(file_path, path) then
       project_dir = path
+      has_config = true
       root_config = editor_config:getConfig(
         common.relative_path(path, file_path)
       )
@@ -184,9 +195,11 @@ local function recursive_get_config(file_path)
         if pconfig then
           merge_config(editor_config, pconfig)
           config_found = true
+          has_config = true
         end
         if parser.root then
           root_found = true
+          has_config = true
           break
         end
       end
@@ -194,6 +207,21 @@ local function recursive_get_config(file_path)
     if not root_found and root_config then
       merge_config(editor_config, root_config)
       config_found = true
+    end
+  end
+
+  if not config_found and not has_config then
+    local fallback_path = config.plugins.editorconfig.fallback_path
+    if fallback_path and fallback_path ~= "" then
+      if file_exists(fallback_path) then
+        local parser = Parser.new(fallback_path)
+        local fallback_config_options = parser:getConfig(relative_file_path)
+        if fallback_config_options then
+          editor_config = fallback_config_options
+          config_found = true
+          core.log_quiet("[EditorConfig]: using fallback %s", fallback_path)
+        end
+      end
     end
   end
 
