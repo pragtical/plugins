@@ -18,7 +18,7 @@ local sh_syntax = {
     "%.zsh$", "%.fish$",
     PATHSEP .. "APKBUILD$",
   },
-  headers = "^#!.*bin.*sh\n",
+  headers = "^#!.*bin.*sh%s*.*$",
   comment = "#",
   patterns = {
     -- $# is a bash special variable and the '#' shouldn't be interpreted
