@@ -22,7 +22,7 @@ local Parser = require "plugins.editorconfig.parser"
 ---@field fallback_path string
 config.plugins.editorconfig = common.merge({
   debug = false,
-	fallback_path = nil,
+  fallback_path = nil,
   -- The config specification used by the settings gui
   config_spec = {
     name = "EditorConfig",
