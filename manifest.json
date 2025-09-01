@@ -401,7 +401,7 @@
       "id": "editorconfig",
       "mod_version": "3.1",
       "path": "plugins/editorconfig",
-      "version": "0.5"
+      "version": "0.6"
     },
     {
       "description": "Make sure the file ends with one blank line.",
