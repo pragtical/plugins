@@ -166,13 +166,14 @@
         "language_v": {},
         "language_wren": {},
         "language_yaml": {},
-        "language_zig": {}
+        "language_zig": {},
+        "language_zsh": {}
       },
       "description": "A metapackage containing all publically accessible language syntaxes.",
       "id": "meta_languages",
       "mod_version": "3",
       "type": "meta",
-      "version": "0.1.20"
+      "version": "0.1.21"
     },
     {
       "description": "Align multiple carets and selections *([clip](https://user-images.githubusercontent.com/2798487/165631951-532f8d24-d596-4dd0-9d21-ff53c71ed32f.mp4))*",
@@ -1773,6 +1774,16 @@
         "language"
       ],
       "version": "0.2"
+    },
+    {
+      "description": "Syntax for Zsh shell scripting language",
+      "id": "language_zsh",
+      "mod_version": "3.1",
+      "path": "plugins/language_zsh.lua",
+      "tags": [
+        "language"
+      ],
+      "version": "0.1.0"
     },
     {
       "description": "Automatically inserts indentation and closing bracket/text after newline",
