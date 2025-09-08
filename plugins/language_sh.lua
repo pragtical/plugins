@@ -107,6 +107,7 @@ local sh_syntax = {
     ["printf"] = "keyword",
     ["read"] = "keyword",
     ["readarray"] = "keyword",
+    ["readonly"] = "keyword",
     ["pwd"] = "keyword",
     ["select"] = "keyword",
     ["set"] = "keyword",
