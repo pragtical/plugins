@@ -106,5 +106,9 @@ config.plugins.rainbowparen.config_spec = {
 command.add(nil, {
   ["rainbow-parentheses:toggle"] = function()
     toggle_rainbowparen(not config.plugins.rainbowparen.enabled)
+    core.log(
+      "Rainbow Parentheses: %s",
+      config.plugins.rainbowparen.enabled and "Enabled" or "Disabled"
+    )
   end
 })

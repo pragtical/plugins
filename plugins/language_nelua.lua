@@ -11,6 +11,7 @@ local syntax = require "core.syntax"
   against the source code in order to highlight the code.
 ]]
 syntax.add {
+  name = "Nelua",
   -- the extension of source code
   files = "%.nelua$",
   -- this add support for shebang, is not rare to add #!/usr/local/bin/lua to make

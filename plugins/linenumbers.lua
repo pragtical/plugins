@@ -1,4 +1,4 @@
--- mod-version:3
+-- mod-version:3 priority:5
 local config = require "core.config"
 local style = require "core.style"
 local DocView = require "core.docview"
@@ -36,16 +36,28 @@ config.plugins.linenumbers = common.merge({
   }
 }, config.plugins.linenumbers)
 
+if type(config.show_line_numbers) == "boolean" then
+  table.remove(config.plugins.linenumbers.config_spec, 1)
+end
+
 local draw_line_gutter = DocView.draw_line_gutter
 local get_gutter_width = DocView.get_gutter_width
 
 function DocView:draw_line_gutter(line, x, y, width)
   local lh = self:get_line_height()
-  if not config.plugins.linenumbers.show then
+  if
+    type(config.show_line_numbers) ~= "boolean"
+    and
+    not config.plugins.linenumbers.show
+  then
     return lh
   end
 
-  if not (config.plugins.linenumbers.relative or config.plugins.linenumbers.hybrid) then
+  if
+    not (config.plugins.linenumbers.relative or config.plugins.linenumbers.hybrid)
+    or
+    (type(config.show_line_numbers) == "boolean" and not config.show_line_numbers)
+  then
     return draw_line_gutter(self, line, x, y, width)
   end
 
@@ -61,58 +73,47 @@ function DocView:draw_line_gutter(line, x, y, width)
   local l1 = self.doc:get_selection(false)
   local local_idx = math.abs(line - l1)
   local alignment = "right"
-  local x_offset = style.padding.x
+  local x_offset = style.padding.x / 2
 
   if config.plugins.linenumbers.hybrid and line == l1 then
     local_idx = line
-    alignment = "left"
-    x_offset = 0
   end
 
+  -- allow other plugins to also draw into the gutter
+  draw_line_gutter(self, line, x, y, width)
+
+  -- hide old numbers
+  renderer.draw_rect(x + x_offset, y, width + style.padding.x, lh, style.background)
+
+  -- show new number
   common.draw_text(
     self:get_font(),
     color, local_idx, alignment,
     x + x_offset,
     y,
-    width, lh
+    width + style.padding.x / 2, lh
   )
 
   return lh
 end
 
-function DocView:get_gutter_width(...)
-  if
-      not config.plugins.linenumbers.show
-  then
-    local width = get_gutter_width(self, ...)
+if type(config.show_line_numbers) ~= "boolean" then
+  command.add(nil, {
+    ["line-numbers:toggle"]           = function()
+      config.plugins.linenumbers.show = not config.plugins.linenumbers.show
+    end,
 
-    local correct_width = self:get_font():get_width(#self.doc.lines)
-        + (style.padding.x * 2)
+    ["line-numbers:disable"]          = function()
+      config.plugins.linenumbers.show = false
+    end,
 
-    -- compatibility with center doc
-    if width <= correct_width then
-      width = style.padding.x
+    ["line-numbers:enable"]           = function()
+      config.plugins.linenumbers.show = true
     end
-
-    return width, 0
-  else
-    return get_gutter_width(self, ...)
-  end
+  })
 end
 
 command.add(nil, {
-  ["line-numbers:toggle"]           = function()
-    config.plugins.linenumbers.show = not config.plugins.linenumbers.show
-  end,
-
-  ["line-numbers:disable"]          = function()
-    config.plugins.linenumbers.show = false
-  end,
-
-  ["line-numbers:enable"]           = function()
-    config.plugins.linenumbers.show = true
-  end,
-
   ["relative-line-numbers:toggle"]  = function()
     config.plugins.linenumbers.relative = not config.plugins.linenumbers.relative
   end,

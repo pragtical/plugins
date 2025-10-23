@@ -199,7 +199,7 @@ function TetrisView:new(options)
     }
   }
   self.live_piece = nil
-  self.hold_piece = nil
+  self.held_piece = nil
 end
 
 function TetrisView:calculate_tick(score)
@@ -292,16 +292,17 @@ function TetrisView:draw()
   local lh = style.font:get_height()
   local tx = self.position.x + style.padding.x
   local ty = self.position.y + style.padding.y
+  local normal = style.syntax["normal"]
 
-  renderer.draw_text(style.font, "Score: " .. self.score, tx, self.position.y + style.padding.y, style.normal)
-  local w = renderer.draw_text(style.font, "Next Piece", tx, self.position.y + style.padding.y + lh, style.normal)
+  renderer.draw_text(style.font, "Score: " .. self.score, tx, self.position.y + style.padding.y, normal)
+  local w = renderer.draw_text(style.font, "Next Piece", tx, self.position.y + style.padding.y + lh, normal)
   if self.next_piece then
     self:draw_tetronimo(tx, self.position.y + style.padding.y + lh * 2, self.tetronimos[self.next_piece], 1)
   end
   if self.held_piece then
     self:draw_tetronimo(w + style.padding.x, self.position.y + style.padding.y + lh * 2, self.tetronimos[self.held_piece], 1)
   end
-  renderer.draw_text(style.font, "Held Piece", w + style.padding.x, self.position.y + style.padding.y + lh, style.normal)
+  renderer.draw_text(style.font, "Held Piece", w + style.padding.x, self.position.y + style.padding.y + lh, normal)
   ty = ty + lh * 2 + (self.cell_size + self.cell_padding) * 4 + style.padding.y
 
   renderer.draw_rect(tx, ty, (self.cell_size + self.cell_padding) * self.grid.x, (self.cell_size + self.cell_padding) * self.grid.y, style.background)

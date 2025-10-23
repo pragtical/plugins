@@ -3,6 +3,7 @@
 local core = require "core"
 local config = require "core.config"
 local common = require "core.common"
+local command = require "core.command"
 local style = require "core.style"
 local StatusView = require "core.statusview"
 
@@ -47,3 +48,13 @@ core.status_view:add_item({
   separator = core.status_view.separator2
 })
 
+command.add(nil, {
+  ['memory-usage:toggle'] = function()
+    config.plugins.memoryusage.enabled = not config.plugins.memoryusage.enabled
+    if config.plugins.memoryusage.enabled then
+      core.status_view:get_item("status:memory-usage"):show()
+    else
+      core.status_view:get_item("status:memory-usage"):hide()
+    end
+  end,
+})

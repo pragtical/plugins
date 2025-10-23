@@ -50,7 +50,7 @@ config.plugins.keymap_export = common.merge({
     },
     {
       label = "Autostart",
-      description = "Automatically export on Lite XL startup.",
+      description = "Automatically export on Pragtical startup.",
       path = "autostart",
       type = "toggle",
       default = false
@@ -170,7 +170,7 @@ end
 -- END OF json.lua
 -----------------------------------------------------------
 
--- convert all strings into arrays 
+-- convert all strings into arrays
 local function normalize_value(v)
   return type(v) == "string" and ({ v }) or v
 end

@@ -13,10 +13,12 @@ local string_interpolation_syntax = { patterns = {}, symbols = {} }
 local sh_syntax = {
   name = "Shell script",
   files = {
-    "%.sh$", "%.bash$", "%.zsh$", "%.fish$", PATHSEP .. "%.bashrc$",
-    PATHSEP .. "%.bash_profile$", PATHSEP .. "%.profile$",
+    "%.sh$", "%.bash$",
+    PATHSEP .. "%.bashrc$", PATHSEP .. "%.bash_profile$", PATHSEP .. "%.profile$",
+    "%.zsh$", "%.fish$",
+    PATHSEP .. "APKBUILD$",
   },
-  headers = "^#!.*bin.*sh\n",
+  headers = "^#!.*bin.*sh%s*.*$",
   comment = "#",
   patterns = {
     -- $# is a bash special variable and the '#' shouldn't be interpreted
@@ -105,6 +107,7 @@ local sh_syntax = {
     ["printf"] = "keyword",
     ["read"] = "keyword",
     ["readarray"] = "keyword",
+    ["readonly"] = "keyword",
     ["pwd"] = "keyword",
     ["select"] = "keyword",
     ["set"] = "keyword",
