@@ -228,7 +228,15 @@ function Visu:start(bars, fetchMode, workers)
               self.noSoundCounter = self.noSoundCounter + 1
             end
             if self.noSoundCounter < 1000 then
-              coroutine.yield(self.pollRate)
+              -- use previous frame if no new info and prev info available
+              if not self.redraw and self.barsInfo then
+                for i = 1, self.bars do
+                  local h = ((self.barsInfo[i] * 239)) * SCALE
+                  if h > 0 then core.redraw = true self.redraw = true break end
+                end
+              end
+              -- duplicate pollrate to reduce frame skips
+              coroutine.yield(self.pollRate * 0.5)
             else
               self.noSoundCounter = 1000
               coroutine.yield(2)
