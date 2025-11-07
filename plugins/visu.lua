@@ -207,6 +207,8 @@ function Visu:start(bars, fetchMode, workers)
     if self.fetchMode == "workers" or self.fetchMode == "both" then
       for _ = 1, workers do
         local wid = core.add_thread(function()
+          local frameTime = 1 / config.plugins.visu.cavaFrameRate
+          local nextFrame = system.get_time() + frameTime
           while true do
             local tmpInfo = self:getLatestInfo()
             local newBarsInfo = tmpInfo
@@ -235,8 +237,14 @@ function Visu:start(bars, fetchMode, workers)
                   if h > 0 then core.redraw = true self.redraw = true break end
                 end
               end
-              -- duplicate pollrate to reduce frame skips
-              coroutine.yield(self.pollRate * 0.5)
+              local poll = self.pollRate
+              local now = system.get_time()
+              if nextFrame < now then
+                -- adjust the poll rate based on the delay of prev frame
+                poll = math.min(poll, frameTime - (now - nextFrame))
+              end
+              nextFrame = now + poll
+              coroutine.yield(poll)
             else
               self.noSoundCounter = 1000
               coroutine.yield(2)

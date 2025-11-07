@@ -2367,7 +2367,7 @@
       "id": "visu",
       "mod_version": "3",
       "path": "plugins/visu.lua",
-      "version": "0.2.7"
+      "version": "0.2.8"
     },
     {
       "description": "Adds in a word count to the statusview.",
