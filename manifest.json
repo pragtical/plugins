@@ -166,7 +166,8 @@
         "language_v": {},
         "language_wren": {},
         "language_yaml": {},
-        "language_zig": {}
+        "language_zig": {},
+        "language_zsh": {}
       },
       "description": "A metapackage containing all publically accessible language syntaxes.",
       "id": "meta_languages",
@@ -1776,6 +1777,16 @@
         "language"
       ],
       "version": "0.2"
+    },
+    {
+      "description": "Syntax for Zsh shell scripting language",
+      "id": "language_zsh",
+      "mod_version": "3.1",
+      "path": "plugins/language_zsh.lua",
+      "tags": [
+        "language"
+      ],
+      "version": "0.1.0"
     },
     {
       "description": "Automatically inserts indentation and closing bracket/text after newline",
