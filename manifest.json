@@ -2212,7 +2212,7 @@
       "id": "statusclock",
       "mod_version": "3",
       "path": "plugins/statusclock.lua",
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Keep track of the current scope at the top of the view (*[video](https://user-images.githubusercontent.com/2798487/222133911-e467a583-596c-47ab-8e65-eefc7b5c9112.mp4)*)",

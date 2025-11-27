@@ -9,6 +9,7 @@ config.plugins.statusclock = common.merge({
   enabled = true,
   time_format = "%H:%M:%S",
   date_format = "%A, %d %B %Y",
+  show_date = true,
   -- The config specification used by the settings gui
   config_spec = {
     name = "Status Clock",
@@ -34,6 +35,13 @@ config.plugins.statusclock = common.merge({
       path = "time_format",
       type = "string",
       default = "%H:%M:%S"
+    },
+    {
+      label = "Show Date",
+      description = "Show or hide the date.",
+      path = "show_date",
+      type = "toggle",
+      default = true
     },
     {
       label = "Date Format",
@@ -73,16 +81,22 @@ core.status_view:add_item({
   alignment = StatusView.Item.RIGHT,
   get_item = function(self)
     update_time()
-    return {
-      style.text,
-      time_data.date_text,
-      style.dim,
-      self.separator,
-      style.text,
-      time_data.time_text,
-    }
+    if config.plugins.statusclock.show_date then
+      return {
+        style.text,
+        time_data.date_text,
+        style.dim,
+        self.separator,
+        style.text,
+        time_data.time_text,
+      }
+    else
+      return {
+        style.text,
+        time_data.time_text,
+      }
+    end
   end,
   position = -1,
   separator = core.status_view.separator2
 })
-
