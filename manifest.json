@@ -407,7 +407,7 @@
       "description": "Make sure the file ends with one blank line.",
       "id": "eofnewline",
       "mod_version": "3",
-      "url": "plugins/eofnewline.lua",
+      "path": "plugins/eofnewline.lua",
       "version": "0.1"
     },
     {
