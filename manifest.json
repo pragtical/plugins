@@ -2256,7 +2256,7 @@
       "id": "terminal",
       "mod_version": "3",
       "remote": "https://github.com/pragtical/terminal.git:master",
-      "version": "1.066"
+      "version": "1.08"
     },
     {
       "description": "Allows you to play tetris directly in the editor.",
