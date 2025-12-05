@@ -63,7 +63,9 @@ local previous_tabs_status
 local previous_line_numbers_status
 
 local function save_previous_status()
-  previous_win_status = system.get_window_mode(core.window)
+  previous_win_status = core.window
+    and system.get_window_mode(core.window)
+    or core.window_mode
   previous_treeview_status = treeview.visible
   previous_statusbar_status = core.status_view.visible
   previous_tabs_status = config.hide_tabs
