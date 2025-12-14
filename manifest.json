@@ -1638,7 +1638,7 @@
       "version": "0.1"
     },
     {
-      "description": "Syntax for the [Tau](https://githu.com/NicoNex/tau) programming language",
+      "description": "Syntax for the [Tau](https://github.com/NicoNex/tau) programming language",
       "id": "language_tau",
       "mod_version": "3",
       "path": "plugins/language_tau.lua",
