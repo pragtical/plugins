@@ -696,20 +696,21 @@ cli.register({
       core_docs_path = DATADIR
       system_libs = {
         "bit",
-        "dirmonitor",
+        "canvas",
         "diff",
+        "dirmonitor",
         "encoding",
         "globals",
         "process",
         "regex",
         "renderer",
         "renwindow",
+        "repl",
         "shmem",
         "string",
         "system",
         "thread",
         "utf8extra",
-        "repl",
       }
       -- we need to parse C Lua libs first to prevent issues
       -- so we copy them to output, parse and then delete
