@@ -258,7 +258,7 @@
       "id": "centerdoc",
       "mod_version": "3",
       "path": "plugins/centerdoc.lua",
-      "version": "0.2.6"
+      "version": "0.2.7"
     },
     {
       "description": "Hides the treeview at start if no arguments passed to the executable are directories. Compatible with lite.",

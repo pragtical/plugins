@@ -137,10 +137,12 @@ config.plugins.centerdoc.config_spec = {
     default = false,
     on_apply = function(enabled)
       if on_startup then
-        core.add_thread(function()
-          save_previous_status()
-          toggle_zen_mode(enabled)
-        end)
+        if enabled then -- don't step over config.plugins.centerdoc.enabled
+          core.add_thread(function()
+            save_previous_status()
+            toggle_zen_mode(enabled)
+          end)
+        end
         on_startup = false
       else
         toggle_zen_mode(enabled)
