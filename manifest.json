@@ -2002,7 +2002,7 @@
       "id": "motiontrail",
       "mod_version": "3.1",
       "path": "plugins/motiontrail.lua",
-      "version": "0.3"
+      "version": "0.4"
     },
     {
       "description": "Allows moving back and forward between document positions, reducing the amount of scrolling",

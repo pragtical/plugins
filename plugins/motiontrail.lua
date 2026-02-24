@@ -39,10 +39,12 @@ core.add_thread(function()
 end)
 
 local function get_caret_size(dv, i)
-  local line, col = dv.doc:get_selection_idx(i)
-  local chw = dv:get_font():get_width(dv.doc:get_char(line, col))
   local w = style.caret_width
   local h = dv:get_line_height()
+
+  local line, col = dv.doc:get_selection_idx(i)
+  if not line or not col then return w, h end
+  local chw = dv:get_font():get_width(dv.doc:get_char(line, col))
 
   if dv.doc.overwrite then
     w = chw
