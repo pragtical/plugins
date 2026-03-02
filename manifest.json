@@ -221,9 +221,9 @@
     {
       "description": "Automatically inserts closing brackets and quotes. Also allows selected text to be wrapped with brackets or quotes.",
       "id": "autoinsert",
-      "mod_version": "3",
+      "mod_version": "3.1",
       "path": "plugins/autoinsert.lua",
-      "version": "0.2"
+      "version": "0.3"
     },
     {
       "description": "Automatically saves files when they are changed",
