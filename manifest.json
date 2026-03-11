@@ -1850,11 +1850,11 @@
       "id": "lintplus",
       "mod_version": "3",
       "name": "lint+",
-      "remote": "https://github.com/liquidev/lintplus:54240453a1b7a2ee4fbbf3d67ab15f3e3800bcb8",
+      "remote": "https://github.com/liquidev/lintplus:09ca63263bd393a0490f2037991c9340beb95ae3",
       "replaces": [
         "linter"
       ],
-      "version": "0.5"
+      "version": "0.6"
     },
     {
       "description": "Discord rich presence for Lite XL (display file editing in Discord)",
@@ -1874,8 +1874,8 @@
       "description": "Provides code completion (also known as IntelliSense) using the Language Server Protocol",
       "id": "lsp",
       "mod_version": "3.4.0",
-      "remote": "https://github.com/pragtical/lsp:d64bcafd5218b24d6137f530cc47fb0bd2914e59",
-      "version": "0.12.16"
+      "remote": "https://github.com/pragtical/lsp:a8ac75d6001377ea84ab402762dc29f923cde548",
+      "version": "0.12.18"
     },
     {
       "description": "Automatic configuration/binary download for LSP completion for C/C++ with clangd.",
