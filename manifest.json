@@ -1850,11 +1850,11 @@
       "id": "lintplus",
       "mod_version": "3",
       "name": "lint+",
-      "remote": "https://github.com/liquidev/lintplus:09ca63263bd393a0490f2037991c9340beb95ae3",
+      "remote": "https://github.com/liquidev/lintplus:1aa6d2d0d799fa20c0fd52efaf89243424c840b0",
       "replaces": [
         "linter"
       ],
-      "version": "0.6"
+      "version": "0.7"
     },
     {
       "description": "Discord rich presence for Lite XL (display file editing in Discord)",
