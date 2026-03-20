@@ -1,13 +1,12 @@
 -- mod-version:3.1
 local core = require "core"
 local config = require "core.config"
-local style = require "core.style"
 local common = require "core.common"
 local DocView = require "core.docview"
 
 config.plugins.smoothcaret = common.merge({
   enabled = true,
-  rate = 0.65,
+  rate = 0.30,
   -- The config specification used by the settings gui
   config_spec = {
     name = "Smooth Caret",
@@ -23,8 +22,8 @@ config.plugins.smoothcaret = common.merge({
       description = "Speed of the animation.",
       path = "rate",
       type = "number",
-      default = 0.65,
-      min = 0.2,
+      default = 0.30,
+      min = 0.1,
       max = 1.0,
       step = 0.05
     },
@@ -37,8 +36,11 @@ local docview_update = DocView.update
 function DocView:update()
   docview_update(self)
 
-  if not config.plugins.smoothcaret.enabled then return end
+  if not config.plugins.smoothcaret.enabled or self ~= core.active_view then
+    return
+  end
 
+  local redraw_caret = false
   local minline, maxline = self:get_visible_line_range()
 
   -- We need to keep track of all the carets
@@ -56,22 +58,36 @@ function DocView:update()
     x = x + self.scroll.x
     y = y + self.scroll.y
 
-    if not self.carets[idx] then
-      self.carets[idx] = { current = { x = x, y = y }, target = { x = x, y = y } }
+    local c = self.carets[idx]
+
+    if not c then
+      self.carets[idx] = {
+        line = line, col = col,
+        current = { x = x, y = y },
+        target = { x = x, y = y }
+      }
+      c = self.carets[idx]
+    elseif c.line ~= line or c.col ~= col then
+      c.line, c.col = line, col
+      c.complete = false
     end
 
-    local c = self.carets[idx]
     c.target.x = x
     c.target.y = y
 
-    -- Chech if the number of carets changed
-    if self.last_n_selections ~= #self.doc.selections then
-      -- Don't animate when there are new carets
+    -- Check if the number of carets changed or caret animation is complete
+    if self.last_n_selections ~= #self.doc.selections or c.complete then
+      -- Don't animate when there are new carets or animation is complete
       c.current.x = x
       c.current.y = y
     else
       self:move_towards(c.current, "x", c.target.x, config.plugins.smoothcaret.rate)
       self:move_towards(c.current, "y", c.target.y, config.plugins.smoothcaret.rate)
+      if c.current.x ~= c.target.x or c.current.y ~= c.target.y then
+        if not c.complete then redraw_caret = true end
+      else
+        c.complete = true
+      end
     end
 
     -- Keep track of visible carets
@@ -88,13 +104,9 @@ function DocView:update()
     self.carets[i] = nil
   end
 
-  if self.mouse_selecting ~= self.last_mouse_selecting then
-    self.last_mouse_selecting = self.mouse_selecting
-    -- Show the caret on click, so that it can be seen moving towards the new position
-    if self.mouse_selecting then
-      core.blink_timer = core.blink_timer + config.blink_period / 2
-      core.redraw = true
-    end
+  if redraw_caret then
+    core.blink_start = core.blink_timer
+    core.redraw = true
   end
 
   -- This is used by `DocView:draw_caret` to keep track of the current caret
@@ -103,7 +115,7 @@ end
 
 local docview_draw_caret = DocView.draw_caret
 function DocView:draw_caret(x, y, line, col)
-  if not config.plugins.smoothcaret.enabled then
+  if not config.plugins.smoothcaret.enabled or self ~= core.active_view then
     docview_draw_caret(self, x, y, line, col)
     return
   end

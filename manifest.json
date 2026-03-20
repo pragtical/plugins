@@ -2224,7 +2224,7 @@
       "id": "smoothcaret",
       "mod_version": "3.1",
       "path": "plugins/smoothcaret.lua",
-      "version": "0.3"
+      "version": "0.4"
     },
     {
       "description": "Provides code snippets support",
