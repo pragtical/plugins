@@ -2146,7 +2146,7 @@
       "id": "profiler",
       "mod_version": "3",
       "path": "plugins/profiler",
-      "version": "0.4"
+      "version": "0.5"
     },
     {
       "description": "Show nesting of parentheses with rainbow colours",
@@ -2160,7 +2160,7 @@
       "id": "recentfiles",
       "mod_version": "3.1",
       "path": "plugins/recentfiles.lua",
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Allows for you to write a regex and its replacement in one go, and live preview the results.",

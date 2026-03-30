@@ -222,12 +222,12 @@ if config.plugins.profiler.enable_on_startup then
 end
 
 --------------------------------------------------------------------------------
--- Override core.run to stop profiler before exit if running.
+-- Override core.exit to stop profiler before exit if running.
 --------------------------------------------------------------------------------
-local core_run = core.run
-function core.run(...)
-  core_run(...)
-  Profiler.stop()
+local core_exit = core.exit
+function core.exit(quit_fn, force)
+  if force then Profiler.stop() end
+  core_exit(quit_fn, force)
 end
 
 --------------------------------------------------------------------------------
