@@ -1,4 +1,4 @@
---- mod-version:3
+--- mod-version:3.1
 local core = require "core"
 local style = require "core.style"
 local command = require "core.command"
@@ -60,9 +60,13 @@ config.plugins.bracketmatch = common.merge({
       default = 1,
       min = 1,
       step = 1,
+      --- @param value number
+      --- @return number
       get_value = function(value)
         return math.floor(value / SCALE)
       end,
+      --- @param value number
+      --- @return number
       set_value = function(value)
         return math.ceil(value * SCALE)
       end
@@ -79,6 +83,11 @@ local bracket_maps = {
 }
 
 
+--- @param doc core.doc
+--- @param line integer
+--- @param col integer
+--- @return string? type
+--- @return string? text
 local function get_token_at(doc, line, col)
   local column = 0
   for _,type,text in doc.highlighter:each_token(line) do
@@ -88,6 +97,15 @@ local function get_token_at(doc, line, col)
 end
 
 
+--- @param doc core.doc
+--- @param line integer
+--- @param col integer
+--- @param line_limit integer
+--- @param open_byte integer
+--- @param close_byte integer
+--- @param direction integer
+--- @return integer? line
+--- @return integer? col
 local function get_matching_bracket(doc, line, col, line_limit, open_byte, close_byte, direction)
   local end_line = line + line_limit * direction
   local depth = 0
@@ -113,6 +131,7 @@ end
 local state = {}
 local select_adj = 0
 
+--- @param line_limit integer?
 local function update_state(line_limit)
   line_limit = line_limit or math.huge
 
@@ -163,16 +182,25 @@ end
 
 local update = DocView.update
 
+--- @param ... any
 function DocView:update(...)
   update(self, ...)
   update_state(100)
 end
 
 
-local function redraw_char(dv, x, y, line, col, bg_color, char_color)
-  local x1 = x + dv:get_col_x_offset(line, col)
-  local x2 = x + dv:get_col_x_offset(line, col + 1)
-  local lh = dv:get_line_height()
+--- @param dv core.docview
+--- @param x number
+--- @param y number
+--- @param screen_x number
+--- @param screen_y number
+--- @param width number
+--- @param height number
+--- @param line integer
+--- @param col integer
+--- @param bg_color renderer.color | boolean
+--- @param char_color renderer.color | boolean
+local function redraw_char(dv, x, y, screen_x, screen_y, width, height, line, col, bg_color, char_color)
   local token = get_token_at(dv.doc, line, col)
   if not char_color then
     char_color = style.syntax[token]
@@ -182,19 +210,26 @@ local function redraw_char(dv, x, y, line, col, bg_color, char_color)
 
   if not bg_color then
     -- redraw background
-    core.push_clip_rect(x1, y, x2 - x1, lh)
+    core.push_clip_rect(screen_x, screen_y, width, height)
     local dlt = DocView.draw_line_text
     DocView.draw_line_text = function() end
     dv:draw_line_body(line, x, y)
     DocView.draw_line_text = dlt
     core.pop_clip_rect()
   else
-    renderer.draw_rect(x1, y, x2 - x1, lh, bg_color)
+    renderer.draw_rect(screen_x, screen_y, width, height, bg_color)
   end
-  renderer.draw_text(font, char, x1, y + dv:get_line_text_y_offset(), char_color)
+  -- redraw char
+  renderer.draw_text(font, char, screen_x, screen_y + dv:get_line_text_y_offset(), char_color)
 end
 
 
+--- @param dv core.docview
+--- @param x number
+--- @param y number
+--- @param line integer
+--- @param col integer
+--- @param width integer
 local function draw_decoration(dv, x, y, line, col, width)
   local conf = config.plugins.bracketmatch
   local color = style.bracketmatch_color or style.syntax["function"]
@@ -203,35 +238,40 @@ local function draw_decoration(dv, x, y, line, col, width)
   local block_color = style.bracketmatch_block_color or style.line_number2
   local frame_color = style.bracketmatch_frame_color or style.line_number2
 
-  local h = conf.line_size
+  local thickness = conf.line_size
 
+  -- position data
+  local screen_x, screen_y = dv:get_line_screen_position(line, col)
+  local screen_x2 = dv:get_line_screen_position(line, col + width)
+  local screen_w = math.abs(screen_x2 - screen_x)
+  local lh = dv:get_line_height()
+
+  -- color char or block style
   if conf.color_char or conf.style == "block" then
     for i = 1, width, 1 do
-      redraw_char(dv, x, y, line, col + i - 1,
+      redraw_char(dv, x, y, screen_x, screen_y, screen_w, lh, line, col + i - 1,
                   conf.style == "block" and block_color, conf.color_char and char_color)
     end
   end
+
+  -- draw decoration
   if conf.style == "underline" then
-    local x1 = x + dv:get_col_x_offset(line, col)
-    local x2 = x + dv:get_col_x_offset(line, col + width)
-    local lh = dv:get_line_height()
-
-    renderer.draw_rect(x1, y + lh - h, x2 - x1, h, color)
+    renderer.draw_rect(screen_x, screen_y + lh - thickness, screen_w, thickness, color)
   elseif conf.style == "frame" then
-    local x1 = x + dv:get_col_x_offset(line, col)
-    local x2 = x + dv:get_col_x_offset(line, col + width)
-    local lh = dv:get_line_height()
-
-    renderer.draw_rect(x1, y + lh - h, x2 - x1, h, frame_color)
-    renderer.draw_rect(x1, y, x2 - x1, h, frame_color)
-    renderer.draw_rect(x1, y, h, lh, frame_color)
-    renderer.draw_rect(x2, y, h, lh, frame_color)
+    renderer.draw_rect(screen_x - thickness, screen_y - thickness, screen_w + thickness, thickness, frame_color) --top
+    renderer.draw_rect(screen_x, screen_y + lh - thickness, screen_w, thickness, frame_color) --bottom
+    renderer.draw_rect(screen_x - thickness, screen_y, thickness, lh, frame_color) --left
+    renderer.draw_rect(screen_x2 - thickness, screen_y, thickness, lh, frame_color) --right
   end
 end
 
 
 local draw_line_text = DocView.draw_line_text
 
+--- @param line integer
+--- @param x number
+--- @param y number
+--- @return number
 function DocView:draw_line_text(line, x, y)
   local lh = draw_line_text(self, line, x, y)
   local width = 1

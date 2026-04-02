@@ -270,9 +270,9 @@
     {
       "description": "Underlines matching pair for bracket under the caret *([screenshot](https://user-images.githubusercontent.com/3920290/80132745-0c863f00-8594-11ea-8875-c455c6fd7eae.png))*",
       "id": "bracketmatch",
-      "mod_version": "3",
+      "mod_version": "3.1",
       "path": "plugins/bracketmatch.lua",
-      "version": "0.2"
+      "version": "0.3"
     },
     {
       "description": "Buffers and not tabs for Lite XL",
