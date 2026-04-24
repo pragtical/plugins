@@ -42,7 +42,7 @@ local function replace_view(this, that)
 end
 
 
-local msg = "This file is not displayed because it is either binary or uses an unsupported text encoding."
+local msg = "Warning: binary file or unsupported encoding."
 
 local function open_external(resource)
   if common.open_in_system then
@@ -60,18 +60,18 @@ local function open_external(resource)
   end
 end
 
-local opt = { "Open anyway", "Open with other program", "Close" }
+local opt = { "Open anyway", "Open in System", "Close" }
 local opt_actions = {
   function(self)
     -- open anyway
-    local view = DocView(core.open_doc(self.filename))
+    local view = DocView(self.doc)
     replace_view(self, view)
   end,
   function(self)
     -- open externally
     local node = core.root_view.root_node:get_node_for_view(self)
     node:close_view(core.root_view.root_node, self)
-    open_external(self.filename)
+    open_external(self.doc.abs_filename)
   end,
   function(self)
     local node = core.root_view.root_node:get_node_for_view(self)
@@ -83,14 +83,14 @@ local opt_actions = {
 local OpenExtView = View:extend()
 
 
-function OpenExtView:new(filename)
+function OpenExtView:new(doc)
   OpenExtView.super.new(self)
-  self.filename = filename
+  self.doc = doc
 end
 
 
 function OpenExtView:get_name()
-  return common.basename(self.filename)
+  return common.basename(self.doc.abs_filename)
 end
 
 
@@ -153,7 +153,10 @@ local function validate_doc(doc)
   if not f then return true end
   local str = f:read(128 * 4) -- max bytes for 128 codepoints
   f:close()
-  return validate_utf8(str or "", 128)
+  if validate_utf8(str or "", 128) then return true end
+  -- if not utf-8 then a valid encoding was detected
+  if doc.encoding ~= "UTF-8" then return true end
+  return false
 end
 
 
@@ -164,7 +167,7 @@ function RootView:open_doc(doc)
     return rootview_open_doc(self, doc)
   else
     local node = self:get_active_node_default()
-    local view = OpenExtView(doc.abs_filename or doc.filename)
+    local view = OpenExtView(doc)
     node:add_view(view)
     self.root_node:update_layout()
     return view
