@@ -2153,7 +2153,7 @@
       "id": "rainbowparen",
       "mod_version": "3",
       "path": "plugins/rainbowparen.lua",
-      "version": "0.1.2"
+      "version": "0.2"
     },
     {
       "description": "Saves recently opened files for easy access from command menu.",

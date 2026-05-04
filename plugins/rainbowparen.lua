@@ -21,6 +21,9 @@ style.syntax.paren5  =  style.syntax.paren5 or { common.color "#5a98cf"}
 
 local tokenize = tokenizer.tokenize
 local extract_subsyntaxes = tokenizer.extract_subsyntaxes
+local highlighter_start = Highlighter.start
+local highlighter_get_line = Highlighter.get_line
+local highlighter_tokenize_line = Highlighter.tokenize_line
 local closers = {
   ["("] = ")",
   ["["] = "]",
@@ -32,23 +35,15 @@ local function parenstyle(parenstack)
 end
 
 function tokenizer.extract_subsyntaxes(base_syntax, state)
-  if not config.plugins.rainbowparen.enabled then
-    return extract_subsyntaxes(base_syntax, state)
-  end
-  return extract_subsyntaxes(base_syntax, state.istate)
+  return extract_subsyntaxes(base_syntax, state)
 end
 
-function tokenizer.tokenize(syntax, text, state, resume)
-  if not config.plugins.rainbowparen.enabled then
-    return tokenize(syntax, text, state, resume)
-  end
-  state = state or {}
-  local res, istate, resume = tokenize(syntax, text, state.istate, resume)
-  local parenstack = state.parenstack or ""
+local function apply_rainbow(tokens, parenstack)
+  parenstack = parenstack or ""
   local newres = {}
   -- split parens out
   -- the stock tokenizer can't do this because it merges identical adjacent tokens
-  for i, type, text in tokenizer.each_token(res) do
+  for i, type, text in tokenizer.each_token(tokens) do
     if type == "normal" or type == "symbol" then
       for normtext1, paren, normtext2 in text:gmatch("([^%(%[{}%]%)]*)([%(%[{}%]%)]?)([^%(%[{}%]%)]*)") do
         if #normtext1 > 0 then
@@ -77,7 +72,132 @@ function tokenizer.tokenize(syntax, text, state, resume)
       table.insert(newres, text)
     end
   end
-  return newres, { parenstack = parenstack, istate = istate }, resume
+  return newres, parenstack
+end
+
+local function get_prev_parenstack(self, idx)
+  local prev = idx > 1 and self.lines[idx - 1]
+  return prev and prev.parenstack or ""
+end
+
+local function set_max_wanted_line(self, idx)
+  self.max_wanted_line = math.max(self.max_wanted_line, idx)
+  if self.first_invalid_line <= self.max_wanted_line then
+    self:start()
+  end
+end
+
+local function recolor_line(line, parenstack)
+  line.init_parenstack = parenstack
+  line.tokens, line.parenstack = apply_rainbow(line.base_tokens or line.tokens, parenstack)
+  return line
+end
+
+local function tokenize_highlighter_line(self, idx, state, parenstack, resume)
+  local res = self.lines[idx] or {}
+  res.init_state = state
+  res.init_parenstack = parenstack or ""
+  res.text = self.doc:get_utf8_line(idx)
+  res.base_tokens, res.state, res.resume = tokenize(self.doc.syntax, res.text, state, resume)
+  res.tokens, res.parenstack = apply_rainbow(res.base_tokens, res.init_parenstack)
+  return res
+end
+
+function tokenizer.tokenize(syntax, text, state, resume)
+  return tokenize(syntax, text, state, resume)
+end
+
+function Highlighter:tokenize_line(idx, state, resume)
+  if not config.plugins.rainbowparen.enabled then
+    return highlighter_tokenize_line(self, idx, state, resume)
+  end
+  return tokenize_highlighter_line(self, idx, state, get_prev_parenstack(self, idx), resume)
+end
+
+function Highlighter:get_line(idx)
+  if not config.plugins.rainbowparen.enabled then
+    return highlighter_get_line(self, idx)
+  end
+  if not self.doc then return { text = "", tokens = { "normal", "" } } end
+
+  local line = self.lines[idx]
+  local text = self.doc:get_utf8_line(idx)
+  local state = idx > 1 and self.lines[idx - 1] and self.lines[idx - 1].state
+  local parenstack = get_prev_parenstack(self, idx)
+
+  if not line or line.text ~= text or line.init_state ~= state then
+    line = tokenize_highlighter_line(self, idx, state, parenstack)
+    self.lines[idx] = line
+    self:update_notify(idx, 0)
+  elseif line.init_parenstack ~= parenstack then
+    recolor_line(line, parenstack)
+    self:update_notify(idx, 0)
+  end
+
+  set_max_wanted_line(self, idx)
+  return line
+end
+
+function Highlighter:start()
+  if not config.plugins.rainbowparen.enabled then
+    return highlighter_start(self)
+  end
+  if self.running then return end
+  self.running = true
+  core.add_thread(function()
+    local views = #core.get_views_referencing_doc(self.doc)
+    local prev_line = 0
+    while self.first_invalid_line <= self.max_wanted_line do
+      if not self.doc then return end
+      local max = math.min(self.first_invalid_line + 40, self.max_wanted_line)
+      local line
+      local retokenized_from
+      for i = self.first_invalid_line, max do
+        local state = (i > 1) and self.lines[i - 1].state
+        local parenstack = get_prev_parenstack(self, i)
+        line = self.lines[i]
+        local text = self.doc:get_utf8_line(i)
+        if line and line.resume and (line.init_state ~= state or line.text ~= text) then
+          line.resume = nil
+        end
+        if not (line and line.init_state == state and line.text == text and not line.resume) then
+          retokenized_from = retokenized_from or i
+          self.lines[i] = tokenize_highlighter_line(self, i, state, parenstack, line and line.resume)
+          if self.lines[i].resume then
+            self.first_invalid_line = i
+            goto yield
+          end
+        elseif line.init_parenstack ~= parenstack then
+          retokenized_from = retokenized_from or i
+          recolor_line(line, parenstack)
+        elseif retokenized_from then
+          self:update_notify(retokenized_from, i - retokenized_from - 1)
+          retokenized_from = nil
+        end
+      end
+
+      self.first_invalid_line = max + 1
+      ::yield::
+      if
+        retokenized_from and (
+          prev_line ~= retokenized_from
+          or
+          not (line and line.resume and #line.text > 200)
+        )
+      then
+        prev_line = retokenized_from
+        self:update_notify(retokenized_from, max - retokenized_from)
+      end
+      core.redraw = true
+      coroutine.yield()
+
+      if views > 0 and #core.get_views_referencing_doc(self.doc) == 0 then
+        break
+      end
+    end
+    self.max_wanted_line = 0
+    self.running = false
+  end, self)
 end
 
 local function toggle_rainbowparen(enabled)
