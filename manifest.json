@@ -586,7 +586,7 @@
       "id": "gitstatus",
       "mod_version": "3.1",
       "path": "plugins/gitstatus.lua",
-      "version": "0.2"
+      "version": "0.2.1"
     },
     {
       "description": "Auto-formats the current go file, adds the missing imports and the missing return cases",

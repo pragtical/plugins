@@ -100,6 +100,7 @@ core.add_thread(function()
       cached_color_for_item = {}
 
       local folder = core.root_project().path
+      local root_project = folder
       for line in string.gmatch(diff, "[^\n]+") do
         local submodule = line:match("^Entering '(.+)'$")
         if submodule then
@@ -116,6 +117,7 @@ core.add_thread(function()
             while abs_path do
               cached_color_for_item[abs_path] = style.gitstatus_modification
               abs_path = common.dirname(abs_path)
+              if abs_path == root_project then break end
             end
           end
         end
