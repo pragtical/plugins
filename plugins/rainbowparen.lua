@@ -114,9 +114,8 @@ function Highlighter:get_line(idx)
   local text = self.doc:get_utf8_line(idx)
   local state = idx > 1 and self.lines[idx - 1] and self.lines[idx - 1].state
   local parenstack = get_prev_parenstack(self, idx)
-
   if not line or line.text ~= text or line.init_state ~= state then
-    line = tokenize_highlighter_line(self, idx, state, parenstack)
+    line = self:tokenize_line(idx, state)
     self.lines[idx] = line
     self:update_notify(idx, 0)
   elseif line.init_parenstack ~= parenstack then
@@ -144,15 +143,15 @@ function Highlighter:start()
       local retokenized_from
       for i = self.first_invalid_line, max do
         local state = (i > 1) and self.lines[i - 1].state
-        local parenstack = get_prev_parenstack(self, i)
         line = self.lines[i]
         local text = self.doc:get_utf8_line(i)
+        local parenstack = get_prev_parenstack(self, i)
         if line and line.resume and (line.init_state ~= state or line.text ~= text) then
           line.resume = nil
         end
         if not (line and line.init_state == state and line.text == text and not line.resume) then
           retokenized_from = retokenized_from or i
-          self.lines[i] = tokenize_highlighter_line(self, i, state, parenstack, line and line.resume)
+          self.lines[i] = self:tokenize_line(i, state, line and line.resume)
           if self.lines[i].resume then
             self.first_invalid_line = i
             goto yield
