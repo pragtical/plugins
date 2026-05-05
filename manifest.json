@@ -2153,7 +2153,7 @@
       "id": "rainbowparen",
       "mod_version": "3",
       "path": "plugins/rainbowparen.lua",
-      "version": "0.2"
+      "version": "0.2.1"
     },
     {
       "description": "Saves recently opened files for easy access from command menu.",
@@ -2303,7 +2303,7 @@
       "id": "terminal",
       "mod_version": "3",
       "remote": "https://github.com/pragtical/terminal.git:master",
-      "version": "1.086"
+      "version": "1.087"
     },
     {
       "description": "Allows you to play tetris directly in the editor.",

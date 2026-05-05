@@ -19,8 +19,6 @@ style.syntax.paren3  =  style.syntax.paren3 or { common.color "#fcd476"}
 style.syntax.paren4  =  style.syntax.paren4 or { common.color "#52dab2"}
 style.syntax.paren5  =  style.syntax.paren5 or { common.color "#5a98cf"}
 
-local tokenize = tokenizer.tokenize
-local extract_subsyntaxes = tokenizer.extract_subsyntaxes
 local highlighter_start = Highlighter.start
 local highlighter_get_line = Highlighter.get_line
 local highlighter_tokenize_line = Highlighter.tokenize_line
@@ -34,16 +32,12 @@ local function parenstyle(parenstack)
   return "paren" .. ((#parenstack % config.plugins.rainbowparen.parens) + 1)
 end
 
-function tokenizer.extract_subsyntaxes(base_syntax, state)
-  return extract_subsyntaxes(base_syntax, state)
-end
-
 local function apply_rainbow(tokens, parenstack)
   parenstack = parenstack or ""
   local newres = {}
   -- split parens out
   -- the stock tokenizer can't do this because it merges identical adjacent tokens
-  for i, type, text in tokenizer.each_token(tokens) do
+  for _, type, text in tokenizer.each_token(tokens) do
     if type == "normal" or type == "symbol" then
       for normtext1, paren, normtext2 in text:gmatch("([^%(%[{}%]%)]*)([%(%[{}%]%)]?)([^%(%[{}%]%)]*)") do
         if #normtext1 > 0 then
@@ -98,13 +92,9 @@ local function tokenize_highlighter_line(self, idx, state, parenstack, resume)
   res.init_state = state
   res.init_parenstack = parenstack or ""
   res.text = self.doc:get_utf8_line(idx)
-  res.base_tokens, res.state, res.resume = tokenize(self.doc.syntax, res.text, state, resume)
+  res.base_tokens, res.state, res.resume = tokenizer.tokenize(self.doc.syntax, res.text, state, resume)
   res.tokens, res.parenstack = apply_rainbow(res.base_tokens, res.init_parenstack)
   return res
-end
-
-function tokenizer.tokenize(syntax, text, state, resume)
-  return tokenize(syntax, text, state, resume)
 end
 
 function Highlighter:tokenize_line(idx, state, resume)
