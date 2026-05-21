@@ -219,6 +219,14 @@
       "version": "0.1"
     },
     {
+      "description": "AI-assisted coding with provider adapters, project context, guarded tools, and editor-native chat UI.",
+      "id": "assistant",
+      "name": "Assistant",
+      "mod_version": "3.10.1",
+      "remote": "https://github.com/pragtical/assistant:ec285b3c17f37025e8d0b9c42172c9ca7a0f3ac2",
+      "version": "0.1.0"
+    },
+    {
       "description": "Automatically inserts closing brackets and quotes. Also allows selected text to be wrapped with brackets or quotes.",
       "id": "autoinsert",
       "mod_version": "3.1",
