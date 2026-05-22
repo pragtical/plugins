@@ -221,8 +221,8 @@
     {
       "description": "AI-assisted coding with provider adapters, project context, guarded tools, and editor-native chat UI.",
       "id": "assistant",
-      "name": "Assistant",
       "mod_version": "3.10.1",
+      "name": "Assistant",
       "remote": "https://github.com/pragtical/assistant:473d24c0cb26cb5611fc5ad704739db095052560",
       "version": "0.1.1"
     },
