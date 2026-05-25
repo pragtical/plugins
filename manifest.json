@@ -2164,6 +2164,13 @@
       "version": "0.2.2"
     },
     {
+      "description": "Highlight CSV and TSV files in different rainbow colors to make them more readable",
+      "id": "rainbow_csv",
+      "mod_version": "3",
+      "path": "plugins/rainbow_csv.lua",
+      "version": "0.2.1"
+    },
+    {
       "description": "Saves recently opened files for easy access from command menu.",
       "id": "recentfiles",
       "mod_version": "3.1",
