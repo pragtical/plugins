@@ -834,7 +834,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.3"
+      "version": "0.3.1"
     },
     {
       "description": "Syntax for the [Carbon programming language](https://github.com/carbon-language/carbon-lang).",

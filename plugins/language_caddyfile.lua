@@ -3,7 +3,7 @@ local syntax = require "core.syntax"
 
 syntax.add {
   name = "Caddyfile",
-  files = { PATHSEP .. "Caddyfile$" },
+  files = { PATHSEP .. "Caddyfile$", "^Caddyfile$" },
   comment = "#",
   patterns = {
     { pattern = { "#", "\n"},          type = "comment"  },
