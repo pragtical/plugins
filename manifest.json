@@ -2056,14 +2056,6 @@
       "version": "0.1"
     },
     {
-      "description": "Add support for TCP and UDP sockets using SDL_net.",
-      "id": "net",
-      "mod_version": "3",
-      "remote": "https://github.com/jgmdev/lite-xl-net:4ddece50cdc6d00ab09be1896ef0474e89da89b8",
-      "type": "library",
-      "version": "1.1"
-    },
-    {
       "dependencies": {
         "font_symbols_nerdfont_mono_regular": {}
       },
