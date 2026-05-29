@@ -1,4 +1,4 @@
--- mod-version:3
+-- mod-version:3.11
 local common = require "core.common"
 local style = require "core.style"
 local DocView = require "core.docview"
