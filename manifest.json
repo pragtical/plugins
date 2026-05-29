@@ -1854,15 +1854,15 @@
       "version": "0.1.4"
     },
     {
-      "description": "Advanced linter with ErrorLens-like error reporting. Compatible with linters made for `linter` *([screenshot](https://raw.githubusercontent.com/liquid600pgm/lintplus/master/screenshots/1.png))*",
+      "description": "Advanced linter with ErrorLens-like error reporting. Compatible with linters made for `linter` *([screenshot](https://raw.githubusercontent.com/pragtical/lintplus/master/screenshots/1.png))*",
       "id": "lintplus",
-      "mod_version": "3",
+      "mod_version": "3.11",
       "name": "lint+",
-      "remote": "https://github.com/liquidev/lintplus:1aa6d2d0d799fa20c0fd52efaf89243424c840b0",
+      "remote": "https://github.com/pragtical/lintplus:662e824bf953e8cc31d834fe798efb1a09bfdb68",
       "replaces": [
         "linter"
       ],
-      "version": "0.7"
+      "version": "0.8"
     },
     {
       "description": "Discord rich presence for Lite XL (display file editing in Discord)",
@@ -1881,9 +1881,9 @@
     {
       "description": "Provides code completion (also known as IntelliSense) using the Language Server Protocol",
       "id": "lsp",
-      "mod_version": "3.4.0",
-      "remote": "https://github.com/pragtical/lsp:cd8b927ad39cd42a24ef3349aeb4ce0c5e5fc3eb",
-      "version": "0.15.1"
+      "mod_version": "3.11.0",
+      "remote": "https://github.com/pragtical/lsp:c0871a71be30edc5546da471319ef8f397742150",
+      "version": "0.16.0"
     },
     {
       "description": "Automatic configuration/binary download for LSP completion for C/C++ with clangd.",
@@ -2201,10 +2201,10 @@
     {
       "description": "Extensible source control management plugin with git and fossil backends.",
       "id": "scm",
-      "mod_version": "3.1",
+      "mod_version": "3.11",
       "name": "Source Control Management",
-      "remote": "https://github.com/pragtical/scm:a6cd16cf5219b1cc9c58665fb9b6a5f665a9a365",
-      "version": "0.7.0"
+      "remote": "https://github.com/pragtical/scm:178890db139954744f6bc699f77ac0e1ecfd0794",
+      "version": "0.8.0"
     },
     {
       "description": "Select a color theme, like VScode, Sublime Text.(plugin saves changes)",
