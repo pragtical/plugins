@@ -328,9 +328,9 @@
     {
       "description": "Underlays color values (eg. `#ff00ff`, `rgb(255, 0, 255)` or hsl(300, 100%, 50%)) with their resultant color. *([screenshot](https://user-images.githubusercontent.com/3920290/80743752-731bd780-8b15-11ea-97d3-847db927c5dc.png))*",
       "id": "colorpreview",
-      "mod_version": "3",
+      "mod_version": "3.11",
       "path": "plugins/colorpreview.lua",
-      "version": "0.3.2"
+      "version": "0.4.0"
     },
     {
       "description": "A console for running external commands and capturing their output *([gif](https://user-images.githubusercontent.com/3920290/81343656-49325a00-90ad-11ea-8647-ff39d8f1d730.gif))*",
@@ -494,9 +494,9 @@
     {
       "description": "When a selection crosses multiple lines, it is drawn to the end of the screen *([screenshot](https://user-images.githubusercontent.com/2798487/140995616-89a20b55-5917-4df8-8a7c-d7c53732fa8b.png))*",
       "id": "extend_selection_line",
-      "mod_version": "3",
+      "mod_version": "3.11",
       "path": "plugins/extend_selection_line.lua",
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Allows to open an external console in current project directory",
@@ -643,9 +643,9 @@
     {
       "description": "Adds indent guides *([screenshot](https://user-images.githubusercontent.com/3920290/79640716-f9860000-818a-11ea-9c3b-26d10dd0e0c0.png))*",
       "id": "indentguide",
-      "mod_version": "3",
+      "mod_version": "3.11",
       "path": "plugins/indentguide.lua",
-      "version": "0.4.2"
+      "version": "0.5.0"
     },
     {
       "description": "Generates input latency stats by measuring time taken from key press to rendering.",
@@ -2216,9 +2216,9 @@
     {
       "description": "Highlights regions of code that match the current selection *([screenshot](https://user-images.githubusercontent.com/3920290/80710883-5f597c80-8ae7-11ea-97f0-76dfacc08439.png))*",
       "id": "selectionhighlight",
-      "mod_version": "3",
+      "mod_version": "3.11",
       "path": "plugins/selectionhighlight.lua",
-      "version": "0.3"
+      "version": "0.4"
     },
     {
       "description": "Displays the current time in the corner of the status view",
@@ -2237,9 +2237,9 @@
     {
       "description": "Smooth caret animation *([gif](https://user-images.githubusercontent.com/20792268/139006049-a0ba6559-88cb-49a7-8077-4822445b4a1f.gif))*",
       "id": "smoothcaret",
-      "mod_version": "3.1",
+      "mod_version": "3.11",
       "path": "plugins/smoothcaret.lua",
-      "version": "0.4"
+      "version": "0.5"
     },
     {
       "description": "Provides code snippets support",
@@ -2279,10 +2279,10 @@
     {
       "description": "Keep track of the current scope at the top of the view (*[video](https://user-images.githubusercontent.com/2798487/222133911-e467a583-596c-47ab-8e65-eefc7b5c9112.mp4)*)",
       "id": "sticky_scroll",
-      "mod_version": "3",
+      "mod_version": "3.11",
       "name": "Sticky Scroll",
       "path": "plugins/sticky_scroll.lua",
-      "version": "1.0"
+      "version": "2.0"
     },
     {
       "description": "Save files that require root permissions. Needs `pkexec`.",
