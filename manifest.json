@@ -2028,9 +2028,9 @@
     {
       "description": "Shows a minimap on the right-hand side of the docview. Taken from [@andsve](https://github.com/andsve/lite-plugins/tree/minimap-plugin), and improved upon.",
       "id": "minimap",
-      "mod_version": "3",
+      "mod_version": "3.11",
       "path": "plugins/minimap.lua",
-      "version": "0.2.3"
+      "version": "0.3.0"
     },
     {
       "description": "Fully customizable modal editing for Lite XL",
