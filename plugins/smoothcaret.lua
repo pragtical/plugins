@@ -91,7 +91,8 @@ function DocView:update()
     end
 
     -- Keep track of visible carets
-    if line >= minline and line <= maxline then
+    local offset = self:offset_from_position(line, col)
+    if offset >= minline and offset <= maxline then
       self.visible_carets[v_idx] = self.carets[idx]
       v_idx = v_idx + 1
     end
