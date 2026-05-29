@@ -1,4 +1,4 @@
--- mod-version:3
+-- mod-version:3.11
 --
 -- For dictionaries you can use the Hunspell .dic files available on:
 -- https://github.com/titoBouzout/Dictionaries
@@ -306,16 +306,58 @@ function DocView:draw_line_text(idx, x, y)
     self.old_wrapped_lines = self.wrapped_lines
     reset_cache()
   end
+  local vs, ve, uvs, uve = get_visible_cols_range(self, idx, 50)
+  local wraps = self:get_line_wraps(idx)
+  local cache_key = string.format(
+    "%s:%s:%s:%s:%s",
+    tostring(x),
+    tostring(self:visual_row_from_position(idx, 1)),
+    tostring(vs),
+    tostring(ve),
+    wraps and table.concat(wraps, ",") or ""
+  )
   if
     not spell_cache[self.doc.highlighter][idx]
-    or pos_cache[self.doc.highlighter][idx] ~= x
+    or pos_cache[self.doc.highlighter][idx] ~= cache_key
   then
-    pos_cache[self.doc.highlighter][idx] = x
+    pos_cache[self.doc.highlighter][idx] = cache_key
 
     local calculated = {}
-    local vs, ve, uvs, uve = get_visible_cols_range(self, idx, 50)
     local s, e, us, ue = 0, 0, 0, 0
     local text = self.doc.lines[idx]:usub(uvs, uve)
+    local ox, oy = self:get_content_offset()
+    local gw = self:get_gutter_width()
+    local line_count = self:visual_line_count()
+    local line_len = #self.doc.lines[idx]
+
+    local function append_underline(start_col, end_col)
+      local row1 = self:visual_row_from_position(idx, start_col)
+      local row2 = self:visual_row_from_position(idx, end_col)
+      for row = row1, row2 do
+        local line, row_col = self:visual_position_from_row(row)
+        if line ~= idx then break end
+
+        local row_end_col = line_len + 1
+        if row < line_count then
+          local next_line, next_col = self:visual_position_from_row(row + 1)
+          if next_line == idx then
+            row_end_col = next_col
+          end
+        end
+
+        local col1 = math.max(start_col, row_col)
+        local col2 = math.min(end_col, row_end_col)
+        if col1 < col2 then
+          local x1 = ox + gw + self:get_col_x_offset(idx, col1)
+          local x2 = ox + gw + self:get_col_x_offset(idx, col2, col2 == row_end_col)
+          local y1 = oy + style.padding.y + (row - 1) * self:get_line_height()
+          table.insert(calculated, x1 - self.position.x - gw + self.scroll.x)
+          table.insert(calculated, y1 - self.position.y + self.scroll.y)
+          table.insert(calculated, x2 - self.position.x - gw + self.scroll.x)
+          table.insert(calculated, y1 - self.position.y + self.scroll.y)
+        end
+      end
+    end
 
     while true do
       us, ue = text:ufind(word_pattern, ue + 1)
@@ -324,12 +366,7 @@ function DocView:draw_line_text(idx, x, y)
       s = text:ucharpos(us)
       e = text:ucharpos(ue)
       if not words[word] and not active_word(self.doc, idx, vs + e) then
-        x, y = self:get_line_screen_position(idx, vs + s - 1)
-        table.insert(calculated,  x - self.position.x - self:get_gutter_width() + self.scroll.x)
-        table.insert(calculated, y - self.position.y + self.scroll.y)
-        x, y = self:get_line_screen_position(idx, vs + e)
-        table.insert(calculated, x - self.position.x - self:get_gutter_width() + self.scroll.x)
-        table.insert(calculated, y - self.position.y + self.scroll.y)
+        append_underline(vs + s - 1, vs + e)
       end
     end
 
