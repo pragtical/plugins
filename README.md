@@ -330,7 +330,6 @@ to follow with `extra.follow_branch`.*
 | [`haxe`](https://github.com/lite-xl/lite-xl-lsp-servers.git)*                                | Official Haxe builds.                                                                    |
 | [`jdk`](https://github.com/lite-xl/lite-xl-lsp-servers.git)*                                 | Production and Early-Access OpenJDK Builds, from Oracle.                                 |
 | [`jsonmod`](plugins/jsonmod.lua?raw=1)                                                       | rxi JSON library with error handling and other modifications.                            |
-| [`net`](https://github.com/jgmdev/lite-xl-net)*                                              | Add support for TCP and UDP sockets using SDL_net.                                       |
 | [`nodejs`](https://github.com/lite-xl/lite-xl-lsp-servers.git)*                              | Official NodeJs builds.                                                                  |
 | [`tree_sitter`](https://github.com/Evergreen-lxl/lite-xl-tree-sitter.git)*                   | Tree-sitter bindings based on `lua-tree-sitter`                                          |
 | [`www`](https://github.com/adamharrison/lite-xl-www.git)*                                    | A simple library that provides a web client to fetch, and submit data via HTTP requests. |
