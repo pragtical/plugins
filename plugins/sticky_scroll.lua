@@ -1,4 +1,4 @@
--- mod-version:3
+-- mod-version:3.11
 local core = require "core"
 local DocView = require "core.docview"
 local style = require "core.style"
@@ -199,15 +199,6 @@ function SS.get_sticky_lines(doc, start_line, max_sticky_lines)
   return res
 end
 
--- TODO: Workaround - Remove when lite-xl/lite-xl#1382 is merged and released
-local function get_visible_line_range(dv)
-  local _, y, _, y2 = dv:get_content_bounds()
-  local lh = dv:get_line_height()
-  local minline = math.max(1, math.floor((y - style.padding.y) / lh) + 1)
-  local maxline = math.min(#dv.doc.lines, math.floor((y2 - style.padding.y) / lh) + 1)
-  return minline, maxline
-end
-
 local last_max_sticky_lines
 local old_dv_update = DocView.update
 function DocView:update(...)
@@ -228,16 +219,18 @@ function DocView:update(...)
     last_max_sticky_lines = config.plugins.sticky_scroll.max_sticky_lines
   end
 
-  local minline, _ = get_visible_line_range(self)
+  local min_offset = self:get_visible_line_range()
   local lh = self:get_line_height()
 
   -- We need to find the first line that'll be visible
   -- even after the sticky lines are drawn.
-  local from = math.max(1, minline)
-  local to = math.min(minline + config.plugins.sticky_scroll.max_sticky_lines, #self.doc.lines)
   local new_sticky_lines = {}
-  local new_reference_line = to
-  for i = from, to do
+  local new_reference_line = select(2, self:position_from_offset(min_offset))
+    or math.min(min_offset, #self.doc.lines)
+  local max_offset = min_offset + config.plugins.sticky_scroll.max_sticky_lines
+  for offset = min_offset, max_offset do
+    local i = self:position_from_offset(offset)
+    if not i or i > #self.doc.lines then break end
     -- Simple cache
     if not docview.sticky_scroll_cache[i] then
       docview.sticky_scroll_cache[i] = SS.get_sticky_lines(self.doc, i, config.plugins.sticky_scroll.max_sticky_lines)
@@ -261,7 +254,9 @@ function DocView:draw_overlay(...)
   local res = old_dv_draw_overlay(self, ...)
   if not SS.should_run(self) then return res end
 
-  local minline, _ = get_visible_line_range(self)
+  local min_offset = self:get_visible_line_range()
+  local minline = select(2, self:position_from_offset(min_offset))
+    or math.min(min_offset, #self.doc.lines)
   local lh = self:get_line_height()
 
   -- Ignore the horizontal scroll position when drawing sticky lines
