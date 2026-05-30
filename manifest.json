@@ -645,7 +645,7 @@
       "id": "indentguide",
       "mod_version": "3.11",
       "path": "plugins/indentguide.lua",
-      "version": "0.5.0"
+      "version": "0.5.1"
     },
     {
       "description": "Generates input latency stats by measuring time taken from key press to rendering.",

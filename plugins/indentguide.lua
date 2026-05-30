@@ -126,24 +126,29 @@ function DocView:update()
         end
 
         self.indentguide_indent_active[line] = lvl
+        local stop_lvl = math.max(0, lvl - indent_size)
 
-        -- check if the lines before the current are part of the block
-        local i = line - 1
-        if i > 0 and not top then
+        -- check if the visible lines before the current are part of the block
+        local offset_i = offset - 1
+        if offset_i >= minline and not top then
           repeat
-            if get_indent(i) <= lvl - indent_size then break end
+            local i = self:position_from_offset(offset_i)
+            if not i then break end
+            if get_indent(i) <= stop_lvl then break end
             self.indentguide_indent_active[i] = lvl
-            i = i - 1
-          until i < 1 or self:offset_from_position(i, 1) < minline
+            offset_i = offset_i - 1
+          until offset_i < minline
         end
-        -- check if the lines after the current are part of the block
-        i = line + 1
-        if i <= #self.doc.lines and not bottom then
+        -- check if the visible lines after the current are part of the block
+        offset_i = offset + 1
+        if offset_i <= maxline and not bottom then
           repeat
-            if get_indent(i) <= lvl - indent_size then break end
+            local i = self:position_from_offset(offset_i)
+            if not i then break end
+            if get_indent(i) <= stop_lvl then break end
             self.indentguide_indent_active[i] = lvl
-            i = i + 1
-          until i > #self.doc.lines or self:offset_from_position(i, 1) > maxline
+            offset_i = offset_i + 1
+          until offset_i > maxline
         end
       end
     end
