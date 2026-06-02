@@ -1886,6 +1886,13 @@
       "version": "0.16.0"
     },
     {
+      "description": "Automatic configuration/binary download for LSP completion for Bash with bash-language-server.",
+      "id": "lsp_bash",
+      "mod_version": "3",
+      "remote": "https://github.com/pragtical/lsp-servers.git:8fb287f8680cb2f3b570a9cc12911aff8a62fbce",
+      "version": "5.6.0"
+    },
+    {
       "description": "Automatic configuration/binary download for LSP completion for C/C++ with clangd.",
       "id": "lsp_c",
       "mod_version": "3",
