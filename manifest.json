@@ -607,7 +607,7 @@
       "description": "Official Go builds.",
       "id": "golang",
       "mod_version": "3",
-      "remote": "https://github.com/lite-xl/lite-xl-lsp-servers.git:443a076fe5741dbd3a8f774c9b577bbf4c58f4e9",
+      "remote": "https://github.com/pragtical/lsp-servers.git:65656fa9bee94136195756df2acbec7e23176d4d",
       "type": "library",
       "version": "1.24.5"
     },
@@ -622,7 +622,7 @@
       "description": "Official Haxe builds.",
       "id": "haxe",
       "mod_version": "3",
-      "remote": "https://github.com/lite-xl/lite-xl-lsp-servers.git:443a076fe5741dbd3a8f774c9b577bbf4c58f4e9",
+      "remote": "https://github.com/pragtical/lsp-servers.git:65656fa9bee94136195756df2acbec7e23176d4d",
       "type": "library",
       "version": "4.3.7"
     },
@@ -658,7 +658,7 @@
       "description": "Production and Early-Access OpenJDK Builds, from Oracle.",
       "id": "jdk",
       "mod_version": "3",
-      "remote": "https://github.com/lite-xl/lite-xl-lsp-servers.git:443a076fe5741dbd3a8f774c9b577bbf4c58f4e9",
+      "remote": "https://github.com/pragtical/lsp-servers.git:65656fa9bee94136195756df2acbec7e23176d4d",
       "type": "library",
       "version": "24.0.2"
     },
@@ -1889,99 +1889,113 @@
       "description": "Automatic configuration/binary download for LSP completion for C/C++ with clangd.",
       "id": "lsp_c",
       "mod_version": "3",
-      "remote": "https://github.com/lite-xl/lite-xl-lsp-servers.git:443a076fe5741dbd3a8f774c9b577bbf4c58f4e9",
+      "remote": "https://github.com/pragtical/lsp-servers.git:65656fa9bee94136195756df2acbec7e23176d4d",
       "version": "20.1.8"
     },
     {
       "description": "Automatic configuration/binary download for LSP completion for clojure with clojure-lsp.",
       "id": "lsp_clojure",
       "mod_version": "3",
-      "remote": "https://github.com/lite-xl/lite-xl-lsp-servers.git:443a076fe5741dbd3a8f774c9b577bbf4c58f4e9",
+      "remote": "https://github.com/pragtical/lsp-servers.git:65656fa9bee94136195756df2acbec7e23176d4d",
       "version": "2025.06.13"
+    },
+    {
+      "description": "LSP support for CSS, LESS, and SCSS via vscode-css-languageserver.",
+      "id": "lsp_css",
+      "mod_version": "3",
+      "remote": "https://github.com/pragtical/lsp-servers.git:65656fa9bee94136195756df2acbec7e23176d4d",
+      "version": "1.122.1"
     },
     {
       "description": "Automatic configuration/binary download for LSP completion for D with serve_d.",
       "id": "lsp_d",
       "mod_version": "3",
-      "remote": "https://github.com/lite-xl/lite-xl-lsp-servers.git:975e96322c6b0e343395c56bf66360c3156dad42",
+      "remote": "https://github.com/pragtical/lsp-servers.git:65656fa9bee94136195756df2acbec7e23176d4d",
       "version": "0.7.6"
     },
     {
       "description": "Automatic configuration/binary download for LSP completion for Emmet with emmet-language-server.",
       "id": "lsp_emmet",
       "mod_version": "3",
-      "remote": "https://github.com/lite-xl/lite-xl-lsp-servers.git:443a076fe5741dbd3a8f774c9b577bbf4c58f4e9",
+      "remote": "https://github.com/pragtical/lsp-servers.git:65656fa9bee94136195756df2acbec7e23176d4d",
       "version": "2.7.0"
     },
     {
       "description": "Automatic configuration/binary download for LSP completion for Go with gopls.",
       "id": "lsp_go",
       "mod_version": "3",
-      "remote": "https://github.com/lite-xl/lite-xl-lsp-servers.git:443a076fe5741dbd3a8f774c9b577bbf4c58f4e9",
+      "remote": "https://github.com/pragtical/lsp-servers.git:65656fa9bee94136195756df2acbec7e23176d4d",
       "version": "0.19.1"
     },
     {
       "description": "Automatic configuration/binary download for LSP completion for Haxe with haxe-language-server.",
       "id": "lsp_haxe",
       "mod_version": "3",
-      "remote": "https://github.com/lite-xl/lite-xl-lsp-servers.git:aae96e435bf34e890c5945638e7ba05fab4abfe5",
-      "version": "2.34.1"
+      "remote": "https://github.com/pragtical/lsp-servers.git:65656fa9bee94136195756df2acbec7e23176d4d",
+      "version": "2.34.2"
     },
     {
-      "description": "LSP support for JSON via vscode-json-languageserver with [additional patches](https://github.com/lite-xl/lite-xl-lsp-servers/tree/latest/patches/vscode-json-languageserver) for increased functionality.",
+      "description": "LSP support for HTML via vscode-html-languageserver.",
+      "id": "lsp_html",
+      "mod_version": "3",
+      "remote": "https://github.com/pragtical/lsp-servers.git:65656fa9bee94136195756df2acbec7e23176d4d",
+      "version": "1.122.1"
+    },
+    {
+      "description": "LSP support for JSON via vscode-json-languageserver with [SchemaStore integration](https://github.com/pragtical/lsp-servers/tree/latest/patches/vscode-json-languageserver).",
       "id": "lsp_json",
       "mod_version": "3",
-      "remote": "https://github.com/lite-xl/lite-xl-lsp-servers.git:443a076fe5741dbd3a8f774c9b577bbf4c58f4e9",
-      "version": "1.102.3.0.2"
+      "remote": "https://github.com/pragtical/lsp-servers.git:65656fa9bee94136195756df2acbec7e23176d4d",
+      "version": "1.122.1"
     },
     {
       "description": "Automatic configuration/binary download for LSP completion for Lua with lua-language-server (sumneko).",
       "id": "lsp_lua",
       "mod_version": "3",
-      "remote": "https://github.com/lite-xl/lite-xl-lsp-servers.git:443a076fe5741dbd3a8f774c9b577bbf4c58f4e9",
+      "remote": "https://github.com/pragtical/lsp-servers.git:65656fa9bee94136195756df2acbec7e23176d4d",
       "version": "3.15.0"
     },
     {
       "description": "Automatic configuration/binary download for LSP completion for Java with jdtls.",
       "id": "lsp_java",
       "mod_version": "3",
-      "remote": "https://github.com/lite-xl/lite-xl-lsp-servers.git:443a076fe5741dbd3a8f774c9b577bbf4c58f4e9",
+      "remote": "https://github.com/pragtical/lsp-servers.git:65656fa9bee94136195756df2acbec7e23176d4d",
       "version": "1.49.0"
     },
     {
       "description": "Automatic configuration/binary download for LSP completion for Python with Pyright.",
       "id": "lsp_python",
       "mod_version": "3",
-      "remote": "https://github.com/lite-xl/lite-xl-lsp-servers.git:443a076fe5741dbd3a8f774c9b577bbf4c58f4e9",
+      "remote": "https://github.com/pragtical/lsp-servers.git:65656fa9bee94136195756df2acbec7e23176d4d",
       "version": "1.1.403"
     },
     {
       "description": "Automatic configuration/binary download for LSP linting for Javascript with quick-lint-js.",
       "id": "lsp_quicklintjs",
       "mod_version": "3",
-      "remote": "https://github.com/lite-xl/lite-xl-lsp-servers:89efc5642cb9abcd9023c8e5ef3dba85b399884e",
+      "remote": "https://github.com/pragtical/lsp-servers.git:65656fa9bee94136195756df2acbec7e23176d4d",
       "version": "3.2.0"
     },
     {
       "description": "Automatic configuration/binary download for LSP completion for Rust with rust-analyzer.",
       "id": "lsp_rust",
       "mod_version": "3",
-      "remote": "https://github.com/lite-xl/lite-xl-lsp-servers.git:443a076fe5741dbd3a8f774c9b577bbf4c58f4e9",
+      "remote": "https://github.com/pragtical/lsp-servers.git:65656fa9bee94136195756df2acbec7e23176d4d",
       "version": "20250804"
     },
     {
       "description": "Automatic configuration/binary download for LSP completion for TeX with texlab.",
       "id": "lsp_tex",
       "mod_version": "3",
-      "remote": "https://github.com/lite-xl/lite-xl-lsp-servers.git:443a076fe5741dbd3a8f774c9b577bbf4c58f4e9",
+      "remote": "https://github.com/pragtical/lsp-servers.git:65656fa9bee94136195756df2acbec7e23176d4d",
       "version": "5.23.1"
     },
     {
       "description": "Automatic configuration/binary download for LSP completion for Typescript and Javascript with typescript-language-server.",
       "id": "lsp_typescript",
       "mod_version": "3",
-      "remote": "https://github.com/lite-xl/lite-xl-lsp-servers.git:a1d66e32f0b4ac1066fcf7376d3c018871988b90",
-      "version": "4.3.4"
+      "remote": "https://github.com/pragtical/lsp-servers.git:65656fa9bee94136195756df2acbec7e23176d4d",
+      "version": "5.3.0"
     },
     {
       "description": "Adds LSP snippets support to the snippets plugin",
@@ -1994,15 +2008,15 @@
       "description": "LSP support for YAML via yaml-language-server.",
       "id": "lsp_yaml",
       "mod_version": "3",
-      "remote": "https://github.com/lite-xl/lite-xl-lsp-servers.git:443a076fe5741dbd3a8f774c9b577bbf4c58f4e9",
-      "version": "1.18.0"
+      "remote": "https://github.com/pragtical/lsp-servers.git:65656fa9bee94136195756df2acbec7e23176d4d",
+      "version": "1.23.0"
     },
     {
       "description": "Automatic configuration/binary download for LSP completion for Zig via zls.",
       "id": "lsp_zig",
       "mod_version": "3",
-      "remote": "https://github.com/lite-xl/lite-xl-lsp-servers.git:443a076fe5741dbd3a8f774c9b577bbf4c58f4e9",
-      "version": "0.14.0"
+      "remote": "https://github.com/pragtical/lsp-servers.git:65656fa9bee94136195756df2acbec7e23176d4d",
+      "version": "0.16.0"
     },
     {
       "description": "Remaps mac modkeys `command/option` to `ctrl/alt`",
@@ -2070,7 +2084,7 @@
       "description": "Official NodeJs builds.",
       "id": "nodejs",
       "mod_version": "3",
-      "remote": "https://github.com/lite-xl/lite-xl-lsp-servers.git:443a076fe5741dbd3a8f774c9b577bbf4c58f4e9",
+      "remote": "https://github.com/pragtical/lsp-servers.git:65656fa9bee94136195756df2acbec7e23176d4d",
       "type": "library",
       "version": "22.18.0"
     },
@@ -2521,7 +2535,7 @@
     }
   ],
   "remotes": [
-    "https://github.com/lite-xl/lite-xl-lsp-servers:latest",
+    "https://github.com/pragtical/lsp-servers:latest",
     "https://github.com/lite-xl/lite-xl-ide:latest"
   ]
 }
