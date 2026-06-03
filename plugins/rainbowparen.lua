@@ -87,11 +87,28 @@ local function recolor_line(line, parenstack)
   return line
 end
 
+local function empty_line(state, parenstack)
+  parenstack = parenstack or ""
+  return {
+    init_state = state,
+    init_parenstack = parenstack,
+    text = "",
+    base_tokens = { "normal", "" },
+    tokens = { "normal", "" },
+    state = state,
+    parenstack = parenstack
+  }
+end
+
 local function tokenize_highlighter_line(self, idx, state, parenstack, resume)
+  local text = self.doc:get_utf8_line(idx)
+  if not text then
+    return empty_line(state, parenstack)
+  end
   local res = self.lines[idx] or {}
   res.init_state = state
   res.init_parenstack = parenstack or ""
-  res.text = self.doc:get_utf8_line(idx)
+  res.text = text
   res.base_tokens, res.state, res.resume = tokenizer.tokenize(self.doc.syntax, res.text, state, resume)
   res.tokens, res.parenstack = apply_rainbow(res.base_tokens, res.init_parenstack)
   return res
@@ -114,6 +131,9 @@ function Highlighter:get_line(idx)
   local text = self.doc:get_utf8_line(idx)
   local state = idx > 1 and self.lines[idx - 1] and self.lines[idx - 1].state
   local parenstack = get_prev_parenstack(self, idx)
+  if not text then
+    return empty_line(state, parenstack)
+  end
   if not line or line.text ~= text or line.init_state ~= state then
     line = self:tokenize_line(idx, state)
     self.lines[idx] = line
@@ -145,6 +165,10 @@ function Highlighter:start()
         local state = (i > 1) and self.lines[i - 1].state
         line = self.lines[i]
         local text = self.doc:get_utf8_line(i)
+        if not text then
+          self.first_invalid_line = i + 1
+          goto continue
+        end
         local parenstack = get_prev_parenstack(self, i)
         if line and line.resume and (line.init_state ~= state or line.text ~= text) then
           line.resume = nil
@@ -163,6 +187,7 @@ function Highlighter:start()
           self:update_notify(retokenized_from, i - retokenized_from - 1)
           retokenized_from = nil
         end
+        ::continue::
       end
 
       self.first_invalid_line = max + 1
