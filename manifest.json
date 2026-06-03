@@ -1959,8 +1959,8 @@
       "description": "Automatic configuration/binary download for LSP completion for Lua with lua-language-server (sumneko).",
       "id": "lsp_lua",
       "mod_version": "3",
-      "remote": "https://github.com/pragtical/lsp-servers.git:65656fa9bee94136195756df2acbec7e23176d4d",
-      "version": "3.15.0"
+      "remote": "https://github.com/pragtical/lsp-servers.git:e1090654b869d9b54d6a8dc529cffdc1ca085a42",
+      "version": "3.18.2"
     },
     {
       "description": "Automatic configuration/binary download for LSP completion for Java with jdtls.",
