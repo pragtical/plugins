@@ -16,29 +16,7 @@ config.plugins.centerdoc = common.merge({
   zen_mode_hide_line_numbers = true
 }, config.plugins.centerdoc)
 
-local draw_line_gutter = DocView.draw_line_gutter
 local get_gutter_width = DocView.get_gutter_width
-
-
-function DocView:draw_line_gutter(line, x, y, width)
-  local lh
-  if not config.plugins.centerdoc.enabled then
-    lh = draw_line_gutter(self, line, x, y, width)
-  else
-    local real_gutter_width
-    if type(config.show_line_numbers) == "boolean" then
-      real_gutter_width = config.show_line_numbers
-        and self:get_font():get_width(#self.doc.lines)
-        or self:get_gutter_width()
-    else
-      real_gutter_width = self:get_font():get_width(#self.doc.lines)
-    end
-    local offset = self:get_gutter_width() - real_gutter_width * 2
-    offset = offset - style.padding.x / 2
-    lh = draw_line_gutter(self, line, x + offset, y, real_gutter_width)
-  end
-  return lh
-end
 
 
 function DocView:get_gutter_width()
