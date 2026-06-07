@@ -39,6 +39,8 @@ local CommandView = require "core.commandview"
 ---@field todo_separator string
 ---Text displayed when the note is empty.
 ---@field todo_default_text string
+---Amount of worker threads used for project-wide TODO scans.
+---@field threading_workers integer
 
 ---@type plugins.todotreeview
 local view
@@ -64,6 +66,7 @@ config.plugins.todotreeview = common.merge({
   treeview_size = math.floor(200 * SCALE),
   todo_separator = " - ",
   todo_default_text = "blank",
+  threading_workers = math.ceil(thread.get_cpu_count() / 2) + 1,
   config_spec = {
     name = "ToDo Tree View",
     {
@@ -139,6 +142,14 @@ config.plugins.todotreeview = common.merge({
       end
     },
     {
+      label = "Workers",
+      description = "The maximum amount of threads to create per scan.",
+      path = "threading_workers",
+      type = "number",
+      default = math.ceil(thread.get_cpu_count() / 2) + 1,
+      min = 1
+    },
+    {
       label = "Hide on Startup",
       description = "Set the default visibility of the todo list.",
       path = "visible",
@@ -176,9 +187,10 @@ function TodoTreeView:new()
   self.visible = true
   self.cache = {}
   self.init_size = true
-  self.co_running = false
   self.current_mode = config.plugins.todotreeview.todo_mode
   self.current_project_dir = ""
+  self.scan = nil
+  self.file_updates = {}
   self.scroll_width = 0
   self.scroll_height = 0
   self.scrollable = true
@@ -189,226 +201,432 @@ function TodoTreeView:new()
   self.items = {}
 end
 
-local function is_file_ignored(filename)
-  for _, path in ipairs(config.plugins.todotreeview.ignore_paths) do
-    local s, _ = filename:find(path)
-    if s then
-      return true
+local threaded_scan_id = 0
+local threaded_update_id = 0
+
+local function todo_scan_thread(tid, options)
+  local commons = require "core.common"
+  local result_channel = thread.get_channel("todotree_results" .. tid)
+  local status_channel = thread.get_channel("todotree_status" .. tid)
+  local stop_channel = thread.get_channel("todotree_stop" .. tid)
+  local filename_channels = {}
+  local workers_list = {}
+  local workers = options.workers or 1
+
+  local function todo_worker_thread(tid, id, options)
+    local function parse_file_todos(abs_filename, tags, default_text)
+      local todos = {}
+      local fp = io.open(abs_filename)
+      if not fp then return todos end
+      local n = 1
+      for line in fp:lines() do
+        for _, todo_tag in ipairs(tags or {}) do
+          local extended_line = " " .. line .. " "
+          local match_str = "[^a-zA-Z_\"'`]" .. todo_tag .. "[^\"'a-zA-Z_`]+"
+          local s, e = extended_line:find(match_str)
+          if s then
+            local text = extended_line:sub(e + 1)
+            table.insert(todos, {
+              type = "todo",
+              tag = todo_tag,
+              filename = abs_filename,
+              text = text ~= "" and text or default_text,
+              line = n,
+              col = s
+            })
+          end
+        end
+        n = n + 1
+      end
+      fp:close()
+      return todos
     end
+
+    local filename_channel = thread.get_channel("todotree_fname" .. tid .. id)
+    local result_channel = thread.get_channel("todotree_results" .. tid)
+    local stop_channel = thread.get_channel("todotree_stop" .. tid)
+    local job = filename_channel:wait()
+    while job ~= "{{stop}}" do
+      if stop_channel:first() == "stop" then break end
+      result_channel:push({
+        filename = job.filename,
+        abs_filename = job.abs_filename,
+        todos = parse_file_todos(
+          job.abs_filename,
+          options.todo_tags,
+          options.todo_default_text
+        )
+      })
+      filename_channel:pop()
+      job = filename_channel:wait()
+    end
+    filename_channel:clear()
+    return 0
   end
 
-  return false
-end
+  for id = 1, workers do
+    filename_channels[id] = thread.get_channel("todotree_fname" .. tid .. id)
+    local worker, err = thread.create(
+      "todowrk" .. tid .. id,
+      todo_worker_thread,
+      tid,
+      id,
+      options
+    )
+    if not worker then
+      status_channel:clear()
+      status_channel:push({
+        error = err or "unknown error"
+      })
+      for worker_id = 1, id - 1 do
+        filename_channels[worker_id]:push("{{stop}}")
+      end
+      for _, worker_thread in ipairs(workers_list) do
+        if worker_thread then worker_thread:wait() end
+      end
+      return 1
+    end
+    workers_list[id] = worker
+  end
 
----Current project files iterator.
----@return fun(): system.fileinfo
-local function get_project_files()
-  local start_time = system.get_time()
-  core.log_quiet("TODO View: Started Scanning")
-  return coroutine.wrap(function()
-    local root = core.root_project().path
-    local directories = {""}
-    local file_size_limit = config.file_size_limit * 1e6
-    local ignore_files = core.get_ignore_file_rules()
+  local function is_ignored(filename, info)
+    if commons.match_ignore_rule(filename, info, options.ignore_files or {}) then
+      return true
+    end
+    for _, pattern in ipairs(options.ignore_paths or {}) do
+      if filename:find(pattern) then
+        return true
+      end
+    end
+    return false
+  end
 
-    while #directories > 0 do
-      for didx, directory in ipairs(directories) do
-        local dir_path = ""
+  local count = 0
+  local current_worker = 1
+  local directories = {""}
+  while #directories > 0 and stop_channel:first() ~= "stop" do
+    for didx, directory in ipairs(directories) do
+      local dir_path
+      local rel_prefix
+      if directory ~= "" then
+        dir_path = options.root .. options.pathsep .. directory
+        rel_prefix = directory .. options.pathsep
+      else
+        dir_path = options.root
+        rel_prefix = ""
+      end
 
-        if directory ~= "" then
-          dir_path = root .. PATHSEP .. directory
-          directory = directory .. PATHSEP
-        else
-          dir_path = root
-        end
-
-        local files = system.list_dir(dir_path)
-
-        if files then
-          for _, file in ipairs(files) do
-            local info = system.get_file_info(
-              dir_path .. PATHSEP .. file
-            )
-
-            if
-              info and info.size <= file_size_limit and not common.match_ignore_rule(
-                directory .. file, info, ignore_files
-              )
-            then
-              if info.type == "dir" then
-                table.insert(directories, directory .. file)
-              else
-                info.filename = common.relative_path(
-                  core.root_project().path,
-                  dir_path .. PATHSEP .. file
-                )
-                coroutine.yield(info)
+      local files = system.list_dir(dir_path)
+      if files then
+        for _, file in ipairs(files) do
+          if stop_channel:first() == "stop" then break end
+          local rel_filename = rel_prefix .. file
+          local abs_filename = dir_path .. options.pathsep .. file
+          local info = system.get_file_info(abs_filename)
+          if info and not is_ignored(rel_filename, info) then
+            if info.type == "dir" then
+              table.insert(directories, rel_filename)
+            elseif info.type == "file" and info.size <= options.file_size_limit then
+              count = count + 1
+              filename_channels[current_worker]:push({
+                filename = rel_filename,
+                abs_filename = abs_filename
+              })
+              current_worker = current_worker + 1
+              if current_worker > workers then current_worker = 1 end
+              if count % 100 == 0 then
+                status_channel:clear()
+                status_channel:push(count)
               end
             end
           end
         end
-        table.remove(directories, didx)
-        break
       end
+      table.remove(directories, didx)
+      break
     end
-    core.log_quiet(
-      "TODO View: Finished Scanning in %s seconds",
-      system.get_time() - start_time
+  end
+
+  for id = 1, workers do
+    filename_channels[id]:push("{{stop}}")
+  end
+  for _, worker in ipairs(workers_list) do
+    if worker then worker:wait() end
+  end
+
+  if stop_channel:first() == "stop" then
+    result_channel:clear()
+    status_channel:clear()
+  else
+    status_channel:clear()
+    status_channel:push("finished")
+  end
+  return 0
+end
+
+local function todo_file_thread(tid, options)
+  local function parse_file_todos(abs_filename, tags, default_text)
+    local todos = {}
+    local fp = io.open(abs_filename)
+    if not fp then return todos end
+    local n = 1
+    for line in fp:lines() do
+      for _, todo_tag in ipairs(tags or {}) do
+        local extended_line = " " .. line .. " "
+        local match_str = "[^a-zA-Z_\"'`]" .. todo_tag .. "[^\"'a-zA-Z_`]+"
+        local s, e = extended_line:find(match_str)
+        if s then
+          local text = extended_line:sub(e + 1)
+          table.insert(todos, {
+            type = "todo",
+            tag = todo_tag,
+            filename = abs_filename,
+            text = text ~= "" and text or default_text,
+            line = n,
+            col = s
+          })
+        end
+      end
+      n = n + 1
+    end
+    fp:close()
+    return todos
+  end
+
+  local result_channel = thread.get_channel("todotree_update_results" .. tid)
+  local status_channel = thread.get_channel("todotree_update_status" .. tid)
+  result_channel:push({
+    filename = options.filename,
+    abs_filename = options.abs_filename,
+    todos = parse_file_todos(
+      options.abs_filename,
+      options.todo_tags,
+      options.todo_default_text
     )
-  end)
+  })
+  status_channel:push("finished")
+  return 0
+end
+
+local function make_cached_file(result)
+  if not result or #result.todos == 0 then return nil end
+  return {
+    expanded = config.plugins.todotreeview.todo_expanded,
+    filename = result.filename,
+    abs_filename = result.abs_filename,
+    type = "file",
+    todos = result.todos,
+    tags = {}
+  }
+end
+
+local function add_cached_to_items(items, cached, mode, old)
+  if not cached then return end
+  if mode == "file" then
+    items[cached.filename] = cached
+    if old and old[cached.filename] then
+      cached.expanded = old[cached.filename].expanded
+    end
+  elseif mode == "file_tag" then
+    local old_file = old and old[cached.filename]
+    local file_t = {
+      expanded = old_file and old_file.expanded or config.plugins.todotreeview.todo_expanded,
+      type = "file",
+      tags = {},
+      todos = {},
+      filename = cached.filename,
+      abs_filename = cached.abs_filename
+    }
+    items[cached.filename] = file_t
+    for _, todo in ipairs(cached.todos) do
+      local tag = todo.tag
+      if not file_t.tags[tag] then
+        file_t.tags[tag] = {
+          expanded = old_file and old_file.tags and old_file.tags[tag]
+            and old_file.tags[tag].expanded
+            or config.plugins.todotreeview.todo_expanded,
+          type = "group",
+          todos = {},
+          tag = tag
+        }
+      end
+      table.insert(file_t.tags[tag].todos, todo)
+    end
+  else
+    for _, todo in ipairs(cached.todos) do
+      local tag = todo.tag
+      if not items[tag] then
+        items[tag] = {
+          expanded = old and old[tag] and old[tag].expanded
+            or config.plugins.todotreeview.todo_expanded,
+          type = "group",
+          todos = {},
+          tag = tag
+        }
+      end
+      table.insert(items[tag].todos, todo)
+    end
+  end
+end
+
+local function remove_file_from_items(
+  items, filename, abs_filename, mode, yield_every
+)
+  if mode == "file" or mode == "file_tag" then
+    items[filename] = nil
+    return
+  end
+  local recursed = 0
+  for tag, item in pairs(items) do
+    local deleted = 0
+    for pos = 1, #item.todos do
+      local todo = item.todos[pos - deleted]
+      recursed = recursed + 1
+      if todo.filename == abs_filename then
+        table.remove(item.todos, pos - deleted)
+        deleted = deleted + 1
+      end
+      if yield_every and recursed % yield_every == 0 then coroutine.yield() end
+    end
+    if #item.todos <= 0 then
+      items[tag] = nil
+    end
+  end
+end
+
+local function drain_scan_results(self, result_channel, items, old_items, mode)
+  local found = false
+  local result = result_channel:first()
+  while result do
+    local cached = make_cached_file(result)
+    if cached then
+      self.cache[cached.filename] = cached
+      add_cached_to_items(items, cached, mode, old_items)
+    end
+    result_channel:pop()
+    found = true
+    result = result_channel:first()
+  end
+  return found
+end
+
+function TodoTreeView:stop_scan()
+  if self.scan then
+    self.scan.stop_channel:push("stop")
+  end
 end
 
 function TodoTreeView:refresh_cache()
-  self.current_project_dir = core.root_project().path
-  self.cache = {}
+  self:stop_scan()
 
-  local items = {}
+  local project_dir = core.root_project().path
   local old_items = self.items
   local prev_mode = self.current_mode
   local current_mode = config.plugins.todotreeview.todo_mode
+  local workers = math.max(
+    1,
+    math.floor(config.plugins.todotreeview.threading_workers or 1)
+  )
+  local ignore_files = core.get_ignore_file_rules()
+  if not next(ignore_files) then ignore_files = nil end
+  local ignore_paths = config.plugins.todotreeview.ignore_paths
+  if not ignore_paths or not next(ignore_paths) then ignore_paths = nil end
+  local todo_tags = config.plugins.todotreeview.todo_tags
+  if not todo_tags or not next(todo_tags) then todo_tags = nil end
 
-  if self.updating_cache and self.co_running then
-    for _, thread in ipairs(core.threads) do
-      if thread.todotreeview then
-        thread.cr = coroutine.create(function() end)
-      end
-    end
+  threaded_scan_id = threaded_scan_id + 1
+  local tid = threaded_scan_id
+  local result_channel = thread.get_channel("todotree_results" .. tid)
+  local status_channel = thread.get_channel("todotree_status" .. tid)
+  local stop_channel = thread.get_channel("todotree_stop" .. tid)
+  local items = {}
+
+  self.current_project_dir = project_dir
+  self.current_mode = current_mode
+  self.cache = {}
+  self.items = items
+  self.updating_cache = true
+
+  core.log_quiet("TODO View: Started Scanning")
+  local start_time = system.get_time()
+  local scan_thread, err = thread.create(
+    "todoscan" .. tid,
+    todo_scan_thread,
+    tid,
+    {
+      root = project_dir,
+      pathsep = PATHSEP,
+      file_size_limit = config.file_size_limit * 1e6,
+      ignore_files = ignore_files,
+      ignore_paths = ignore_paths,
+      todo_tags = todo_tags,
+      todo_default_text = config.plugins.todotreeview.todo_default_text,
+      workers = workers
+    }
+  )
+
+  if not scan_thread then
+    self.updating_cache = false
+    core.error("Could not start TODO scanner: %s", err or "unknown error")
+    return
   end
 
-  self.updating_cache = true
-  self.co_running = true
+  local scan = {
+    id = tid,
+    thread = scan_thread,
+    stop_channel = stop_channel
+  }
+  self.scan = scan
 
-  local co_idx = core.add_thread(function()
-    self.items = items
-    self.current_mode = current_mode
-    local count = 0
-    for item in get_project_files() do
-      local ignored = is_file_ignored(item.filename)
-      if not ignored and item.type == "file" then
-        count = count + 1
-        local cached = self:get_cached(item.filename)
+  core.add_thread(function()
+    local status = status_channel:first()
+    while
+      self.scan == scan
+      and status ~= "finished"
+      and type(status) ~= "table"
+    do
+      if drain_scan_results(self, result_channel, items, old_items, current_mode) then
+        core.redraw = true
+      end
+      coroutine.yield()
+      status = status_channel:first()
+    end
 
-        if cached then
-          if config.plugins.todotreeview.todo_mode == "file" then
-            items[cached.filename] = cached
-          elseif config.plugins.todotreeview.todo_mode == "file_tag" then
-            local file_t = {}
-            file_t.expanded = config.plugins.todotreeview.todo_expanded
-            file_t.type = "file"
-            file_t.tags = {}
-            file_t.todos = {}
-            file_t.filename = cached.filename
-            file_t.abs_filename = cached.abs_filename
-            items[cached.filename] = file_t
-            for _, todo in ipairs(cached.todos) do
-              local tag = todo.tag
-              if not file_t.tags[tag] then
-                local tag_t = {}
-                tag_t.expanded = config.plugins.todotreeview.todo_expanded
-                tag_t.type = "group"
-                tag_t.todos = {}
-                tag_t.tag = tag
-                file_t.tags[tag] = tag_t
-              end
-
-              table.insert(file_t.tags[tag].todos, todo)
-            end
-          else
-            for _, todo in ipairs(cached.todos) do
-              local tag = todo.tag
-              if not items[tag] then
-                local t = {}
-                t.expanded = config.plugins.todotreeview.todo_expanded
-                t.type = "group"
-                t.todos = {}
-                t.tag = tag
-                items[tag] = t
-              end
-
-              table.insert(items[tag].todos, todo)
-            end
+    if self.scan == scan and type(status) == "table" then
+      self.updating_cache = false
+      self.scan = nil
+      core.error("TODO View: %s", status.error or "Scan failed")
+    elseif self.scan == scan then
+      drain_scan_results(self, result_channel, items, old_items, current_mode)
+      if
+        current_mode == prev_mode
+        or
+        (prev_mode:match("file") and current_mode:match("file"))
+      then
+        for tag, data in pairs(old_items) do
+          if items[tag] then
+            items[tag].expanded = data.expanded
           end
         end
-        if count % 100 == 0 then coroutine.yield() end
       end
-    end
-
-    -- Copy expanded from old items
-    if
-      current_mode == prev_mode
-      or
-      (prev_mode:match("file") and current_mode:match("file"))
-    then
-      for tag, data in pairs(old_items) do
-        if items[tag] then
-          items[tag].expanded = data.expanded
-        end
-      end
-    end
-
-    self.current_mode = current_mode
-    self.updating_cache = false
-
-    if self.visible then
+      self.updating_cache = false
+      self.scan = nil
+      core.log_quiet(
+        "TODO View: Finished Scanning in %s seconds",
+        system.get_time() - start_time
+      )
       core.redraw = true
     end
 
-    self.co_running = false
-  end, self)
-
-  core.threads[co_idx].todotreeview = true
-end
-
-
-local function find_file_todos(t, filename)
-  local fp = io.open(filename)
-  if not fp then return t end
-  local n = 1
-  for line in fp:lines() do
-    for _, todo_tag in ipairs(config.plugins.todotreeview.todo_tags) do
-      -- Add spaces at the start and end of line so the pattern will pick
-      -- tags at the start and at the end of lines
-      local extended_line = " "..line.." "
-      local match_str = "[^a-zA-Z_\"'`]"..todo_tag.."[^\"'a-zA-Z_`]+"
-      local s, e = extended_line:find(match_str)
-      if s then
-        local d = {}
-        d.type = "todo"
-        d.tag = todo_tag
-        d.filename = filename
-        d.text = extended_line:sub(e+1)
-        if d.text == "" then
-          d.text = config.plugins.todotreeview.todo_default_text
-        end
-        d.line = n
-        d.col = s
-        table.insert(t, d)
-      end
-      core.redraw = true
-    end
-    if n % 100 == 0 then coroutine.yield() end
-    n = n + 1
-    core.redraw = true
-  end
-  fp:close()
+    scan_thread:wait()
+    result_channel:clear()
+    status_channel:clear()
+    stop_channel:clear()
+  end)
 end
 
 
 function TodoTreeView:get_cached(filename)
-  local t = self.cache[filename]
-  if not t then
-    t = {}
-    t.expanded = config.plugins.todotreeview.todo_expanded
-    t.filename = filename
-    t.abs_filename = core.project_absolute_path(filename)
-    t.type = "file"
-    t.todos = {}
-    t.tags = {}
-    find_file_todos(t.todos, t.abs_filename)
-    if #t.todos > 0 then
-      self.cache[t.filename] = t
-    end
-  end
   return self.cache[filename]
 end
 
@@ -430,78 +648,69 @@ end
 
 
 function TodoTreeView:update_file(filename)
-  self.cache[filename] = nil
+  if self.updating_cache then return end
 
-  local cached = self:get_cached(filename)
+  local abs_filename = core.project_absolute_path(filename)
+  threaded_update_id = threaded_update_id + 1
+  local tid = threaded_update_id
+  local result_channel = thread.get_channel("todotree_update_results" .. tid)
+  local status_channel = thread.get_channel("todotree_update_status" .. tid)
+  local todo_tags = config.plugins.todotreeview.todo_tags
+  if not todo_tags or not next(todo_tags) then todo_tags = nil end
+  local update_thread, err = thread.create(
+    "todofile" .. tid,
+    todo_file_thread,
+    tid,
+    {
+      filename = filename,
+      abs_filename = abs_filename,
+      todo_tags = todo_tags,
+      todo_default_text = config.plugins.todotreeview.todo_default_text
+    }
+  )
 
-  if config.plugins.todotreeview.todo_mode == "file" then
-    local old = self.items[filename]
-    self.items[filename] = cached
-    if old and cached then
-      cached.expanded = old.expanded
-    end
-  elseif config.plugins.todotreeview.todo_mode == "file_tag" then
-    if cached then
-      local old = self.items[filename]
-      local file_t = {}
-      file_t.expanded = old and old.expanded
-      file_t.type = "file"
-      file_t.tags = {}
-      file_t.todos = {}
-      file_t.filename = filename
-      file_t.abs_filename = cached.abs_filename
-      self.items[filename] = file_t
-      for _, todo in ipairs(cached.todos) do
-        local tag = todo.tag
-        if not file_t.tags[tag] then
-          local tag_t = {}
-          tag_t.expanded = (old and old.tags[tag]) and old.tags[tag].expanded
-          tag_t.type = "group"
-          tag_t.todos = {}
-          tag_t.tag = tag
-          file_t.tags[tag] = tag_t
-        end
-
-        table.insert(file_t.tags[tag].todos, todo)
-      end
-    else
-      self.items[filename] = nil
-    end
-  else
-    local expanded = {}
-    local abs_filename = core.project_absolute_path(filename)
-
-    for tag, item in pairs(self.items) do
-      local deleted = 0
-      expanded[tag] = item.expanded
-      for pos=1, #item.todos do
-        local todo = item.todos[pos-deleted]
-        if todo.filename == abs_filename then
-          table.remove(self.items[tag].todos, pos-deleted)
-          deleted = deleted + 1
-        end
-      end
-      if #self.items[tag].todos <= 0 then
-        self.items[tag] = nil
-      end
-    end
-
-    if cached then
-      for _, todo in ipairs(cached.todos) do
-        local tag = todo.tag
-        if not self.items[tag] then
-          self.items[tag] = {
-            expanded = expanded[tag],
-            type = "group",
-            todos = {},
-            tag = tag
-          }
-        end
-
-        table.insert(self.items[tag].todos, todo)
-      end
-    end
+  if not update_thread then
+    core.error("Could not start TODO file scan: %s", err or "unknown error")
+    return
   end
+
+  self.file_updates[filename] = tid
+
+  core.add_thread(function()
+    while status_channel:first() ~= "finished" do
+      coroutine.yield()
+    end
+
+    local result = result_channel:first()
+    result_channel:clear()
+    status_channel:clear()
+    update_thread:wait()
+
+    if self.file_updates[filename] ~= tid then
+      return
+    end
+    self.file_updates[filename] = nil
+    if self.updating_cache then return end
+
+    local mode = config.plugins.todotreeview.todo_mode
+    local old_items = {}
+    if mode == "file" or mode == "file_tag" then
+      old_items[filename] = self.items[filename]
+    else
+      for tag, item in pairs(self.items) do
+        old_items[tag] = { expanded = item.expanded }
+      end
+    end
+    remove_file_from_items(self.items, filename, abs_filename, mode)
+    self.cache[filename] = nil
+    local cached = make_cached_file(result)
+    if cached then
+      self.cache[filename] = cached
+      add_cached_to_items(self.items, cached, mode, old_items)
+    end
+
+    core.redraw = true
+  end)
 end
 
 function TodoTreeView:each_item()
@@ -819,9 +1028,7 @@ local doc_save = Doc.save
 function Doc:save(...)
   local res = doc_save(self, ...)
   if self.filename then
-    core.add_thread(function()
-      view:update_file(self.filename)
-    end)
+    view:update_file(self.filename)
   end
   return res
 end
@@ -833,26 +1040,13 @@ function os.remove(filename)
   if view.cache[file] then
     core.add_thread(function()
       view.cache[file] = nil
-      if config.plugins.todotreeview.todo_mode == "file" then
-        view.items[file] = nil
-      else
-        local recursed = 0
-        for tag, item in pairs(view.items) do
-          local deleted = 0
-          for pos=1, #item.todos do
-            local todo = item.todos[pos-deleted]
-            recursed = recursed + 1
-            if todo.filename == file then
-              table.remove(view.items[tag].todos, pos-deleted)
-              deleted = deleted + 1
-            end
-            if recursed % 1000 == 0 then coroutine.yield() end
-          end
-          if #view.items[tag].todos <= 0 then
-            view.items[tag] = nil
-          end
-        end
-      end
+      remove_file_from_items(
+        view.items,
+        file,
+        core.project_absolute_path(file),
+        config.plugins.todotreeview.todo_mode,
+        1000
+      )
     end)
   end
   return os_remove(filename)
