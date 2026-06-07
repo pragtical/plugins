@@ -223,8 +223,8 @@
       "id": "assistant",
       "mod_version": "3.11.0",
       "name": "Assistant",
-      "remote": "https://github.com/pragtical/assistant:c876061c36ade71c14b9b4b7371a8bb60401eb76",
-      "version": "0.1.2"
+      "remote": "https://github.com/pragtical/assistant:b0b1da8ca0f56e64a6cd9cd6e6ff7fb28ae9c514",
+      "version": "0.1.3"
     },
     {
       "description": "Automatically inserts closing brackets and quotes. Also allows selected text to be wrapped with brackets or quotes.",
@@ -1882,8 +1882,8 @@
       "description": "Provides code completion (also known as IntelliSense) using the Language Server Protocol",
       "id": "lsp",
       "mod_version": "3.11.0",
-      "remote": "https://github.com/pragtical/lsp:99c8a243e4dc58e4ff618af0cc838a074d28ea5e",
-      "version": "0.17.0"
+      "remote": "https://github.com/pragtical/lsp:be001baab2a094f5004609cb2380f626f4d329d5",
+      "version": "0.17.1"
     },
     {
       "description": "Automatic configuration/binary download for LSP completion for Bash with bash-language-server.",
