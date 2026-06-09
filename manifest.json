@@ -223,8 +223,8 @@
       "id": "assistant",
       "mod_version": "3.11.0",
       "name": "Assistant",
-      "remote": "https://github.com/pragtical/assistant:16732e4374075782c6ed95bf9731730fba63c59d",
-      "version": "0.1.4"
+      "remote": "https://github.com/pragtical/assistant:319e3f5782371d9c80fb5a334f1ef3981486fc8f",
+      "version": "0.1.5"
     },
     {
       "description": "Automatically inserts closing brackets and quotes. Also allows selected text to be wrapped with brackets or quotes.",
