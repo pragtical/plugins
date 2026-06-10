@@ -390,6 +390,16 @@
       "version": "0.1"
     },
     {
+      "description": "Play as frontra against an army of bots at the end of civilization.",
+      "id": "frontra",
+      "mod_version": "3",
+      "path": "games/frontra.lua",
+      "tags": [
+        "game"
+      ],
+      "version": "0.1"
+    },
+    {
       "description": "Debug Lite-XL's Lua VM interactively, if you're running it from a terminal. Warning: Will significantly slow down Lite-XL if installed.",
       "id": "lite-debugger",
       "mod_version": "3",
@@ -2344,7 +2354,7 @@
       "description": "Allows you to play tetris directly in the editor.",
       "id": "tetris",
       "mod_version": "3",
-      "path": "plugins/tetris.lua",
+      "path": "games/tetris.lua",
       "tags": [
         "game"
       ],
