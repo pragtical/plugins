@@ -701,6 +701,7 @@ cli.register({
         "dirmonitor",
         "encoding",
         "globals",
+        "net",
         "process",
         "regex",
         "renderer",
@@ -710,8 +711,14 @@ cli.register({
         "string",
         "system",
         "thread",
+        "tokenizer",
         "utf8extra",
       }
+      for i = #system_libs, 1, -1 do
+        if not file_exists(DATADIR..PATHSEP..system_libs[i]..".lua") then
+          table.remove(system_libs, i)
+        end
+      end
       -- we need to parse C Lua libs first to prevent issues
       -- so we copy them to output, parse and then delete
       for _, name in ipairs(system_libs) do
