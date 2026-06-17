@@ -629,6 +629,13 @@
       "version": "1.0"
     },
     {
+      "description": "Draw configurable background colors in the editor gutter.",
+      "id": "guttercolor",
+      "mod_version": "3",
+      "path": "plugins/guttercolor.lua",
+      "version": "0.1"
+    },
+    {
       "description": "Official Haxe builds.",
       "id": "haxe",
       "mod_version": "3",
