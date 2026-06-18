@@ -487,14 +487,6 @@
       "version": "0.2"
     },
     {
-      "description": "🌳 Treesitter support for Pragtical.",
-      "id": "evergreen",
-      "mod_version": "3",
-      "name": "Evergreen.lxl",
-      "remote": "https://github.com/Evergreen-lxl/Evergreen.lxl.git:7856f897c044e86ab93e27a60e9da8f490a47e4e",
-      "version": "0.3.1"
-    },
-    {
       "description": "Runs selected text through shell command and replaces with result",
       "id": "exec",
       "mod_version": "3",
@@ -2413,12 +2405,12 @@
       "version": "0.1"
     },
     {
-      "description": "Tree-sitter bindings based on `lua-tree-sitter`",
-      "id": "tree_sitter",
-      "name": "Tree-sitter",
-      "remote": "https://github.com/Evergreen-lxl/lite-xl-tree-sitter.git:b5a1445b037cd093536ff6d869f82014ffdf9a45",
-      "type": "library",
-      "version": "0.1.1"
+      "description": "Tree-sitter syntax highlighting through a direct LuaJIT FFI wrapper around the Tree-sitter runtime.",
+      "id": "treesitter",
+      "mod_version": "3",
+      "name": "Treesitter",
+      "remote": "https://github.com/pragtical/treesitter:b41ec69a20e85d4e170c409554bd947a955692fc",
+      "version": "0.5.1"
     },
     {
       "description": "Extend Pragtical's treeview menu *([screenshot](https://raw.githubusercontent.com/juliardi/pragtical-treeview-extender/main/screenshot.png))*",
