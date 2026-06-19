@@ -2409,8 +2409,8 @@
       "id": "treesitter",
       "mod_version": "3",
       "name": "Treesitter",
-      "remote": "https://github.com/pragtical/treesitter:b41ec69a20e85d4e170c409554bd947a955692fc",
-      "version": "0.5.1"
+      "remote": "https://github.com/pragtical/treesitter:e9178369b27c3baedcd8ad08d43532dbf4902261",
+      "version": "0.6.0"
     },
     {
       "description": "Extend Pragtical's treeview menu *([screenshot](https://raw.githubusercontent.com/juliardi/pragtical-treeview-extender/main/screenshot.png))*",
