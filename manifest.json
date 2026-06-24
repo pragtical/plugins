@@ -1890,9 +1890,9 @@
     {
       "description": "Provides code completion (also known as IntelliSense) using the Language Server Protocol",
       "id": "lsp",
-      "mod_version": "3.11.0",
-      "remote": "https://github.com/pragtical/lsp:3e856f56fd0c135c0d756d3a79a7d9a6e7499285",
-      "version": "0.17.2"
+      "mod_version": "3.12.3",
+      "remote": "https://github.com/pragtical/lsp:9961ac93ce2cd57415fa4fe331607a9c24df0822",
+      "version": "0.17.3"
     },
     {
       "description": "Automatic configuration/binary download for LSP completion for Bash with bash-language-server.",
