@@ -145,8 +145,8 @@ syntax.add {
   name = "C3 Contract",
   files = { "%.c3contract$" },
   patterns = { 
-    -- absurdity hacks to get syntax highlighting for @guards in contracts
-    -- while remaining everythin else a comment
+    -- absurd hacks to get syntax highlighting for @guards in contracts
+    -- while remaining everything else as a comment
     { pattern = {"@require",    " $"}, type = "keyword", syntax = ".c3" },
     { pattern = {"@require",    "\n"}, type = "keyword", syntax = ".c3" },
     { pattern = {"@ensure",     " $"}, type = "keyword", syntax = ".c3" },
