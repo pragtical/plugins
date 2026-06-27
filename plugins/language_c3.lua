@@ -144,12 +144,22 @@ local _c3_something_else = [[
 syntax.add {
   name = "C3 Contract",
   files = { "%.c3contract$" },
-  patterns = {
+  patterns = { 
+    -- absurdity hacks to get syntax highlighting for @guards in contracts
+    -- while remaining everythin else a comment
+    { pattern = {"@require",    " $"}, type = "keyword", syntax = ".c3" },
     { pattern = {"@require",    "\n"}, type = "keyword", syntax = ".c3" },
+    { pattern = {"@ensure",     " $"}, type = "keyword", syntax = ".c3" },
     { pattern = {"@ensure",     "\n"}, type = "keyword", syntax = ".c3" },
+    { pattern = {"@param",      " $"}, type = "keyword", syntax = ".c3" },
     { pattern = {"@param",      "\n"}, type = "keyword", syntax = ".c3" },
+    { pattern = {"@pure",       " $"}, type = "keyword", syntax = ".c3" },
     { pattern = {"@pure",       "\n"}, type = "keyword", syntax = ".c3" },
-    { pattern = {"@return?",    "\n"}, type = "keyword", syntax = ".c3" },
+    { pattern = {"@return",     " $"}, type = "keyword", syntax = ".c3" },
+    { pattern = {"@return",     "\n"}, type = "keyword", syntax = ".c3" },
+    { pattern = {"@return%?",   " $"}, type = "keyword", syntax = ".c3" },
+    { pattern = {"@return%?",   "\n"}, type = "keyword", syntax = ".c3" },
+    { pattern = {"@deprecated", " $"}, type = "keyword", syntax = ".c3" },
     { pattern = {"@deprecated", "\n"}, type = "keyword", syntax = ".c3" },
     { pattern = ".",                   type = "comment" },
   },
@@ -157,6 +167,7 @@ syntax.add {
 
 local syntax_patterns = merge_i_tables(
   {
+    { pattern = "%*>", type = "comment" }, -- this is here because of the C3 Contract
     { pattern = "//.-\n",                  type = "comment"  },
     { pattern = { "/%*", "%*/" },          type = "comment"  },
     { pattern = { "<%*", "%*>" },          type = "comment", syntax = ".c3contract"  },
@@ -199,3 +210,4 @@ syntax.add {
 ------------------------------
 -- Gathering altogether end --
 ------------------------------
+
