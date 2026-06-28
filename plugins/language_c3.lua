@@ -20,11 +20,9 @@ local function escape_lua_pattern(input_str)
     ["$"] = "%$"
   }
 
-  local escaped = input_str:gsub(".", function(char)
+  return input_str:gsub(".", function(char)
     return special_chars[char] or char
   end)
-
-  return escaped
 end
 
 local function merge_kv_tables(...)
@@ -145,8 +143,8 @@ syntax.add {
   name = "C3 Contract",
   files = { "%.c3contract$" },
   patterns = { 
-    -- absurd hacks to get syntax highlighting for @guards in contracts
-    -- while remaining everything else as a comment
+    -- absurdity hacks to get syntax highlighting for @guards in contracts
+    -- while remaining everythin else a comment
     { pattern = {"@require",    " $"}, type = "keyword", syntax = ".c3" },
     { pattern = {"@require",    "\n"}, type = "keyword", syntax = ".c3" },
     { pattern = {"@ensure",     " $"}, type = "keyword", syntax = ".c3" },
@@ -167,7 +165,6 @@ syntax.add {
 
 local syntax_patterns = merge_i_tables(
   {
-    { pattern = "%*>", type = "comment" }, -- this is here because of the C3 Contract
     { pattern = "//.-\n",                  type = "comment"  },
     { pattern = { "/%*", "%*/" },          type = "comment"  },
     { pattern = { "<%*", "%*>" },          type = "comment", syntax = ".c3contract"  },
@@ -185,6 +182,10 @@ local syntax_patterns = merge_i_tables(
     -- This ensures any identifier gets tokenized as "symbol",
     -- which then gets looked up in the symbols table.
     { pattern = "[%a_][%w_]*",             type = "symbol" },
+    -- edge case for [<*>]
+    { pattern = "%[<()%*()>%]", type = {"normal", "operator", "normal"} },
+    -- Otherwise the closing *> of C3 Contract won't be of "comment" type
+    { pattern = "%*>", type = "comment" },
   },
   create_patterns_table(escape_lua_pattern(c3_punctuations), "normal"),
   create_patterns_table(escape_lua_pattern(c3_compile_time_keywords), "keyword"),
