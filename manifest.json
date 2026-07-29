@@ -281,7 +281,7 @@
       "id": "bracketmatch",
       "mod_version": "3.1",
       "path": "plugins/bracketmatch.lua",
-      "version": "0.3"
+      "version": "0.4"
     },
     {
       "description": "Buffers and not tabs for Lite XL",

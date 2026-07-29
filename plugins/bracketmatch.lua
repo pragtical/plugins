@@ -97,6 +97,16 @@ local function get_token_at(doc, line, col)
 end
 
 
+--- @param type string?
+--- @return string
+local function get_token_context(type)
+  if type == "comment" or type == "string" then
+    return type
+  end
+  return "code"
+end
+
+
 --- @param doc core.doc
 --- @param line integer
 --- @param col integer
@@ -104,19 +114,27 @@ end
 --- @param open_byte integer
 --- @param close_byte integer
 --- @param direction integer
+--- @param context string
 --- @return integer? line
 --- @return integer? col
-local function get_matching_bracket(doc, line, col, line_limit, open_byte, close_byte, direction)
+local function get_matching_bracket(
+  doc, line, col, line_limit, open_byte, close_byte, direction, context
+)
   local end_line = line + line_limit * direction
   local depth = 0
 
   while line ~= end_line do
     local byte = doc.lines[line]:byte(col)
-    if byte == open_byte and get_token_at(doc, line, col) ~= "comment" then
-      depth = depth + 1
-    elseif byte == close_byte and get_token_at(doc, line, col) ~= "comment" then
-      depth = depth - 1
-      if depth == 0 then return line, col end
+    if byte == open_byte or byte == close_byte then
+      local type = get_token_at(doc, line, col)
+      if get_token_context(type) == context then
+        if byte == open_byte then
+          depth = depth + 1
+        else
+          depth = depth - 1
+          if depth == 0 then return line, col end
+        end
+      end
     end
 
     local prev_line, prev_col = line, col
@@ -157,10 +175,13 @@ local function update_state(line_limit)
       local line, col = doc:position_offset(line, col, i)
       local open = doc.lines[line]:byte(col)
       local close = map[open]
-      if close and get_token_at(doc, line, col) ~= "comment" then
+      if close then
+        local context = get_token_context(get_token_at(doc, line, col))
         -- i == 0 if the cursor is on the left side of a bracket (or -1 when on right)
         select_adj = i + 1 -- if i == 0 then select_adj = 1 else select_adj = 0 end
-        line2, col2 = get_matching_bracket(doc, line, col, line_limit, open, close, map.direction)
+        line2, col2 = get_matching_bracket(
+          doc, line, col, line_limit, open, close, map.direction, context
+        )
         goto found
       end
     end
