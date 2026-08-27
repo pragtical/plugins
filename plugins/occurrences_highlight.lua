@@ -8,22 +8,55 @@ local core = require "core"
 local config = require "core.config"
 local style = require "core.style"
 local command = require "core.command"
+local common = require "core.common"
 local DocView = require "core.docview"
 
 -- Safe Plugin Configurations
-config.plugins.occurrences = config.plugins.occurrences or {}
+
+config.plugins.occurrences = common.merge({
+  enabled = true,
+  highlight_word_under_caret = nil,
+  match_whole_word = nil,
+  case_sensitive = true,
+  min_length = 2,
+  show_scrollbar_markers = true, 
+  colour = { 80, 160, 240, 70 }, -- Text highlight colour (RGBA translucent blue) 
+  marker_colour = { 255, 170, 40, 230 }, -- Scrollbar marker colour (RGBA bright amber/orange, VS Code style) 
+  config_spec = {
+    name = "Occurrences Highlight",
+    {
+      label = "Enabled",
+      description = "Activate cccurrences-highlight by default.",
+      path = "enabled",
+      type = "toggle",
+      default = true
+    },
+    {
+      label = "Highlight Word Under Caret",
+      description = "Enable to highlight word under caret",
+      path = "highlight_word_under_caret",
+      type = "toggle",
+      default = false
+    },
+    {
+      label = "Match Whole Word",
+      description = "Enable to match whole word",
+      path = "match_whole_word",
+      type = "toggle",
+      default = false
+    },
+    {
+      label = "Case Sensitive",
+      description = "Enable case sensitivity",
+      path = "case_sensitive",
+      type = "toggle",
+      default = true
+    },
+  }
+}, config.plugins.occurrences)
+
 local opts = config.plugins.occurrences
 
-if opts.enabled == nil then opts.enabled = true end
-if opts.highlight_word_under_caret == nil then opts.highlight_word_under_caret = true end
-if opts.match_whole_word == nil then opts.match_whole_word = true end
-if opts.case_sensitive == nil then opts.case_sensitive = true end
-if opts.min_length == nil then opts.min_length = 2 end
-if opts.show_scrollbar_markers == nil then opts.show_scrollbar_markers = true end
--- Text highlight color (RGBA translucent blue)
-if opts.color == nil then opts.color = { 80, 160, 240, 70 } end
--- Scrollbar marker color (RGBA bright amber/orange, VS Code style)
-if opts.marker_color == nil then opts.marker_color = { 255, 170, 40, 230 } end
 
 -- Calculate character pixel offset using Font:get_width
 local function get_column_x(docview, line, col)
@@ -181,7 +214,7 @@ function DocView:draw_line_body(line, x, y)
         local w = x2 - x1
 
         if w > 0 then
-          renderer.draw_rect(x1, y, w, lh, opts.color)
+          renderer.draw_rect(x1, y, w, lh, opts.colour)
         end
       end
     end
@@ -214,14 +247,14 @@ function DocView:draw()
     local sb_w = (style and style.scrollbar_size) or 10
     local sb_x = self.position.x + self.size.x - sb_w
     local marker_h = 3
-    local marker_color = opts.marker_color or { 255, 170, 40, 230 }
+    local marker_colour = opts.marker_colour or { 255, 170, 40, 230 }
 
     for line_num, _ in pairs(matches) do
       local line_y = (line_num - 1) * lh
       local ratio = line_y / total_h
       local my = view_y + math.floor(ratio * (view_h - marker_h))
 
-      renderer.draw_rect(sb_x, my, sb_w, marker_h, marker_color)
+      renderer.draw_rect(sb_x, my, sb_w, marker_h, marker_colour)
     end
   end)
 end
