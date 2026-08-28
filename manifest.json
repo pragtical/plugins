@@ -2141,7 +2141,7 @@
     },
     {
       "description": "VS Code-style occurrences highlight and scrollbar track indicators",
-      "id": "occurrences",
+      "id": "occurrences_highlight",
       "mod_version": "3",
       "path": "plugins/occurrences_highlight.lua",
       "version": "1.0"
