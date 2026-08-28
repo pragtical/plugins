@@ -52,6 +52,39 @@ config.plugins.occurrences = common.merge({
       type = "toggle",
       default = true
     },
+    {
+      label = "Minimum Length",
+      description = "The minimum required length of symbols applicable for highlighting.",
+      path = "min_length",
+      type = "number",
+      default = 2,
+      min = 1
+    },
+    {
+      label = "Show Scrollbar Markers",
+      description = "Draw matching symbol markers on the scrollbar.",
+      path = "show_scrollbar_markers",
+      type = "toggle",
+      default = true
+    },
+    {
+      label = "Colour",
+      description = "The color of highlighted symbols.",
+      path = "colour",
+      type = "color",
+      default = string.format("#%02X%02X%02X%02X",
+        80, 160, 240, 70
+      )
+    },
+    {
+      label = "Marker Colour",
+      description = "The color of markers on the scrollbar.",
+      path = "marker_colour",
+      type = "color",
+      default = string.format("#%02X%02X%02X%02X",
+        255, 170, 40, 230
+      )
+    },
   }
 }, config.plugins.occurrences)
 
