@@ -2140,6 +2140,13 @@
       "version": "0.1"
     },
     {
+      "description": "VS Code-style occurrences highlight and scrollbar track indicators",
+      "id": "occurrences",
+      "mod_version": "3",
+      "path": "plugins/occurrences_highlight.lua",
+      "version": "1.0"
+    },
+    {
       "description": "Change the opaqueness/transparency of `pragtical` using shift+alt+mousewheel or a command.",
       "id": "opacity",
       "mod_version": "3",
