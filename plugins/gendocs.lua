@@ -8,6 +8,15 @@ local core = require "core"
 local cli = require "core.cli"
 local common = require "core.common"
 
+local skipped_libraries = {
+  ["core.bit"] = true,
+  ["core.encoding"] = true,
+  ["core.start"] = true,
+  ["core.strict"] = true,
+  ["core.utf8string"] = true,
+  ["plugins.gendocs"] = true,
+}
+
 ---Split a string by the given delimeter
 ---@param s string The string to split
 ---@param delimeter string Delimeter without lua patterns
@@ -120,8 +129,92 @@ local function command_exists(command)
   return false
 end
 
-local function clean_markdown(markdown)
-  return markdown:gsub("</?br/?>", "")
+local function uri_decode(value)
+  return value:gsub("%%(%x%x)", function(hex)
+    return string.char(tonumber(hex, 16))
+  end)
+end
+
+local function normalize_source_path(path)
+  path = path:gsub("\\", "/"):gsub("/+$", "")
+  if PLATFORM == "Windows" then
+    path = path:gsub("^/([%a]:/)", "%1")
+  end
+  return path
+end
+
+local function library_name(file)
+  return file
+    :gsub("[\\/]", "/")
+    :gsub("^%.?/", "")
+    :gsub("%.lua$", "")
+    :gsub("/", ".")
+    :gsub("%.init$", "")
+end
+
+local function markdown_anchor(heading)
+  return heading:lower()
+    :gsub("[^%w%s_%-]", "")
+    :gsub("%s+", "-")
+    :gsub("%-+", "-")
+    :gsub("^%-", "")
+    :gsub("%-$", "")
+end
+
+local function source_link_target(uri, docs_root, label, link_headings)
+  local uri_path = uri:match("^file://([^#]+)")
+  if not uri_path then return end
+
+  local source_path = normalize_source_path(uri_decode(uri_path))
+  local root_path = normalize_source_path(docs_root)
+  local source_compare = source_path
+  local root_compare = root_path
+  if PLATFORM == "Windows" then
+    source_compare = source_compare:lower()
+    root_compare = root_compare:lower()
+  end
+
+  local root_prefix = root_compare .. "/"
+  if source_compare:sub(1, #root_prefix) ~= root_prefix then return end
+
+  local relative_path = source_path:sub(#root_path + 2)
+  if not relative_path:match("%.lua$") then return end
+
+  local library = library_name(relative_path)
+  if
+    skipped_libraries[library]
+    or (label ~= library and label:sub(1, #library + 1) ~= library .. ".")
+  then
+    return
+  end
+
+  local heading = link_headings[label]
+  if not heading then return end
+
+  local anchor = markdown_anchor(heading)
+  if anchor == "" then return end
+
+  return string.format("[%s](/docs/api/%s#%s)", label, library, anchor)
+end
+
+---@param markdown string
+---@param docs_root string
+---@param link_headings table<string,string>
+---@return string
+local function clean_markdown(markdown, docs_root, link_headings)
+  local links = {}
+  markdown = markdown:gsub(
+    "%[([^%]]+)%]%((file://[^%)]+)%)",
+    function(label, uri)
+      local target = source_link_target(uri, docs_root, label, link_headings)
+      if not target then return label end
+
+      table.insert(links, target)
+      return "\1GENDOCS_LINK_" .. #links .. "\2"
+    end
+  )
+
+  markdown = markdown:gsub("</?br/?>", "")
     :gsub("%[", "\\[")
     :gsub("%]", "\\]")
     :gsub("%{", "\\{")
@@ -130,6 +223,10 @@ local function clean_markdown(markdown)
     :gsub(">", "\\>")
     :gsub("^%s*", "")
     :gsub("%s$", "")
+
+  return markdown:gsub("\1GENDOCS_LINK_(%d+)\2", function(index)
+    return links[tonumber(index)]
+  end)
 end
 
 ---@alias plugins.gendocs.lls.view string | "string" | "unknown"
@@ -147,6 +244,8 @@ end
 
 ---@class plugins.gendocs.lls.arg
 ---@field name? string
+---@field desc? string
+---@field rawdesc? string
 ---@field start plugins.gendocs.lls.position
 ---@field finish plugins.gendocs.lls.position
 ---@field type plugins.gendocs.lls.type
@@ -154,6 +253,8 @@ end
 
 ---@class plugins.gendocs.lls.return
 ---@field name? string
+---@field desc? string
+---@field rawdesc? string
 ---@field type plugins.gendocs.lls.type
 ---@field view plugins.gendocs.lls.view
 
@@ -231,6 +332,14 @@ end
 ---@class plugins.gendocs.lls.element
 ---@field desc string
 ---@field def string
+---@field params? plugins.gendocs.function_entry[]
+---@field returns? plugins.gendocs.function_entry[]
+
+---@class plugins.gendocs.function_entry
+---@field name? string
+---@field view string
+---@field desc string
+---@field optional? boolean
 
 ---@class plugins.gendocs.lls.library
 ---@field lib string
@@ -249,6 +358,10 @@ local globals = {}
 ---@type table<string,plugins.gendocs.lls.library>
 local libraries = {}
 
+---Generated API target for each known custom type.
+---@type table<string,string>
+local type_targets = {}
+
 ---List of library names.
 ---@type table<integer,string>
 local libraries_list = {}
@@ -258,6 +371,53 @@ local libraries_list = {}
 ---We manually generate the globals.md file with position set to 1.
 ---@type integer
 local lib_position = 2
+
+local function normalize_optional_type(view)
+  local inner = view:match("^%((.*)%)%?$")
+  if inner then return inner, true end
+  if view:sub(-1) == "?" then return view:sub(1, -2), true end
+  return view, false
+end
+
+local function function_element(source, definition, path, link_headings)
+  local extends = source.extends or {}
+  local params = {}
+  for _, arg in ipairs(extends.args or {}) do
+    if arg.type ~= "self" then
+      local view, optional = normalize_optional_type(tostring(arg.view or ""))
+      table.insert(params, {
+        name = arg.name,
+        view = view,
+        desc = clean_markdown(arg.rawdesc or arg.desc or "", path, link_headings),
+        optional = optional,
+      })
+    end
+  end
+
+  local returns = {}
+  for _, value in ipairs(extends.returns or {}) do
+    table.insert(returns, {
+      name = value.name,
+      view = tostring(value.view or ""),
+      desc = clean_markdown(
+        value.rawdesc or value.desc or "",
+        path,
+        link_headings
+      ),
+    })
+  end
+
+  return {
+    desc = clean_markdown(
+      source.rawdesc or extends.rawdesc or "",
+      path,
+      link_headings
+    ),
+    def = "```lua\n" .. definition .. "\n```",
+    params = params,
+    returns = returns,
+  }
+end
 
 ---Parse the generated LuaLS documentation and make it ready to generate docs.
 ---@param path string
@@ -289,17 +449,40 @@ local function parse_docs(path, output_dir)
   ---@type plugins.gendocs.lls.symbol[]
   local data = json.decode(output:read("*a"))
 
+  ---@type table<string,string>
+  local link_headings = {}
+  -- Standalone types use qualified headings; fields use their short names.
+  for _, symbol in ipairs(data) do
+    if symbol.type == "type" then
+      link_headings[symbol.name] = symbol.name
+      local define = symbol.defines[1]
+      if define and define.file and not define.file:match("^%[FOR") then
+        local lib_name = library_name(define.file)
+        if not skipped_libraries[lib_name] then
+          local target = "/docs/api/" .. lib_name
+          if symbol.name ~= lib_name then
+            target = target .. "#" .. markdown_anchor(symbol.name)
+          end
+          type_targets[symbol.name] = type_targets[symbol.name] or target
+        end
+      end
+    end
+  end
+  for _, symbol in ipairs(data) do
+    if symbol.type == "type" then
+      for _, field in ipairs(symbol.fields or {}) do
+        local name = symbol.name .. "." .. field.name
+        link_headings[name] = link_headings[name] or field.name
+      end
+    end
+  end
+
   ---@type string
   local prev_lib_name = ""
   for _, symbol in ipairs(data) do
     local define = symbol.defines[1]
     if define and define.file and not define.file:match("^%[FOR") then
-      local lib_name = define.file
-        :gsub("[\\/]", "/")
-        :gsub("^%.?/", "")
-        :gsub("%.lua$", "")
-        :gsub("/", ".")
-        :gsub("%.init$", "")
+      local lib_name = library_name(define.file)
       if prev_lib_name ~= lib_name then
         prev_lib_name = lib_name
         if not libraries[lib_name] then
@@ -307,7 +490,11 @@ local function parse_docs(path, output_dir)
           libraries[lib_name] = {
             lib = lib_name,
             name = symbol.name,
-            desc = (symbol.name == lib_name and clean_markdown(define.desc or "") or ""),
+            desc = (
+              symbol.name == lib_name
+              and clean_markdown(define.desc or "", path, link_headings)
+              or ""
+            ),
             fields = {},
             methods = {},
             functions = {},
@@ -318,33 +505,32 @@ local function parse_docs(path, output_dir)
       if symbol.type ~= "type" then
         if define.type == "setglobal" then
           if not globals[symbol.name] then
-            globals[symbol.name] = {
-              desc = clean_markdown(define.desc or ""),
-              def = "```lua\n"
-                .. "global "..symbol.name..": " .. define.view .. "\n"
-                .. "```"
-            }
+            local definition = "global "..symbol.name..": " .. define.view
+            if define.view == "function" then
+              globals[symbol.name] = function_element(
+                define,
+                definition,
+                path,
+                link_headings
+              )
+            else
+              globals[symbol.name] = {
+                desc = clean_markdown(define.desc or "", path, link_headings),
+                def = "```lua\n" .. definition .. "\n```"
+              }
+            end
           end
         elseif define.type == "setmethod" or define.type == "setfield" then
           if define.view == "function" then
-            if define.type == "setfield" then
-              libraries[lib_name].functions[symbol.name] = {
-                desc = clean_markdown(define.desc or ""),
-                def = "```lua\n"
-                  .. define.extends.view .. "\n"
-                  .. "```"
-              }
-            else
-              libraries[lib_name].functions[symbol.name] = {
-                desc = clean_markdown(define.desc or ""),
-                def = "```lua\n"
-                  .. define.extends.view .. "\n"
-                  .. "```"
-              }
-            end
+            libraries[lib_name].functions[symbol.name] = function_element(
+              define,
+              define.extends.view,
+              path,
+              link_headings
+            )
           else
             libraries[lib_name].fields[symbol.name] = {
-              desc = clean_markdown(define.desc or ""),
+              desc = clean_markdown(define.desc or "", path, link_headings),
               def = "```lua\n"
                 .. "(field) "..symbol.name..": " .. define.view .. "\n"
                 .. "```"
@@ -363,14 +549,22 @@ local function parse_docs(path, output_dir)
           )
           and symbol.defines[1].desc
         then
-          libraries[lib_name].desc = symbol.defines[1].desc
+          libraries[lib_name].desc = clean_markdown(
+            symbol.defines[1].desc,
+            path,
+            link_headings
+          )
         end
 
         if not libraries[lib_name].types[symbol.name] then
           libraries[lib_name].types[symbol.name] = {
             lib = lib_name,
             name = symbol.name,
-            desc = clean_markdown(symbol.desc or symbol.defines[1].desc or ""),
+            desc = clean_markdown(
+              symbol.desc or symbol.defines[1].desc or "",
+              path,
+              link_headings
+            ),
             fields = {},
             functions = {},
             methods = {}
@@ -381,26 +575,28 @@ local function parse_docs(path, output_dir)
             libraries[lib_name].types[symbol.name].fields[field.name] = {
               lib = lib_name,
               name = symbol.name,
-              desc = clean_markdown(field.desc or ""),
+              desc = clean_markdown(field.desc or "", path, link_headings),
               def = "```lua\n"
                 .. "(field) "..field.name..": " .. field.view .. "\n"
                 .. "```"
             }
           else
             if field.type == "setfield" then
-              libraries[lib_name].types[symbol.name].functions[field.name] = {
-                desc = clean_markdown(field.desc or ""),
-                def = "```lua\n"
-                  .. field.extends.view .. "\n"
-                  .. "```"
-              }
+              libraries[lib_name].types[symbol.name].functions[field.name] =
+                function_element(
+                  field,
+                  field.extends.view,
+                  path,
+                  link_headings
+                )
             else
-              libraries[lib_name].types[symbol.name].methods[field.name] = {
-                desc = clean_markdown(field.desc or ""),
-                def = "```lua\n"
-                  .. field.extends.view .. "\n"
-                  .. "```"
-              }
+              libraries[lib_name].types[symbol.name].methods[field.name] =
+                function_element(
+                  field,
+                  field.extends.view,
+                  path,
+                  link_headings
+                )
             end
           end
         end
@@ -432,6 +628,113 @@ local function ordered(list)
   end)
 end
 
+local function inline_code(value)
+  local delimiter = "`"
+  while value:find(delimiter, 1, true) do
+    delimiter = delimiter .. "`"
+  end
+  return delimiter .. value .. delimiter
+end
+
+local builtin_types = {
+  ["any"] = true,
+  ["boolean"] = true,
+  ["false"] = true,
+  ["function"] = true,
+  ["integer"] = true,
+  ["lightuserdata"] = true,
+  ["never"] = true,
+  ["nil"] = true,
+  ["number"] = true,
+  ["string"] = true,
+  ["table"] = true,
+  ["thread"] = true,
+  ["true"] = true,
+  ["unknown"] = true,
+  ["userdata"] = true,
+}
+
+local function format_type(view)
+  if view == "" then return "", false end
+
+  local parts = {}
+  local offset = 1
+  local last = 1
+  local linked = false
+  while offset <= #view do
+    local start_idx, original_end = view:find("[%a_][%w_%.]*", offset)
+    if not start_idx then break end
+
+    local end_idx = original_end
+    local type_name = view:sub(start_idx, end_idx)
+    while type_name:sub(-1) == "." do
+      type_name = type_name:sub(1, -2)
+      end_idx = end_idx - 1
+    end
+
+    local target = not builtin_types[type_name] and type_targets[type_name]
+    local previous = view:sub(start_idx - 1, start_idx - 1)
+    local following = view:sub(end_idx + 1, end_idx + 1)
+    local quoted = (previous == '"' or previous == "'") and following == previous
+    if target and not quoted then
+      if start_idx > last then
+        table.insert(parts, inline_code(view:sub(last, start_idx - 1)))
+      end
+      table.insert(parts, "[" .. inline_code(type_name) .. "](" .. target .. ")")
+      last = end_idx + 1
+      linked = true
+    end
+
+    offset = original_end + 1
+  end
+
+  if not linked then return inline_code(view), false end
+  if last <= #view then
+    table.insert(parts, inline_code(view:sub(last)))
+  end
+  return table.concat(parts), true
+end
+
+local function metadata_line(kind, entry)
+  local type_view, has_link = format_type(entry.view)
+  local has_name = entry.name and entry.name ~= ""
+  if kind == "param" then
+    if entry.desc == "" and not has_link then return end
+  elseif not has_name and entry.desc == "" and not has_link then
+    return
+  end
+
+  local line = "@*" .. kind .. "*"
+  if has_name then
+    local name = entry.name .. (entry.optional and "?" or "")
+    line = line .. " " .. inline_code(name)
+  end
+  if type_view ~= "" then
+    line = line .. ": " .. type_view
+  end
+  if entry.desc ~= "" then
+    line = line .. " — " .. entry.desc
+  end
+  return line
+end
+
+local function element_docs(element)
+  local blocks = {}
+  if element.desc and element.desc ~= "" then
+    table.insert(blocks, element.desc)
+  end
+  for _, param in ipairs(element.params or {}) do
+    local line = metadata_line("param", param)
+    if line then table.insert(blocks, line) end
+  end
+  for _, value in ipairs(element.returns or {}) do
+    local line = metadata_line("return", value)
+    if line then table.insert(blocks, line) end
+  end
+  if #blocks == 0 then return "" end
+  return table.concat(blocks, "\n\n") .. "\n\n"
+end
+
 ---@param type plugins.gendocs.lls.library
 ---@param file file*
 local function generate_type_docs(type, file, indent)
@@ -445,13 +748,13 @@ local function generate_type_docs(type, file, indent)
       file:write(
         indent .. "## " .. name .. "\n\n"
         .. field.def .. "\n\n"
-        .. (field.desc ~= "" and field.desc .. "\n\n" or "")
+        .. element_docs(field)
         .. "---\n\n"
       )
     else
       file:write(
         indent .. "## " .. name .. "\n\n"
-        .. (field.desc ~= "" and field.desc .. "\n\n" or "")
+        .. element_docs(field)
       )
       generate_type_docs(
         libraries[type.lib].types[type.lib.."."..name],
@@ -464,7 +767,7 @@ local function generate_type_docs(type, file, indent)
     file:write(
       indent .. "## " .. name .. "\n\n"
       .. field.def .. "\n\n"
-      .. (field.desc ~= "" and field.desc .. "\n\n" or "")
+      .. element_docs(field)
       .. "---\n\n"
     )
   end
@@ -472,7 +775,7 @@ local function generate_type_docs(type, file, indent)
     file:write(
       indent .. "## " .. name .. "\n\n"
       .. field.def .. "\n\n"
-      .. (field.desc ~= "" and field.desc .. "\n\n" or "")
+      .. element_docs(field)
       .. "---\n\n"
     )
   end
@@ -529,7 +832,7 @@ local function generate_docs(library, output, show_require)
           file:write(
             "## " .. name .. "\n\n"
             .. field.def .. "\n\n"
-            .. (field.desc ~= "" and field.desc .. "\n\n" or "")
+            .. element_docs(field)
             .. "---\n\n"
           )
         end
@@ -538,7 +841,7 @@ local function generate_docs(library, output, show_require)
         if name ~= library then
           file:write(
             "## " .. name .. "\n\n"
-            .. (field.desc ~= "" and field.desc .. "\n\n" or "")
+            .. element_docs(field)
           )
           generate_type_docs(
             field,
@@ -551,7 +854,7 @@ local function generate_docs(library, output, show_require)
         file:write(
           "## " .. name .. "\n\n"
           .. field.def .. "\n\n"
-          .. (field.desc ~= "" and field.desc .. "\n\n" or "")
+          .. element_docs(field)
           .. "---\n\n"
         )
       end
@@ -559,7 +862,7 @@ local function generate_docs(library, output, show_require)
         file:write(
           "## " .. name .. "\n\n"
           .. field.def .. "\n\n"
-          .. (field.desc ~= "" and field.desc .. "\n\n" or "")
+          .. element_docs(field)
           .. "---\n\n"
         )
       end
@@ -569,13 +872,13 @@ local function generate_docs(library, output, show_require)
           file:write(
             "## " .. name .. "\n\n"
             .. field.def .. "\n\n"
-            .. (field.desc ~= "" and field.desc .. "\n\n" or "")
+            .. element_docs(field)
             .. "---\n\n"
           )
         else
           file:write(
             "## " .. library.."."..name .. "\n\n"
-            .. (field.desc ~= "" and field.desc .. "\n\n" or "")
+            .. element_docs(field)
           )
           generate_type_docs(
             lib.types[library.."."..name],
@@ -587,7 +890,7 @@ local function generate_docs(library, output, show_require)
         if name ~= library then
           file:write(
             "## " .. name .. "\n\n"
-            .. (field.desc ~= "" and field.desc .. "\n\n" or "")
+            .. element_docs(field)
           )
           generate_type_docs(
             field,
@@ -600,7 +903,7 @@ local function generate_docs(library, output, show_require)
         file:write(
           "## " .. name .. "\n\n"
           .. field.def .. "\n\n"
-          .. (field.desc ~= "" and field.desc .. "\n\n" or "")
+          .. element_docs(field)
           .. "---\n\n"
         )
       end
@@ -608,7 +911,7 @@ local function generate_docs(library, output, show_require)
         file:write(
           "## " .. name .. "\n\n"
           .. field.def .. "\n\n"
-          .. (field.desc ~= "" and field.desc .. "\n\n" or "")
+          .. element_docs(field)
           .. "---\n\n"
         )
       end
@@ -754,12 +1057,9 @@ cli.register({
     end
 
     -- skip some libraries
-    table.insert(system_libs, "core.bit")
-    table.insert(system_libs, "core.encoding")
-    table.insert(system_libs, "core.start")
-    table.insert(system_libs, "core.strict")
-    table.insert(system_libs, "core.utf8string")
-    table.insert(system_libs, "plugins.gendocs")
+    for libname in pairs(skipped_libraries) do
+      table.insert(system_libs, libname)
+    end
 
     -- generate documentation for Lua libraries
     for _, libname in pairs(libraries_list) do
@@ -790,7 +1090,7 @@ cli.register({
         file:write(
           "## " .. name .. "\n\n"
           .. global.def .. "\n\n"
-          .. (global.desc ~= "" and global.desc .. "\n\n" or "")
+          .. element_docs(global)
         )
         if libraries[name] and global.def:find(":%s*"..name) then
           file:write(
