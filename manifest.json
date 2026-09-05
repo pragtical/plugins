@@ -2354,7 +2354,7 @@
       "version": "0.4.1"
     },
     {
-      "description": "Displays tab numbers from 1–9 next to their names *([screenshot](https://user-images.githubusercontent.com/16415678/101285362-007a8500-37e5-11eb-869b-c10eb9d9d902.png))*",
+      "description": "Displays tab numbers from 1\u20139 next to their names *([screenshot](https://user-images.githubusercontent.com/16415678/101285362-007a8500-37e5-11eb-869b-c10eb9d9d902.png))*",
       "id": "tabnumbers",
       "mod_version": "3",
       "path": "plugins/tabnumbers.lua",
@@ -2573,6 +2573,26 @@
       "mod_version": "3",
       "remote": "https://github.com/lite-xl/lite-xl-ide.git:3bb229a5b7ed7028c40bba831b0dd77b06c3e262",
       "version": "0.1"
+    },
+    {
+      "description": "Touhou Fumo companions for Pragtical, with animated characters, click reactions, crazy spin and editor pets.",
+      "extra": {
+        "author": "schermaiolo",
+        "license": "MIT"
+      },
+      "id": "touhou_fumo_companion",
+      "mod_version": "3",
+      "name": "Touhou Fumo Companion",
+      "path": "editors/pragtical",
+      "remote": "https://github.com/schermaiolo/touhou-fumo-companion.git:9f33eada332f371710619a9e664e76111ab460b8",
+      "tags": [
+        "touhou",
+        "fumo",
+        "companion",
+        "animation",
+        "fun"
+      ],
+      "version": "1.0.0"
     }
   ],
   "remotes": [
