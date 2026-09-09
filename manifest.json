@@ -2229,7 +2229,7 @@
       "id": "regexreplacepreview",
       "mod_version": "3",
       "path": "plugins/regexreplacepreview.lua",
-      "version": "0.2"
+      "version": "0.2.1"
     },
     {
       "description": "Keep a list of recently closed tabs, and restore the tab in order on ctrl+shift+t.",

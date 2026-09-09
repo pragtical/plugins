@@ -32,9 +32,7 @@ end
 -- transformations and stuff in lua. Currently, this takes group replacements
 -- as \1 - \9.
 -- Should work on UTF-8 text.
-local function substitute(pattern_string, str, replacement)
-  local pattern = type(pattern_string) == "table" and
-    pattern_string or regex.compile(pattern_string)
+local function substitute(pattern, str, replacement)
   local result, indices = {}
   local matches, replacements = {}, {}
   local offset = 0
@@ -91,8 +89,10 @@ local function regex_replace_file(view, pattern, old_lines, raw, start_line, end
   local replacement = end_replacement and pattern:sub(
     start_replacement, end_replacement
   )
+  -- Removing the final line's content leaves its terminating newline in Doc.
   local replace_line = raw and function(line, new_text)
     if line == #doc.lines then
+      new_text = new_text:gsub("\n$", "")
       doc:raw_remove(line, 1, line, #doc.lines[line], { idx = 1 }, 0)
     else
       doc:raw_remove(line, 1, line+1, 1, { idx = 1 }, 0)
@@ -100,6 +100,7 @@ local function regex_replace_file(view, pattern, old_lines, raw, start_line, end
     doc:raw_insert(line, 1, new_text, { idx = 1 }, 0)
   end or function(line, new_text)
     if line == #doc.lines then
+      new_text = new_text:gsub("\n$", "")
       doc:remove(line, 1, line, #doc.lines[line])
     else
       doc:remove(line, 1, line+1, 1)
@@ -175,6 +176,7 @@ command.add("core.docview!", {
         for k,v in pairs(old_lines) do
           if v then
             if k == #doc.lines then
+              v = v:gsub("\n$", "")
               doc:raw_remove(k, 1, k, #doc.lines[k], { idx = 1 }, 0)
             else
               doc:raw_remove(k, 1, k+1, 1, { idx = 1 }, 0)
