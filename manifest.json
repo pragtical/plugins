@@ -253,7 +253,7 @@
       "id": "autowrap",
       "mod_version": "3",
       "path": "plugins/autowrap.lua",
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Theme manager with base16 color schemes for Lite XL.",
