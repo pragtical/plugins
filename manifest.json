@@ -2475,14 +2475,6 @@
       "version": "0.1.1"
     },
     {
-      "description": "A simple library that provides a web client to fetch, and submit data via HTTP requests.",
-      "id": "www",
-      "mod_version": "3",
-      "remote": "https://github.com/adamharrison/lite-xl-www.git:aecc866c33b0a954fbd41a5de2842bb97f4ac45e",
-      "type": "library",
-      "version": "0.1"
-    },
-    {
       "description": "`pywal` integration with Lite XL.",
       "id": "wal",
       "mod_version": "3",
