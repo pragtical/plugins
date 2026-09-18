@@ -331,12 +331,11 @@ to follow with `extra.follow_branch`.*
 
 ## Libraries
 
-| Library                                                                                      | Description                                                                              |
-| -------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| [`font_nonicons`](plugins/font_nonicons.lua?raw=1)                                           | [Nonicons](https://github.com/yamatsum/nonicons/) font with mapping                      |
-| [`font_symbols_nerdfont_mono_regular`](plugins/font_symbols_nerdfont_mono_regular.lua?raw=1) | [Nerd Font Symbols](https://github.com/ryanoasis/nerd-fonts/) font with mapping          |
-| [`golang`](https://github.com/pragtical/lsp-servers.git)*                                    | Official Go builds.                                                                      |
-| [`haxe`](https://github.com/pragtical/lsp-servers.git)*                                      | Official Haxe builds.                                                                    |
-| [`jdk`](https://github.com/pragtical/lsp-servers.git)*                                       | Production and Early-Access OpenJDK Builds, from Oracle.                                 |
-| [`nodejs`](https://github.com/pragtical/lsp-servers.git)*                                    | Official NodeJs builds.                                                                  |
-| [`www`](https://github.com/adamharrison/lite-xl-www.git)*                                    | A simple library that provides a web client to fetch, and submit data via HTTP requests. |
+| Library                                                                                      | Description                                                                     |
+| -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| [`font_nonicons`](plugins/font_nonicons.lua?raw=1)                                           | [Nonicons](https://github.com/yamatsum/nonicons/) font with mapping             |
+| [`font_symbols_nerdfont_mono_regular`](plugins/font_symbols_nerdfont_mono_regular.lua?raw=1) | [Nerd Font Symbols](https://github.com/ryanoasis/nerd-fonts/) font with mapping |
+| [`golang`](https://github.com/pragtical/lsp-servers.git)*                                    | Official Go builds.                                                             |
+| [`haxe`](https://github.com/pragtical/lsp-servers.git)*                                      | Official Haxe builds.                                                           |
+| [`jdk`](https://github.com/pragtical/lsp-servers.git)*                                       | Production and Early-Access OpenJDK Builds, from Oracle.                        |
+| [`nodejs`](https://github.com/pragtical/lsp-servers.git)*                                    | Official NodeJs builds.                                                         |
