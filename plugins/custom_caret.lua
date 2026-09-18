@@ -96,14 +96,6 @@ core.add_thread(function()
   end
 end)
 
-local caret_idx = 1
-
-local docview_update = DocView.update
-function DocView:update()
-  docview_update(self)
-  caret_idx = 1
-end
-
 function DocView:draw_caret(x, y, line, col)
   local caret_width = style.caret_width
   local caret_height = self:get_line_height()
@@ -116,19 +108,14 @@ function DocView:draw_caret(x, y, line, col)
     return
   end
 
-  local font = self:get_font()
-  local line, col = self.doc:get_selection_idx(caret_idx)
-  local charw = math.ceil(font:get_width(self.doc:get_char(line, col)))
-
-  if (current_caret_shape == "block") then
-    caret_width = charw
-  elseif (current_caret_shape == "underline") then
-    caret_width = charw
-    caret_height = style.caret_width*2
-    y = y+self:get_line_height()
-  else
-    caret_width = style.caret_width
-    caret_height = self:get_line_height()
+  local font
+  if current_caret_shape == "block" or current_caret_shape == "underline" then
+    font = self:get_font()
+    caret_width = math.ceil(font:get_width(self.doc:get_char(line, col)))
+    if current_caret_shape == "underline" then
+      y = y + caret_height
+      caret_height = style.caret_width * 2
+    end
   end
 
   renderer.draw_rect(x, y, caret_width, caret_height, caret_color)
@@ -158,6 +145,4 @@ function DocView:draw_caret(x, y, line, col)
 
     core.pop_clip_rect()
   end
-
-  caret_idx = caret_idx + 1
 end

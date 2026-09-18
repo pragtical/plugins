@@ -352,7 +352,7 @@
       "id": "custom_caret",
       "mod_version": "3.1",
       "path": "plugins/custom_caret.lua",
-      "version": "0.4"
+      "version": "0.4.1"
     },
     {
       "description": "Insert date-, time- and date-time-stamps",
@@ -2092,9 +2092,9 @@
     {
       "description": "Adds a motion-trail to the caret *([gif](https://user-images.githubusercontent.com/3920290/83256814-085ccb00-a1ab-11ea-9e35-e6633cbed1a9.gif))*",
       "id": "motiontrail",
-      "mod_version": "3.1",
+      "mod_version": "3.11",
       "path": "plugins/motiontrail.lua",
-      "version": "0.4.1"
+      "version": "0.4.2"
     },
     {
       "description": "Allows moving back and forward between document positions, reducing the amount of scrolling",
@@ -2286,7 +2286,7 @@
       "id": "smoothcaret",
       "mod_version": "3.11",
       "path": "plugins/smoothcaret.lua",
-      "version": "0.5"
+      "version": "0.5.1"
     },
     {
       "description": "Provides code snippets support",
