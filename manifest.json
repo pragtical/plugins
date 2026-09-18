@@ -2281,6 +2281,13 @@
       "version": "0.5.1"
     },
     {
+      "description": "Play Snake in an editor tab with wrapping or solid walls and persistent high scores.",
+      "id": "snake",
+      "mod_version": "3.8",
+      "path": "plugins/snake.lua",
+      "version": "0.1"
+    },
+    {
       "description": "Provides code snippets support",
       "id": "snippets",
       "mod_version": "3",
