@@ -338,6 +338,5 @@ to follow with `extra.follow_branch`.*
 | [`golang`](https://github.com/pragtical/lsp-servers.git)*                                    | Official Go builds.                                                                      |
 | [`haxe`](https://github.com/pragtical/lsp-servers.git)*                                      | Official Haxe builds.                                                                    |
 | [`jdk`](https://github.com/pragtical/lsp-servers.git)*                                       | Production and Early-Access OpenJDK Builds, from Oracle.                                 |
-| [`jsonmod`](plugins/jsonmod.lua?raw=1)                                                       | rxi JSON library with error handling and other modifications.                            |
 | [`nodejs`](https://github.com/pragtical/lsp-servers.git)*                                    | Official NodeJs builds.                                                                  |
 | [`www`](https://github.com/adamharrison/lite-xl-www.git)*                                    | A simple library that provides a web client to fetch, and submit data via HTTP requests. |
