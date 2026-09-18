@@ -1,4 +1,4 @@
--- mod-version:3
+-- mod-version:3.10
 --
 -- Original Code:
 -- https://github.com/vincens2005/lite-xl-updatechecker
@@ -10,7 +10,7 @@ local core = require "core"
 local config = require "core.config"
 local common = require "core.common"
 local command = require "core.command"
-local json = require "libraries.jsonmod"
+local json = require "core.json"
 
 config.plugins.updatechecker = common.merge({
   timeout = 3, -- increase this value if you get json.lua errors
@@ -111,12 +111,12 @@ local function check_updates()
     return
   end
 
-  local data_read, data = pcall(json.decode, raw_data)
+  local data_read, data, decode_error = pcall(json.decode, raw_data)
 
-  if data_read == false then
+  if not data_read or data == false then
     core.error(
       "[updatechecker] Invalid JSON: %s\n%s\n%s",
-      json.last_error(),
+      data_read and decode_error or data,
       "-----",
       raw_data
     )

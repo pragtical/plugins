@@ -673,14 +673,6 @@
       "version": "24.0.2"
     },
     {
-      "description": "rxi JSON library with error handling and other modifications.",
-      "id": "jsonmod",
-      "mod_version": "3",
-      "path": "plugins/jsonmod.lua",
-      "type": "library",
-      "version": "1.0"
-    },
-    {
       "description": "Simple *key HUD* display.",
       "id": "keyhud",
       "mod_version": "3",
@@ -2455,14 +2447,11 @@
       "version": "0.1"
     },
     {
-      "dependencies": {
-        "jsonmod": {}
-      },
       "description": "Automatically checks for updates and notifies you",
       "id": "updatechecker",
-      "mod_version": "3",
+      "mod_version": "3.10",
       "path": "plugins/updatechecker.lua",
-      "version": "0.1.2"
+      "version": "0.1.3"
     },
     {
       "description": "VI(vim?) bindings with a hint of DOOM Emacs, for pragtical",
