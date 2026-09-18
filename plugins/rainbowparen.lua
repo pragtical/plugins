@@ -105,11 +105,12 @@ local function tokenize_highlighter_line(self, idx, state, parenstack, resume)
   if not text then
     return empty_line(state, parenstack)
   end
-  local res = self.lines[idx] or {}
-  res.init_state = state
+  -- Let the core highlighter handle tokenizer options and legacy resumes.
+  -- Older cores interpret any fourth-argument table as a raw resume.
+  local res = highlighter_tokenize_line(self, idx, state, resume)
+  res.first_line = idx == 1
   res.init_parenstack = parenstack or ""
-  res.text = text
-  res.base_tokens, res.state, res.resume = tokenizer.tokenize(self.doc.syntax, res.text, state, resume)
+  res.base_tokens = res.tokens
   res.tokens, res.parenstack = apply_rainbow(res.base_tokens, res.init_parenstack)
   return res
 end
@@ -134,7 +135,8 @@ function Highlighter:get_line(idx)
   if not text then
     return empty_line(state, parenstack)
   end
-  if not line or line.text ~= text or line.init_state ~= state then
+  if not line or line.first_line ~= (idx == 1)
+    or line.text ~= text or line.init_state ~= state then
     line = self:tokenize_line(idx, state)
     self.lines[idx] = line
     self:update_notify(idx, 0)
@@ -170,10 +172,16 @@ function Highlighter:start()
           goto continue
         end
         local parenstack = get_prev_parenstack(self, i)
-        if line and line.resume and (line.init_state ~= state or line.text ~= text) then
+        if line and line.resume and (
+          line.first_line ~= (i == 1) or line.init_state ~= state
+          or line.text ~= text
+        ) then
           line.resume = nil
         end
-        if not (line and line.init_state == state and line.text == text and not line.resume) then
+        if not (
+          line and line.first_line == (i == 1) and line.init_state == state
+          and line.text == text and not line.resume
+        ) then
           retokenized_from = retokenized_from or i
           self.lines[i] = self:tokenize_line(i, state, line and line.resume)
           if self.lines[i].resume then
