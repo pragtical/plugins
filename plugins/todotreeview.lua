@@ -201,6 +201,9 @@ function TodoTreeView:new()
   self.items = {}
 end
 
+-- Compatibility with older Pragtical versions: workers can survive restart
+-- and channels are process-wide, so keep names unique between sessions.
+local thread_session = string.format("%.9f", system.get_time())
 local threaded_scan_id = 0
 local threaded_update_id = 0
 
@@ -242,7 +245,7 @@ local function todo_scan_thread(tid, options)
       return todos
     end
 
-    local filename_channel = thread.get_channel("todotree_fname" .. tid .. id)
+    local filename_channel = thread.get_channel("todotree_fname" .. tid .. ":" .. id)
     local result_channel = thread.get_channel("todotree_results" .. tid)
     local stop_channel = thread.get_channel("todotree_stop" .. tid)
     local job = filename_channel:wait()
@@ -265,7 +268,7 @@ local function todo_scan_thread(tid, options)
   end
 
   for id = 1, workers do
-    filename_channels[id] = thread.get_channel("todotree_fname" .. tid .. id)
+    filename_channels[id] = thread.get_channel("todotree_fname" .. tid .. ":" .. id)
     local worker, err = thread.create(
       "todowrk" .. tid .. id,
       todo_worker_thread,
@@ -274,16 +277,16 @@ local function todo_scan_thread(tid, options)
       options
     )
     if not worker then
-      status_channel:clear()
-      status_channel:push({
-        error = err or "unknown error"
-      })
       for worker_id = 1, id - 1 do
         filename_channels[worker_id]:push("{{stop}}")
       end
       for _, worker_thread in ipairs(workers_list) do
         if worker_thread then worker_thread:wait() end
       end
+      status_channel:clear()
+      status_channel:push({
+        error = err or "unknown error"
+      })
       return 1
     end
     workers_list[id] = worker
@@ -356,11 +359,9 @@ local function todo_scan_thread(tid, options)
 
   if stop_channel:first() == "stop" then
     result_channel:clear()
-    status_channel:clear()
-  else
-    status_channel:clear()
-    status_channel:push("finished")
   end
+  status_channel:clear()
+  status_channel:push("finished")
   return 0
 end
 
@@ -535,7 +536,7 @@ function TodoTreeView:refresh_cache()
   if not todo_tags or not next(todo_tags) then todo_tags = nil end
 
   threaded_scan_id = threaded_scan_id + 1
-  local tid = threaded_scan_id
+  local tid = thread_session .. ":" .. threaded_scan_id
   local result_channel = thread.get_channel("todotree_results" .. tid)
   local status_channel = thread.get_channel("todotree_status" .. tid)
   local stop_channel = thread.get_channel("todotree_stop" .. tid)
@@ -581,11 +582,11 @@ function TodoTreeView:refresh_cache()
   core.add_thread(function()
     local status = status_channel:first()
     while
-      self.scan == scan
-      and status ~= "finished"
+      status ~= "finished"
       and type(status) ~= "table"
     do
-      if drain_scan_results(self, result_channel, items, old_items, current_mode) then
+      if self.scan == scan
+      and drain_scan_results(self, result_channel, items, old_items, current_mode) then
         core.redraw = true
       end
       coroutine.yield()
@@ -652,7 +653,7 @@ function TodoTreeView:update_file(filename)
 
   local abs_filename = core.project_absolute_path(filename)
   threaded_update_id = threaded_update_id + 1
-  local tid = threaded_update_id
+  local tid = thread_session .. ":" .. threaded_update_id
   local result_channel = thread.get_channel("todotree_update_results" .. tid)
   local status_channel = thread.get_channel("todotree_update_status" .. tid)
   local todo_tags = config.plugins.todotreeview.todo_tags
@@ -1006,6 +1007,12 @@ view = TodoTreeView()
 local node = core.root_view:get_active_node()
 view.size.x = config.plugins.todotreeview.treeview_size
 node:split("right", view, {x=true}, true)
+
+local core_exit = core.exit
+function core.exit(quit_fn, force)
+  if force then view:stop_scan() end
+  return core_exit(quit_fn, force)
+end
 
 -- monitor mode or project dir changes
 local last_mode = config.plugins.todotreeview.todo_mode
