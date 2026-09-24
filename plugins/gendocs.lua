@@ -998,6 +998,7 @@ cli.register({
     else
       core_docs_path = DATADIR
       system_libs = {
+        "audio",
         "bit",
         "canvas",
         "diff",
