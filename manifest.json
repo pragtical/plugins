@@ -2285,7 +2285,7 @@
       "id": "snake",
       "mod_version": "3.8",
       "path": "plugins/snake.lua",
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Provides code snippets support",

@@ -12,12 +12,18 @@ config.plugins.snake = common.merge({
   columns = 28, rows = 20, speed = 8,
   initial_length = config.snake_length or 6,
   wrap = config.snake_wall_die ~= true,
+  audio_enabled = true, music_volume = 20, effects_volume = 60,
   config_spec = {
     name = "Snake",
     { label = "Starting Speed", path = "speed", type = "NUMBER",
       default = 8, min = 3, max = 14,
       description = "Cells per second at the beginning of a new game." },
-    { label = "Wrap Edges", path = "wrap", type = "TOGGLE", default = true }
+    { label = "Wrap Edges", path = "wrap", type = "TOGGLE", default = true },
+    { label = "Audio", path = "audio_enabled", type = "TOGGLE", default = true },
+    { label = "Music Volume", path = "music_volume", type = "NUMBER",
+      default = 20, min = 0, max = 100 },
+    { label = "Effects Volume", path = "effects_volume", type = "NUMBER",
+      default = 60, min = 0, max = 100 }
   }
 }, config.plugins.snake)
 
@@ -56,6 +62,149 @@ local function text(font, value, x, y, color, align)
   renderer.draw_text(font, value, math.floor(x), math.floor(y), color)
 end
 
+local audio_spec = { format = "s16le", channels = 1, sample_rate = 22050 }
+local cues = {
+  start = { 72, 76, 79, duration = .09 },
+  eat = { 79, 84, duration = .055 },
+  level = { 72, 76, 79, 84, duration = .08 },
+  over = { 55, 51, 48, 36, duration = .15 },
+  won = { 72, 76, 79, 84, 79, 84, duration = .13 }
+}
+local melody = {
+  72, 76, 79, 76, 74, 76, 79, 83,
+  81, 76, 72, 76, 79, 76, 72, 71,
+  69, 72, 77, 76, 74, 72, 69, 72,
+  71, 74, 79, 77, 76, 74, 71, 67
+}
+
+-- Short, enveloped PCM phrases keep the plugin self-contained and clicks out.
+local function synthesize(notes, duration, bass)
+  local chunks, frames = {}, math.floor(duration * audio_spec.sample_rate)
+  for _, note in ipairs(notes) do
+    local samples, frequency = {}, 440 * 2 ^ ((note - 69) / 12)
+    for i = 0, frames - 1 do
+      local t, phase = i / audio_spec.sample_rate, i / frames
+      local envelope = math.min(1, t / .006) * math.max(0, 1 - phase / .95) ^ 2
+      local angle = 2 * math.pi * frequency * t
+      local value = (.20 * math.sin(angle) + .04 * math.sin(angle * 2)) * envelope
+      if bass then
+        value = value + .12 * math.sin(2 * math.pi * bass * t) * envelope
+      end
+      samples[i + 1] = string.pack("<i2", math.floor(value * 32767))
+    end
+    chunks[#chunks + 1] = table.concat(samples)
+  end
+  return table.concat(chunks)
+end
+
+local Sound = {}
+Sound.__index = Sound
+function Sound.new()
+  return setmetatable({ sounds = {}, effects = {} }, Sound)
+end
+
+function Sound:stop()
+  if self.mixer then self.mixer:stop() end
+  self.voice, self.effects = nil, {}
+end
+
+function Sound:close()
+  core.threads[self] = nil
+  if self.mixer then self.mixer:close() end
+  for _, sound in pairs(self.sounds) do sound:close() end
+  self.mixer, self.music, self.fx, self.voice = nil, nil, nil, nil
+  self.sounds, self.effects, self.paused = {}, {}, nil
+  self.music_gain, self.effects_gain = nil, nil
+end
+
+function Sound:fail(err)
+  if not self.failed then core.log_quiet("Snake audio: %s", tostring(err)) end
+  self.failed = true
+  self:close()
+end
+
+function Sound:volume()
+  local cfg = config.plugins.snake
+  local music = common.clamp(tonumber(cfg.music_volume) or 20, 0, 100) / 100
+  local effects = common.clamp(tonumber(cfg.effects_volume) or 60, 0, 100) / 100
+  if music ~= self.music_gain then self.music:set_gain(music); self.music_gain = music end
+  if effects ~= self.effects_gain then self.fx:set_gain(effects); self.effects_gain = effects end
+end
+
+function Sound:open()
+  if config.plugins.snake.audio_enabled == false or self.failed then return false end
+  if self.mixer then return true end
+  local ok, native = pcall(require, "audio")
+  if not ok or type(native.create_mixer) ~= "function" or type(native.new_sound) ~= "function" then
+    self:fail("this build has no mixer audio API")
+    return false
+  end
+  self.native = native
+  local err
+  self.mixer, err = native.create_mixer({ max_voices = 8 })
+  if not self.mixer then self:fail(err); return false end
+  self.music, err = self.mixer:group("music")
+  if not self.music then self:fail(err); return false end
+  self.fx, err = self.mixer:group("effects")
+  if not self.fx then self:fail(err); return false end
+  self:volume()
+  -- Build one note per scheduler pass, never a whole soundtrack in an input event.
+  core.add_thread(function()
+    local chunks, roots = {}, { 48, 45, 41, 43 }
+    for i, note in ipairs(melody) do
+      local root = roots[math.floor((i - 1) / 8) + 1]
+      chunks[i] = synthesize({ note }, .2, 440 * 2 ^ ((root - 69) / 12))
+      coroutine.yield(0)
+    end
+    local sound, failure = native.new_sound(table.concat(chunks), audio_spec)
+    if not sound then self:fail(failure); return end
+    self.sounds.music = sound
+  end, self)
+  return true
+end
+
+function Sound:play(name)
+  if not self:open() then return end
+  local sound, err = self.sounds[name]
+  if not sound then
+    local notes = cues[name]
+    sound, err = self.native.new_sound(synthesize(notes, notes.duration), audio_spec)
+    if not sound then self:fail(err); return end
+    self.sounds[name] = sound
+  end
+  for i = #self.effects, 1, -1 do
+    local state = self.effects[i]:get_state()
+    if state ~= "playing" and state ~= "paused" then table.remove(self.effects, i) end
+  end
+  if #self.effects >= 4 then table.remove(self.effects, 1):stop() end
+  local voice
+  voice, err = self.fx:play(sound)
+  if not voice then self:fail(err); return end
+  self.effects[#self.effects + 1] = voice
+end
+
+function Sound:update(state, active)
+  if config.plugins.snake.audio_enabled == false then
+    self:close()
+    self.failed = nil
+    return
+  end
+  if not self.mixer and (not active or state ~= "running" or not self:open()) then return end
+  self:volume()
+  local paused = not active or state == "paused"
+  if paused ~= self.paused then
+    if paused then self.mixer:pause() else self.mixer:resume() end
+    self.paused = paused
+  end
+  if state ~= "running" and state ~= "paused" then
+    if self.voice then self.voice:stop(); self.voice = nil end
+  elseif state == "running" and active and not self.voice and self.sounds.music then
+    local err
+    self.voice, err = self.music:play(self.sounds.music, { loops = -1, fade_in = .15 })
+    if not self.voice then self:fail(err) end
+  end
+end
+
 local SnakeView = View:extend()
 SnakeView.context = "session"
 
@@ -69,15 +218,20 @@ function SnakeView:new(options)
   self.mode = cfg.wrap and "wrap" or "walls"
   self.seed = (math.floor(tonumber(cfg.seed) or system.get_time() * 1000000) % 2147483646) + 1
   self.buttons, self.particles = {}, {}
+  self.audio = Sound.new()
   self:reset()
   core.add_thread(function()
     while not self.closed do
-      if not core.root_view.root_node:get_node_for_view(self) then break end
+      if not core.root_view.root_node:get_node_for_view(self) then
+        self.audio:close()
+        break
+      end
       if self.state == "running" then
         if core.active_view ~= self then self:toggle_pause() end
         core.redraw = true
       end
       if core.root_view.touched_view ~= self then self.touch = nil end
+      self.audio:update(self.state, core.active_view == self and system.window_has_focus(core.window))
       coroutine.yield(1 / 60)
     end
   end, self)
@@ -93,6 +247,7 @@ function SnakeView:random()
 end
 
 function SnakeView:reset()
+  self.audio:stop()
   self.state, self.score, self.level = "ready", 0, 1
   self.direction, self.turns = "right", {}
   self.accumulator, self.clock = 0, 0
@@ -142,9 +297,12 @@ end
 
 function SnakeView:toggle_pause()
   if self.state == "over" or self.state == "won" then self:reset() end
+  local starting = self.state == "ready"
   self.state = self.state == "running" and "paused" or "running"
   self.last_time, self.accumulator = system.get_time(), 0
   self.previous, self.turns = nil, {}
+  self.audio:update(self.state, core.active_view == self and system.window_has_focus(core.window))
+  if starting then self.audio:play("start") end
   core.redraw = true
 end
 
@@ -163,6 +321,8 @@ function SnakeView:step()
     x, y = x % self.columns, y % self.rows
   elseif x < 0 or y < 0 or x >= self.columns or y >= self.rows then
     self.state, self.previous = "over", nil
+    self.audio:stop()
+    self.audio:play("over")
     core.redraw = true
     return
   end
@@ -171,6 +331,8 @@ function SnakeView:step()
   for i = 1, #self.snake - (eating and 0 or 1) do
     if self.snake[i].x == x and self.snake[i].y == y then
       self.state, self.previous = "over", nil
+      self.audio:stop()
+      self.audio:play("over")
       core.redraw = true
       return
     end
@@ -180,6 +342,7 @@ function SnakeView:step()
   for i = 1, #self.snake - (eating and 0 or 1) do body[#body + 1] = self.snake[i] end
   self.snake = body
   if eating then
+    local previous_level = self.level
     self.score = self.score + 10
     self.level = 1 + math.floor(self.score / 50)
     self:save_best()
@@ -191,6 +354,8 @@ function SnakeView:step()
       }
     end
     self:spawn_food()
+    if self.state == "won" then self.audio:stop() end
+    self.audio:play(self.state == "won" and "won" or self.level > previous_level and "level" or "eat")
   end
   core.redraw = true
 end
@@ -212,6 +377,7 @@ function SnakeView:advance(dt)
 end
 
 function SnakeView:update()
+  if self.closed then return end
   SnakeView.super.update(self)
   local now = system.get_time()
   local dt = now - self.last_time
@@ -219,14 +385,17 @@ function SnakeView:update()
   if core.active_view ~= self or not system.window_has_focus(core.window)
     or self.size.x < 240 * SCALE or self.size.y < 220 * SCALE then
     if self.state == "running" then self:toggle_pause() end
+    self.audio:update(self.state, false)
     return
   end
   self:advance(dt)
+  self.audio:update(self.state, true)
 end
 
 function SnakeView:try_close(close)
   self.closed = true
   core.threads[self] = nil
+  self.audio:close()
   close()
 end
 
@@ -407,6 +576,10 @@ command.add(SnakeView, {
   ["snake:right"] = function(view) view:turn("right") end,
   ["snake:pause"] = function(view) view:toggle_pause() end,
   ["snake:restart"] = function(view) view:reset() end,
+  ["snake:toggle-audio"] = function(view)
+    config.plugins.snake.audio_enabled = config.plugins.snake.audio_enabled == false
+    view.audio:update(view.state, true)
+  end,
   ["snake:escape"] = function(view)
     if view.state == "running" then view:toggle_pause() end
   end
@@ -417,7 +590,8 @@ keymap.add {
   ["left"] = "snake:left", ["a"] = "snake:left",
   ["right"] = "snake:right", ["d"] = "snake:right",
   ["space"] = "snake:pause", ["return"] = "snake:pause",
-  ["p"] = "snake:pause", ["r"] = "snake:restart", ["escape"] = "snake:escape"
+  ["p"] = "snake:pause", ["r"] = "snake:restart", ["escape"] = "snake:escape",
+  ["m"] = "snake:toggle-audio"
 }
 
 return SnakeView
