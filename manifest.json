@@ -391,6 +391,13 @@
       "version": "0.1"
     },
     {
+      "description": "Freeze the first row of file",
+      "id": "freeze_row",
+      "mod_version": "3.11",
+      "path": "plugins/freeze_row.lua",
+      "version": "0.1.0"
+    },
+    {
       "description": "Play as frontra against an army of bots at the end of civilization.",
       "id": "frontra",
       "mod_version": "3",
