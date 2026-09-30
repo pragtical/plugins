@@ -2204,6 +2204,13 @@
       "version": "0.2"
     },
     {
+      "description": "Add blurry mask on inactive lines",
+      "id": "privacy_glasses",
+      "mod_version": "3.11",
+      "path": "plugins/privacy_glasses.lua",
+      "version": "1.0.0"
+    },
+    {
       "description": "Adds the ability to profile Pragtical.",
       "id": "profiler",
       "mod_version": "3",
