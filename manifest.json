@@ -583,8 +583,8 @@
       "id": "ghostty",
       "mod_version": "3",
       "name": "Ghostty Terminal",
-      "remote": "https://github.com/pragtical/ghostty.git:c759454faa0e36fc6da731c0dd2d8aba9a888f1b",
-      "version": "0.1.0"
+      "remote": "https://github.com/pragtical/ghostty.git:85d0dfdd3094997496bc4265935a95ae7e40482b",
+      "version": "0.2.0"
     },
     {
       "description": "Shows \"git blame\" information of a line *([screenshot](https://raw.githubusercontent.com/juliardi/lite-xl-gitblame/main/screenshot_1.png))*",
