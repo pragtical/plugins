@@ -568,8 +568,8 @@
       "description": "Code formatter for various languages",
       "id": "formatter",
       "mod_version": "3",
-      "remote": "https://github.com/pragtical/formatter:28056e06d85684fc3f428996d2c93b3337f38d0c",
-      "version": "0.7.0"
+      "remote": "https://github.com/pragtical/formatter:a57e5e0fa484196747cd9a34368f1071ebaf7261",
+      "version": "0.7.1"
     },
     {
       "description": "Generates Pragtical API reference markdown files for Pragtical's website using LuaLS.",
