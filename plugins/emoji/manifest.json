@@ -1,0 +1,12 @@
+{
+  "addons": [
+    {
+      "id": "emoji",
+      "mod_version": "3",
+      "name": "emoji",
+      "path": ".",
+      "type": "plugin",
+      "version": "1.0.1"
+    }
+  ]
+}
