@@ -1248,6 +1248,17 @@
       "version": "0.1"
     },
     {
+      "checksum": "ca2397a39097df66a8ca38a418b356b2638f95d09536425b51cbd47a76a80fd3",
+      "description": "Syntax for the [Janet](https://janet-lang.org/) programming language",
+      "id": "language_janet",
+      "mod_version": "3",
+      "tags": [
+        "language"
+      ],
+      "url": "https://codeberg.org/imo/lite-xl-language-janet/raw/branch/main/plugins/language_janet.lua",
+      "version": "0.0.1"
+    },
+    {
       "description": "Syntax for the [Java](https://en.wikipedia.org/wiki/Java_\\(programming_language\\)) programming language",
       "id": "language_java",
       "mod_version": "3",
