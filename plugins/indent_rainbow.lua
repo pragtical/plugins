@@ -1,5 +1,7 @@
 -- mod-version:3.11
 
+local core = require("core")
+local command = require("core.command")
 local common = require("core.common")
 local DocView = require("core.docview")
 local config = require("core.config")
@@ -16,26 +18,42 @@ local NOOP_EXT = {
 }
 
 config.plugins.indentrainbow = common.merge({
+  enabled = true,
   max = MAX_LINES,
   exclude = NOOP_EXT,
-  style = "block",
+  style = "line",
+  highlight = true,
   -- The config specification used by the settings gui
   config_spec = {
     name = "Indent Rainbow",
+    {
+      label = "Enable",
+      description = "Toggle the drawing of rainbow indentation guides.",
+      path = "enabled",
+      type = "toggle",
+      default = true,
+    },
     {
       label = "Style",
       description = "Style of indent rainbow.",
       path = "style",
       type = "selection",
-      default = "block",
+      default = "line",
       values = {
         { "Block", "block" },
         { "Line", "line" },
       },
     },
     {
+      label = "Highlight Line",
+      description = "Highlight the current indentation guide in line style.",
+      path = "highlight",
+      type = "toggle",
+      default = true,
+    },
+    {
       label = "Max Lines",
-      description = "Maximum lines allowed to enable indent rainbow.",
+      description = "Maximum distance from the visible lines for active indentation highlighting.",
       path = "max",
       type = "number",
       default = MAX_LINES,
@@ -80,11 +98,10 @@ local function get_line_color(level)
   return color or style.guide or style.selection
 end
 
--- exclude large files and non source code
+-- exclude non source code
 local function is_exclude_document(doc)
   local plugin_config = config.plugins.indentrainbow
-  local max = tonumber(plugin_config.max) or MAX_LINES
-  if not doc or not doc.lines or #doc.lines > max then
+  if not doc or not doc.lines then
     return true
   end
 
@@ -140,14 +157,118 @@ local function get_indent_columns(doc, line)
   return columns
 end
 
+local function get_neighbor_indent_columns(doc, line, direction)
+  local text = doc.lines[line]
+  while text and #text > 1 and text:find("^%s*$") do
+    line = line + direction
+    text = doc.lines[line]
+  end
+  return text and #text > 1 and get_indent_columns(doc, line) or -1
+end
+
+local function get_line_indent_columns(doc, line)
+  local text = doc.lines[line]
+  if not text then return -1 end
+  if text:find("^%s*\n") then
+    return math.max(
+      get_neighbor_indent_columns(doc, line - 1, -1),
+      get_neighbor_indent_columns(doc, line + 1, 1)
+    )
+  end
+  return get_indent_columns(doc, line)
+end
+
+local docview_update = DocView.update
+function DocView:update()
+  docview_update(self)
+
+  self.indentrainbow_indents = nil
+  self.indentrainbow_indent_active = nil
+  local plugin_config = config.plugins.indentrainbow
+  if not plugin_config.enabled or not self:is(DocView) or plugin_config.style ~= "line"
+    or is_exclude_document(self.doc) then
+    return
+  end
+
+  local indents, active = {}, {}
+  self.indentrainbow_indents = indents
+  self.indentrainbow_indent_active = active
+  local function get_indent(line)
+    if line < 1 or line > #self.doc.lines then return -1 end
+    if indents[line] == nil then
+      indents[line] = get_line_indent_columns(self.doc, line)
+    end
+    return indents[line]
+  end
+
+  local minline, maxline = self:get_visible_line_range()
+  for _, line in self:each_visible_line() do
+    if line and line >= 1 and line <= #self.doc.lines then get_indent(line) end
+  end
+  if not plugin_config.highlight then return end
+
+  local max_distance = math.max(0, tonumber(plugin_config.max) or MAX_LINES)
+  local _, indent_size = self.doc:get_indent_info()
+  indent_size = math.max(1, indent_size or 2)
+  for _, line in self.doc:get_selections() do
+    local offset = self:offset_from_position(line, 1)
+    if offset
+      and (offset > minline or minline - offset < max_distance)
+      and (offset < maxline or offset - maxline < max_distance) then
+      local level = get_indent(line)
+      local top, bottom
+      if not active[line] or active[line] > level then
+        -- Match indentguide's block header/footer and visible-row traversal.
+        if get_indent(line + 1) > level and get_indent(line + 1) <= level + indent_size then
+          top = true
+          level = get_indent(line + 1)
+        elseif get_indent(line - 1) > level and get_indent(line - 1) <= level + indent_size then
+          bottom = true
+          level = get_indent(line - 1)
+        end
+
+        active[line] = level
+        local stop_level = math.max(0, level - indent_size)
+        local offset_i = offset - 1
+        if offset_i >= minline and not top then
+          repeat
+            local i = self:position_from_offset(offset_i)
+            if not i then break end
+            if get_indent(i) <= stop_level then break end
+            active[i] = level
+            offset_i = offset_i - 1
+          until offset_i < minline
+        end
+        offset_i = offset + 1
+        if offset_i <= maxline and not bottom then
+          repeat
+            local i = self:position_from_offset(offset_i)
+            if not i then break end
+            if get_indent(i) <= stop_level then break end
+            active[i] = level
+            offset_i = offset_i + 1
+          until offset_i > maxline
+        end
+      end
+    end
+  end
+end
+
 local draw_line_text = DocView.draw_line_text
 
 function DocView:draw_line_text(line, x, y)
-  if not self:is(DocView) or is_exclude_document(self.doc) then
+  local plugin_config = config.plugins.indentrainbow
+  if not plugin_config.enabled or not self:is(DocView) or is_exclude_document(self.doc) then
     return draw_line_text(self, line, x, y)
   end
 
-  local columns = get_indent_columns(self.doc, line)
+  local columns
+  if plugin_config.style == "line" then
+    columns = self.indentrainbow_indents and self.indentrainbow_indents[line]
+    if columns == nil then columns = get_line_indent_columns(self.doc, line) end
+  else
+    columns = get_indent_columns(self.doc, line)
+  end
 
   if columns > 0 then
     local _, indent_size = self.doc:get_indent_info()
@@ -155,14 +276,21 @@ function DocView:draw_line_text(line, x, y)
 
     local line_height = self:get_line_visual_height(line)
     local space_width = self:get_font():get_width(" ")
-    local plugin_config = config.plugins.indentrainbow
 
     -- line
     if plugin_config.style == "line" then
+      local width = math.max(1, SCALE)
+      local active_level = plugin_config.highlight and self.indentrainbow_indent_active
+        and self.indentrainbow_indent_active[line] or -1
       for i = 0, columns - 1, indent_size do
         local level = math.floor(i / indent_size) + 1
-        -- look better with 3px offset
-        renderer.draw_rect(math.floor(x + i * space_width) + 3, y, 1, line_height, get_line_color(level))
+        local color = get_line_color(level)
+        if i < active_level and i + indent_size >= active_level then
+          color = style.guide_highlight or style.accent
+        end
+        renderer.draw_rect(
+          math.ceil(x + i * space_width), y, width, line_height, color
+        )
       end
     -- block
     else
@@ -183,5 +311,23 @@ function DocView:draw_line_text(line, x, y)
 
   return draw_line_text(self, line, x, y)
 end
+
+command.add(nil, {
+  ["indent-rainbow:toggle"] = function()
+    config.plugins.indentrainbow.enabled = not config.plugins.indentrainbow.enabled
+    core.log(
+      "Indent Rainbow: %s",
+      config.plugins.indentrainbow.enabled and "Enabled" or "Disabled"
+    )
+  end,
+
+  ["indent-rainbow:toggle-highlight"] = function()
+    config.plugins.indentrainbow.highlight = not config.plugins.indentrainbow.highlight
+    core.log(
+      "Indent Rainbow Highlight: %s",
+      config.plugins.indentrainbow.highlight and "Enabled" or "Disabled"
+    )
+  end,
+})
 
 return indentrainbow
