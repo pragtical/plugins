@@ -270,13 +270,6 @@
       "version": "0.1"
     },
     {
-      "description": "Integrates the [black](https://github.com/psf/black) Python formatter with lite",
-      "id": "black",
-      "mod_version": "3",
-      "remote": "https://git.sr.ht/~tmpod/black-lite:2a1ab1b703f954edb39efb73e72b44c0d18b30a2",
-      "version": "0.1"
-    },
-    {
       "description": "Underlines matching pair for bracket under the caret *([screenshot](https://user-images.githubusercontent.com/3920290/80132745-0c863f00-8594-11ea-8875-c455c6fd7eae.png))*",
       "id": "bracketmatch",
       "mod_version": "3.1",
@@ -406,13 +399,6 @@
         "game"
       ],
       "version": "0.1"
-    },
-    {
-      "description": "Debug Lite-XL's Lua VM interactively, if you're running it from a terminal. Warning: Will significantly slow down Lite-XL if installed.",
-      "id": "lite-debugger",
-      "mod_version": "3",
-      "path": "plugins/lite-debugger.lua",
-      "version": "0.1.1"
     },
     {
       "description": "Debugger integration with GDB MI and DAP backends, source breakpoints, stack navigation and watch expressions. *([screenshot](https://raw.githubusercontent.com/pragtical/ide/master/screenshots/debugger.png))*",
@@ -652,13 +638,6 @@
       "version": "4.3.7"
     },
     {
-      "description": "Dark (or even Mica!) title bar for Lite XL",
-      "id": "immersive-title",
-      "mod_version": "3",
-      "remote": "https://github.com/takase1121/lite-xl-immersive-title:cf3a8029ac7154ea53ac819a95d44a6ff102f051",
-      "version": "0.1"
-    },
-    {
       "description": "Convert between tabs and spaces indentation",
       "id": "indent_convert",
       "mod_version": "3",
@@ -708,17 +687,6 @@
       "mod_version": "3",
       "path": "plugins/keymap_export.lua",
       "version": "0.1.1"
-    },
-    {
-      "dependencies": {
-        "console": {}
-      },
-      "description": "Adds [Kinc](https://github.com/Kode/Kinc) Project generation with basic build commands(depends on [`console`](https://github.com/franko/console))",
-      "id": "kinc-projects",
-      "mod_version": "3",
-      "name": "Kinc Projects",
-      "remote": "https://github.com/Kode-Community/kinc_plugin:309fe4193a09cf739ed0a058b1a6966a463a1dbd",
-      "version": "0.1"
     },
     {
       "description": "Syntax for the [Angelscript](https://www.angelcode.com/angelscript/) programming language",
