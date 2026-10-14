@@ -1934,8 +1934,8 @@
       "description": "Provides code completion (also known as IntelliSense) using the Language Server Protocol",
       "id": "lsp",
       "mod_version": "3.12.3",
-      "remote": "https://github.com/pragtical/lsp:7e2b72da2a97961f09df049fcb2a9e8871642c97",
-      "version": "0.17.5"
+      "remote": "https://github.com/pragtical/lsp:0e15d6b48aa38bb043aa34e874655057227500d8",
+      "version": "0.17.6"
     },
     {
       "description": "Automatic configuration/binary download for LSP completion for Bash with bash-language-server.",
@@ -2289,8 +2289,8 @@
       "id": "scm",
       "mod_version": "3.11",
       "name": "Source Control Management",
-      "remote": "https://github.com/pragtical/scm:178890db139954744f6bc699f77ac0e1ecfd0794",
-      "version": "0.8.0"
+      "remote": "https://github.com/pragtical/scm:18e336c109aa51c46e457ebb02c77b51f64493cb",
+      "version": "0.8.1"
     },
     {
       "description": "Select a color theme, like VScode, Sublime Text.(plugin saves changes)",
