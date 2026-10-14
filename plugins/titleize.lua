@@ -9,3 +9,10 @@ command.add("core.docview", {
     end)
   end,
 })
+
+if core.menu_view then
+  core.menu_view:register({ "edit", "convert" }, {
+    core.menu_view.DIVIDER,
+    { id = "titleize", text = "Title Case", command = "titleize:titleize" }
+  }, "titleize")
+end

@@ -661,6 +661,29 @@ contextmenu:register("core.docview", {
   { text = "Add to Dictionary", command = "spell-check:add-to-dictionary-from-cursor" }
 })
 
+if core.menu_view then
+  core.menu_view:register({ "tools" }, {
+    core.menu_view.DIVIDER,
+    { id = "spellcheck", text = "Spell Check", items = {
+      {
+        id = "enabled", text = "Enabled", command = "spell-check:toggle",
+        ---Report the current spell-check visibility when the menu is opened.
+        ---@return boolean enabled Whether spelling errors are underlined
+        checked = function() return config.plugins.spellcheck.enabled end
+      },
+      {
+        id = "all-files", text = "Check All Files", command = "spell-check:toggle-forced-checking",
+        ---Report whether spelling is checked regardless of the file type.
+        ---@return boolean forced Whether all file types are checked
+        checked = function() return forced_spellcheck end
+      },
+      core.menu_view.DIVIDER,
+      { id = "suggestions", text = "Spelling Suggestions...", command = "spell-check:replace" },
+      { id = "add-word", text = "Add Word to Dictionary", command = "spell-check:add-to-dictionary" }
+    } }
+  }, "spellcheck")
+end
+
 --
 -- Initialize Dictionary on Startup
 --

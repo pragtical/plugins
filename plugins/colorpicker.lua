@@ -102,3 +102,10 @@ command.add("core.docview!", {
 keymap.add {
   ["ctrl+alt+k"] = "color-picker:open"
 }
+
+if core.menu_view then
+  core.menu_view:register({ "tools" }, {
+    core.menu_view.DIVIDER,
+    { id = "colorpicker", text = "Color Picker...", command = "color-picker:open" }
+  }, "colorpicker")
+end

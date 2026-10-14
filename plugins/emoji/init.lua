@@ -75,7 +75,7 @@ end
 local original_on_text_input = RootView.on_text_input
 
 RootView.on_text_input = function(self, ...)
-  original_on_text_input(self, ...)
+  if original_on_text_input(self, ...) then return true end
 
   local view = core.active_view
   local doc = view and view.doc

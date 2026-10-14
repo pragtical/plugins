@@ -51,10 +51,12 @@ end
 -- Double clicking on a tab makes it normal
 local RootView_on_mouse_pressed = RootView.on_mouse_pressed
 function RootView:on_mouse_pressed(button, x, y, clicks)
+  -- A popup can close while handling the press, so check its target first.
+  local floating = self.get_floating_view_at and self:get_floating_view_at(x, y)
   local result = RootView_on_mouse_pressed(self, button, x, y, clicks)
-  if clicks > 1 then
+  if clicks > 1 and not floating then
     local node = self.root_node:get_child_overlapping_point(x, y)
-    local idx = node:get_tab_overlapping_point(x, y)
+    local idx = node and node:get_tab_overlapping_point(x, y)
     if idx then
       node.views[idx].ephemeral = false
     end

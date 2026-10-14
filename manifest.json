@@ -324,7 +324,7 @@
       "id": "colorpicker",
       "mod_version": "3",
       "path": "plugins/colorpicker.lua",
-      "version": "0.2.5"
+      "version": "0.2.6"
     },
     {
       "description": "Underlays color values (eg. `#ff00ff`, `rgb(255, 0, 255)` or hsl(300, 100%, 50%)) with their resultant color. *([screenshot](https://user-images.githubusercontent.com/3920290/80743752-731bd780-8b15-11ea-97d3-847db927c5dc.png))*",
@@ -471,7 +471,7 @@
       "id": "emoji",
       "mod_version": "3",
       "path": "plugins/emoji",
-      "version": "1.0.1"
+      "version": "1.0.2"
     },
     {
       "description": "Make sure the file ends with one blank line.",
@@ -485,7 +485,7 @@
       "id": "ephemeral_tabs",
       "mod_version": "3",
       "path": "plugins/ephemeral_tabs.lua",
-      "version": "0.1"
+      "version": "0.1.1"
     },
     {
       "description": "Graphs y=x equations.",
@@ -637,13 +637,6 @@
       "version": "1.24.5"
     },
     {
-      "description": "Graphical filepicker using zenity or kdialog.",
-      "id": "gui_filepicker",
-      "mod_version": "3.1",
-      "path": "plugins/gui_filepicker.lua",
-      "version": "1.0"
-    },
-    {
       "description": "Draw configurable background colors in the editor gutter.",
       "id": "guttercolor",
       "mod_version": "3",
@@ -670,7 +663,7 @@
       "id": "indent_convert",
       "mod_version": "3",
       "path": "plugins/indent_convert.lua",
-      "version": "0.1"
+      "version": "0.1.1"
     },
     {
       "description": "Show indentation in rainbow colors to make them more readable",
@@ -2346,7 +2339,7 @@
       "id": "sort",
       "mod_version": "3",
       "path": "plugins/sort.lua",
-      "version": "0.2"
+      "version": "0.2.1"
     },
     {
       "description": "Sort selected CSS properties alphabetically or using the concentric model. *([demo](https://raw.githubusercontent.com/felixsanz/lite-xl-sortcss/master/demo.gif))*",
@@ -2360,7 +2353,7 @@
       "id": "spellcheck",
       "mod_version": "3.11",
       "path": "plugins/spellcheck.lua",
-      "version": "0.5.0"
+      "version": "0.5.1"
     },
     {
       "description": "Displays the current date and time in the corner of the status view",
@@ -2459,7 +2452,7 @@
       "id": "titleize",
       "mod_version": "3",
       "path": "plugins/titleize.lua",
-      "version": "0.1"
+      "version": "0.1.1"
     },
     {
       "description": "Todo tree viewer for annotations in code like `TODO`, `BUG`, `FIX`, `IMPROVEMENT`",
@@ -2473,7 +2466,7 @@
       "id": "togglesnakecamel",
       "mod_version": "3",
       "path": "plugins/togglesnakecamel.lua",
-      "version": "0.1"
+      "version": "0.1.1"
     },
     {
       "description": "Tree-sitter syntax highlighting through a direct LuaJIT FFI wrapper around the Tree-sitter runtime.",

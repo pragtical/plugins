@@ -139,3 +139,11 @@ command.add("core.docview!", {
     ["indent-convert:spaces-to-tabs"] = spaces_to_tabs
   }
 )
+
+if core.menu_view then
+  core.menu_view:register({ "edit", "convert" }, {
+    core.menu_view.DIVIDER,
+    { id = "tabs-to-spaces", text = "Tabs to Spaces", command = "indent-convert:tabs-to-spaces" },
+    { id = "spaces-to-tabs", text = "Spaces to Tabs", command = "indent-convert:spaces-to-tabs" }
+  }, "indent_convert")
+end

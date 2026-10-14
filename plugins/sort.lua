@@ -29,3 +29,9 @@ command.add("core.docview!", {
   end,
 })
 
+if core.menu_view then
+  core.menu_view:register({ "edit", "lines" }, {
+    core.menu_view.DIVIDER,
+    { id = "sort", text = "Sort Lines", command = "sort:sort" }
+  }, "sort")
+end
