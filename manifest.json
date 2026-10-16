@@ -2060,6 +2060,13 @@
       "version": "0.1.2"
     },
     {
+      "description": "Matrix digital rain in an editor tab or fullscreen, with a configurable idle screensaver.",
+      "id": "matrix",
+      "mod_version": "3",
+      "path": "plugins/matrix.lua",
+      "version": "0.1"
+    },
+    {
       "description": "Show memory usage in the status view",
       "id": "memoryusage",
       "mod_version": "3",
