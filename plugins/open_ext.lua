@@ -164,7 +164,8 @@ local rootview_open_doc = RootView.open_doc
 function RootView:open_doc(doc)
   local node = self:get_active_node_default()
   for _, view in ipairs(node.views) do
-    if view:is(OpenExtView) and view.doc == doc then
+    if view.doc == doc
+      and (view:is(OpenExtView) or view:extends(DocView)) then
       node:set_active_view(view)
       return view
     end
