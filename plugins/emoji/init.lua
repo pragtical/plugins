@@ -30,6 +30,43 @@ local function load_emoji_data()
   return data
 end
 
+local function inline_metadata(text)
+  local open
+  for i = 1, #text do
+    local c = text:sub(i, i)
+    if c == "[" then
+      open = i
+    elseif c == "]" then
+      open = nil
+    end
+  end
+  return open ~= nil and text:find("::", open, true) ~= nil
+end
+
+-- do not trigger for inline metadata
+local function find_trigger(text)
+  -- right after ::, e.g. unofficial::true
+  if text:match("::%s*$") then
+    return nil
+  end
+
+  local keyword = text:match(":([%w_]+)$")
+  if not keyword then
+    return nil
+  end
+
+  local colon = #text - #keyword
+  -- the second : in key::value
+  if text:sub(colon - 1, colon - 1) == ":" then
+    return nil
+  end
+  -- inline metadata, e.g. [key::name]
+  if inline_metadata(text:sub(1, colon - 1)) then
+    return nil
+  end
+  return colon
+end
+
 local entries = load_emoji_data()
 local emoji_items = {}
 local registered = {}
@@ -48,12 +85,10 @@ local function add_keyword(keyword, emoji)
         return false
       end
       local line, col = doc:get_selection()
-      local before_cursor = (doc.lines[line] or ""):sub(1, col - 1)
-      local typed_keyword = before_cursor:match(":([%w_]+)$")
-      if not typed_keyword then
+      local start_col = find_trigger((doc.lines[line] or ""):sub(1, col - 1))
+      if not start_col then
         return false
       end
-      local start_col = col - #typed_keyword - 1
       doc:remove(line, start_col, line, col)
       doc:text_input(emoji)
       return true
@@ -84,8 +119,7 @@ RootView.on_text_input = function(self, ...)
   end
 
   local line, col = doc:get_selection()
-  local before_cursor = (doc.lines[line] or ""):sub(1, col - 1)
-  if before_cursor:match(":([%w_]+)$") then
+  if find_trigger((doc.lines[line] or ""):sub(1, col - 1)) then
     autocomplete.complete({
       name = "emoji",
       items = emoji_items,
