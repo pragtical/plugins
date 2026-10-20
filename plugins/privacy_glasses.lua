@@ -1,10 +1,13 @@
 -- mod-version:3.11
+-- Add blurry mask on inactive lines.
+-- Also can be used as "zen mode".
 
 local common = require("core.common")
 local command = require("core.command")
 local config = require("core.config")
 local DocView = require("core.docview")
 local style = require("core.style")
+local TitleView = require("core.titleview")
 
 local privacy_glasses = {}
 local MASK_ALPHA = 184
@@ -36,6 +39,27 @@ config.plugins.privacy_glasses = common.merge({
     },
   },
 }, config.plugins.privacy_glasses)
+
+if not TitleView._privacy_glasses_patched then
+  TitleView._privacy_glasses_patched = true
+  local original_update = TitleView.update
+  local original_draw = TitleView.draw
+  function TitleView:update(...)
+    local enabled = config.plugins.privacy_glasses.enabled == true
+    local visible = not enabled
+    if self.visible ~= visible then
+      self.visible = visible
+      self:configure_hit_test(self.visible)
+    end
+    return original_update(self, ...)
+  end
+  function TitleView:draw(...)
+    if config.plugins.privacy_glasses.enabled == true then
+      return
+    end
+    return original_draw(self, ...)
+  end
+end
 
 local function get_active_line(doc)
   if not doc or type(doc.get_selections) ~= "function" then

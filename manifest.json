@@ -2201,7 +2201,7 @@
       "id": "privacy_glasses",
       "mod_version": "3.11",
       "path": "plugins/privacy_glasses.lua",
-      "version": "1.0.0"
+      "version": "1.1.0"
     },
     {
       "description": "Adds the ability to profile Pragtical.",
