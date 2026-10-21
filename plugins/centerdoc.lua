@@ -11,6 +11,7 @@ local DocView = require "core.docview"
 config.plugins.centerdoc = common.merge({
   enabled = true,
   zen_mode = false,
+  zen_mode_hide_menu_bar = true,
   zen_mode_hide_status_bar = true,
   zen_mode_hide_tabs = true,
   zen_mode_hide_line_numbers = true
@@ -33,6 +34,10 @@ end
 local previous_win_status
 ---@type boolean
 local previous_treeview_status
+---@type boolean?
+local previous_toolbar_status
+---@type boolean?
+local previous_menu_bar_status
 ---@type boolean
 local previous_statusbar_status
 ---@type boolean
@@ -40,11 +45,23 @@ local previous_tabs_status
 ---@type boolean
 local previous_line_numbers_status
 
+local function set_menu_bar_visible(visible)
+  if core.menu_view and visible ~= nil then
+    if visible then
+      core.menu_view:show()
+    else
+      core.menu_view:hide()
+    end
+  end
+end
+
 local function save_previous_status()
   previous_win_status = core.window
     and system.get_window_mode(core.window)
     or core.window_mode
   previous_treeview_status = treeview.visible
+  previous_toolbar_status = treeview.toolbar and treeview.toolbar.visible
+  previous_menu_bar_status = core.menu_view and core.menu_view.visible
   previous_statusbar_status = core.status_view.visible
   previous_tabs_status = config.hide_tabs
   previous_line_numbers_status = config.show_line_numbers
@@ -61,6 +78,10 @@ local function toggle_zen_mode(enabled)
       command.perform "core:toggle-fullscreen"
     end
     treeview.visible = false
+    if treeview.toolbar then treeview.toolbar.visible = false end
+    if config.plugins.centerdoc.zen_mode_hide_menu_bar then
+      set_menu_bar_visible(false)
+    end
     if config.plugins.centerdoc.zen_mode_hide_status_bar then
       core.status_view.visible = false
     end
@@ -82,6 +103,10 @@ local function toggle_zen_mode(enabled)
       command.perform "core:toggle-fullscreen"
     end
     treeview.visible = previous_treeview_status
+    if treeview.toolbar then treeview.toolbar.visible = previous_toolbar_status end
+    if config.plugins.centerdoc.zen_mode_hide_menu_bar then
+      set_menu_bar_visible(previous_menu_bar_status)
+    end
     if config.plugins.centerdoc.zen_mode_hide_status_bar then
       core.status_view.visible = previous_statusbar_status
     end
@@ -124,6 +149,22 @@ config.plugins.centerdoc.config_spec = {
         on_startup = false
       else
         toggle_zen_mode(enabled)
+      end
+    end
+  },
+  {
+    label = "Hide Menu Bar on Zen Mode",
+    description = "Hide the menu bar when using zen mode.",
+    path = "zen_mode_hide_menu_bar",
+    type = "toggle",
+    default = true,
+    on_apply = function(enabled)
+      if config.plugins.centerdoc.zen_mode then
+        if enabled then
+          set_menu_bar_visible(false)
+        else
+          set_menu_bar_visible(previous_menu_bar_status)
+        end
       end
     end
   },
