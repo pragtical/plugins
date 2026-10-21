@@ -2255,10 +2255,10 @@
     {
       "description": "Extensible source control management plugin with git and fossil backends.",
       "id": "scm",
-      "mod_version": "3.11",
+      "mod_version": "3.14.0",
       "name": "Source Control Management",
-      "remote": "https://github.com/pragtical/scm:18e336c109aa51c46e457ebb02c77b51f64493cb",
-      "version": "0.8.1"
+      "remote": "https://github.com/pragtical/scm:fc5a4e50cb59dc5763fffd6097295ace6fb5f54a",
+      "version": "0.9.0"
     },
     {
       "description": "Select a color theme, like VScode, Sublime Text.(plugin saves changes)",
