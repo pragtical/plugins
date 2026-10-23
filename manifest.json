@@ -1895,8 +1895,8 @@
       "description": "Provides code completion (also known as IntelliSense) using the Language Server Protocol",
       "id": "lsp",
       "mod_version": "3.12.3",
-      "remote": "https://github.com/pragtical/lsp:32b26c0734b278f2f5419fade9735936a8cccf35",
-      "version": "0.17.7"
+      "remote": "https://github.com/pragtical/lsp:c6ee3ea3f7af5dce4159de17ddd54ddf45d9e99d",
+      "version": "0.17.8"
     },
     {
       "description": "Automatic configuration/binary download for LSP completion for Bash with bash-language-server.",
@@ -2177,9 +2177,9 @@
     {
       "description": "A plugin manager view for pragtical that provides GUI access to `ppm`",
       "id": "plugin_manager",
-      "mod_version": "3",
-      "remote": "https://github.com/pragtical/plugin-manager.git:c038e63b64db6dd67b7ea14fb5888d99b0ef2342",
-      "version": "0.1.1"
+      "mod_version": "3.10.0",
+      "remote": "https://github.com/pragtical/plugin-manager.git:6d274decc09bca29dd4b41d0ea8606c2646e3afb",
+      "version": "1.7.2"
     },
     {
       "description": "Preview files and doc before before opening them",
