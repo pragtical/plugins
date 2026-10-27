@@ -558,6 +558,13 @@
       "version": "0.7.1"
     },
     {
+      "description": "Show random quote via fortune in status bar",
+      "id": "fortune",
+      "mod_version": "3",
+      "path": "plugins/fortune.lua",
+      "version": "1.1.0"
+    },
+    {
       "description": "Generates Pragtical API reference markdown files for Pragtical's website using LuaLS.",
       "id": "gendocs",
       "mod_version": "3",
