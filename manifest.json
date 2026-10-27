@@ -2462,6 +2462,19 @@
       "version": "1.2.0"
     },
     {
+      "description": "Terminal rendering backend (Text-Based UI) for Pragtical Code Editor..",
+      "id": "tui",
+      "mod_version": "3.14.0",
+      "name": "Terminal UI",
+      "remote": "https://github.com/pragtical/tui:02847030acf6484d8ba3f619709316f7a2992daa",
+      "tags": [
+        "terminal",
+        "tui",
+        "text user interface"
+      ],
+      "version": "0.1"
+    },
+    {
       "description": "Displays your current typing speed in characters and words per minute in the status bar",
       "id": "typingspeed",
       "mod_version": "3",
