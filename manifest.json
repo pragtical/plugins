@@ -228,6 +228,14 @@
       "version": "0.1.8"
     },
     {
+      "description": "Audio spectrum overlay and classic visualizer effects for built-in audio API.",
+      "id": "audiovisu",
+      "mod_version": "3.12.5",
+      "name": "Editor Audio Visualizer",
+      "path": "plugins/audiovisu.lua",
+      "version": "0.1.0"
+    },
+    {
       "description": "Automatically inserts closing brackets and quotes. Also allows selected text to be wrapped with brackets or quotes.",
       "id": "autoinsert",
       "mod_version": "3.1",
