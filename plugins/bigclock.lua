@@ -75,6 +75,9 @@ end
 
 
 function ClockView:update()
+  if core.request_update and self.size.x > 0 and self.size.y > 0 then
+    core.request_update(1)
+  end
   local time_text = os.date(config.plugins.bigclock.time_format)
   local date_text = os.date(config.plugins.bigclock.date_format)
   if self.time_text ~= time_text or self.date_text ~= date_text then

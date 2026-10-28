@@ -8,6 +8,7 @@ local config = require "core.config"
 local keymap = require "core.keymap"
 local style = require "core.style"
 local View = require "core.view"
+local RootView = require "core.rootview"
 local renderer = require "renderer"
 local configure_screensaver
 
@@ -301,7 +302,7 @@ core.on_event = function(event, ...)
     return true
   end
   if config.plugins.matrix.screensaver and command.map["matrix:open"].perform == matrix.open
-    and (activity_events[event] or event == "focuslost")
+    and (activity_events[event] or event == "focuslost" or event == "focusgained")
   then
     last_activity = system.get_time()
   end
@@ -329,6 +330,7 @@ configure_screensaver = function(enabled)
   end
   if core.threads[matrix] then return end
   last_activity = system.get_time()
+  if core.request_update then core.request_update(); return end
   -- A sleeping coroutine requests no redraws and performs no work between checks.
   core.add_thread(function()
     local had_focus = system.window_has_focus(core.window)
@@ -352,6 +354,29 @@ configure_screensaver = function(enabled)
     -- Also handle disabling through a direct Lua config assignment.
     if fullscreen and fullscreen.automatic then matrix.exit_fullscreen() end
   end, matrix)
+end
+
+local root_update = RootView.update
+---Schedule the screensaver's actual idle deadline through normal view updates.
+function RootView:update(...)
+  local result = root_update(self, ...)
+  if not core.request_update then return result end
+  if not config.plugins.matrix.screensaver
+    or command.map["matrix:open"].perform ~= matrix.open
+  then
+    if fullscreen and fullscreen.automatic then matrix.exit_fullscreen() end
+    return result
+  end
+  local now = system.get_time()
+  if not system.window_has_focus(core.window) then
+    last_activity = now
+  elseif not fullscreen then
+    local remaining = last_activity
+      + math.max(1, config.plugins.matrix.idle_minutes) * 60 - now
+    if remaining <= 0 then enter_fullscreen(MatrixView(), true)
+    else core.request_update(remaining) end
+  end
+  return result
 end
 
 configure_screensaver(config.plugins.matrix.screensaver)

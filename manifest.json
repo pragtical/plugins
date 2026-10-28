@@ -224,8 +224,8 @@
       "id": "assistant",
       "mod_version": "3.11.0",
       "name": "Assistant",
-      "remote": "https://github.com/pragtical/assistant:bdd6bbe4fffef22a31dc36d6a6e74a2d00790d16",
-      "version": "0.1.7"
+      "remote": "https://github.com/pragtical/assistant:d17fcf0a55da84a80f1db665187c0b5efdb2ab24",
+      "version": "0.1.8"
     },
     {
       "description": "Automatically inserts closing brackets and quotes. Also allows selected text to be wrapped with brackets or quotes.",
@@ -267,7 +267,7 @@
       "id": "bigclock",
       "mod_version": "3",
       "path": "plugins/bigclock.lua",
-      "version": "0.1"
+      "version": "0.1.1"
     },
     {
       "description": "Underlines matching pair for bracket under the caret *([screenshot](https://user-images.githubusercontent.com/3920290/80132745-0c863f00-8594-11ea-8875-c455c6fd7eae.png))*",
@@ -554,8 +554,8 @@
       "description": "Code formatter for various languages",
       "id": "formatter",
       "mod_version": "3",
-      "remote": "https://github.com/pragtical/formatter:a57e5e0fa484196747cd9a34368f1071ebaf7261",
-      "version": "0.7.1"
+      "remote": "https://github.com/pragtical/formatter:7a47859a70b73eb5d6ef5b741f0ab8a7bf10bff1",
+      "version": "0.7.2"
     },
     {
       "description": "Show random quote via fortune in status bar",
@@ -583,8 +583,8 @@
       "id": "ghostty",
       "mod_version": "3",
       "name": "Ghostty Terminal",
-      "remote": "https://github.com/pragtical/ghostty.git:58c5685bc41f57a746d0a2afc8aa14807fbd3888",
-      "version": "0.2.2"
+      "remote": "https://github.com/pragtical/ghostty.git:1953af466ee96c85aa116065d1fe6089e24ebdaa",
+      "version": "0.2.3"
     },
     {
       "description": "Shows \"git blame\" information of a line *([screenshot](https://raw.githubusercontent.com/juliardi/lite-xl-gitblame/main/screenshot_1.png))*",
@@ -612,7 +612,7 @@
       "id": "gitstatus",
       "mod_version": "3.1",
       "path": "plugins/gitstatus.lua",
-      "version": "0.2.1"
+      "version": "0.2.2"
     },
     {
       "description": "Auto-formats the current go file, adds the missing imports and the missing return cases",
@@ -670,7 +670,7 @@
       "id": "input_latency",
       "mod_version": "3",
       "path": "plugins/input_latency.lua",
-      "version": "0.1"
+      "version": "0.1.1"
     },
     {
       "description": "Production and Early-Access OpenJDK Builds, from Oracle.",
@@ -1878,11 +1878,11 @@
       "id": "lintplus",
       "mod_version": "3.11",
       "name": "lint+",
-      "remote": "https://github.com/pragtical/lintplus:662e824bf953e8cc31d834fe798efb1a09bfdb68",
+      "remote": "https://github.com/pragtical/lintplus:de1e9f015431c6e95ef4f8d0bb3ca85e0f4114e4",
       "replaces": [
         "linter"
       ],
-      "version": "0.8"
+      "version": "0.8.1"
     },
     {
       "description": "Discord rich presence for Lite XL (display file editing in Discord)",
@@ -1902,8 +1902,8 @@
       "description": "Provides code completion (also known as IntelliSense) using the Language Server Protocol",
       "id": "lsp",
       "mod_version": "3.12.3",
-      "remote": "https://github.com/pragtical/lsp:c6ee3ea3f7af5dce4159de17ddd54ddf45d9e99d",
-      "version": "0.17.8"
+      "remote": "https://github.com/pragtical/lsp:c17f822705bff56e1ebd9922f8d7dd5ee4597d55",
+      "version": "0.17.9"
     },
     {
       "description": "Automatic configuration/binary download for LSP completion for Bash with bash-language-server.",
@@ -2071,14 +2071,14 @@
       "id": "matrix",
       "mod_version": "3",
       "path": "plugins/matrix.lua",
-      "version": "0.1"
+      "version": "0.1.1"
     },
     {
       "description": "Show memory usage in the status view",
       "id": "memoryusage",
       "mod_version": "3",
       "path": "plugins/memoryusage.lua",
-      "version": "0.1.1"
+      "version": "0.1.2"
     },
     {
       "description": "Shows a minimap on the right-hand side of the docview. Taken from [@andsve](https://github.com/andsve/lite-plugins/tree/minimap-plugin), and improved upon.",
@@ -2185,8 +2185,8 @@
       "description": "A plugin manager view for pragtical that provides GUI access to `ppm`",
       "id": "plugin_manager",
       "mod_version": "3.10.0",
-      "remote": "https://github.com/pragtical/plugin-manager.git:6d274decc09bca29dd4b41d0ea8606c2646e3afb",
-      "version": "1.7.2"
+      "remote": "https://github.com/pragtical/plugin-manager.git:78eb91ea6d014a387cc1777688a1206275004cf6",
+      "version": "1.7.3"
     },
     {
       "description": "Preview files and doc before before opening them",
@@ -2264,8 +2264,8 @@
       "id": "scm",
       "mod_version": "3.14.0",
       "name": "Source Control Management",
-      "remote": "https://github.com/pragtical/scm:fc5a4e50cb59dc5763fffd6097295ace6fb5f54a",
-      "version": "0.9.0"
+      "remote": "https://github.com/pragtical/scm:0c1943807895cd0256a8968eb4d27c366b9811a8",
+      "version": "0.9.1"
     },
     {
       "description": "Select a color theme, like VScode, Sublime Text.(plugin saves changes)",
@@ -2286,7 +2286,7 @@
       "id": "smallclock",
       "mod_version": "3",
       "path": "plugins/smallclock.lua",
-      "version": "0.1"
+      "version": "0.1.1"
     },
     {
       "description": "Opens the selected filename or path in project. Useful to open imports.",
@@ -2335,14 +2335,14 @@
       "id": "spellcheck",
       "mod_version": "3.11",
       "path": "plugins/spellcheck.lua",
-      "version": "0.5.1"
+      "version": "0.5.2"
     },
     {
       "description": "Displays the current date and time in the corner of the status view",
       "id": "statusclock",
       "mod_version": "3",
       "path": "plugins/statusclock.lua",
-      "version": "0.2"
+      "version": "0.2.1"
     },
     {
       "description": "Keep track of the current scope at the top of the view (*[video](https://user-images.githubusercontent.com/2798487/222133911-e467a583-596c-47ab-8e65-eefc7b5c9112.mp4)*)",
@@ -2385,8 +2385,8 @@
       "description": "An integrated terminal for pragtical.",
       "id": "terminal",
       "mod_version": "3",
-      "remote": "https://github.com/pragtical/terminal.git:master",
-      "version": "1.094"
+      "remote": "https://github.com/pragtical/terminal.git:4ecc2dac09487094ca4e6cf9ccbf775624f91106",
+      "version": "1.095"
     },
     {
       "description": "Allows you to play tetris directly in the editor.",
@@ -2441,7 +2441,7 @@
       "id": "todotreeview",
       "mod_version": "3.1",
       "path": "plugins/todotreeview.lua",
-      "version": "0.4.1"
+      "version": "0.4.2"
     },
     {
       "description": "Toggles symbols between `snake_case` and `camelCase`",
@@ -2455,8 +2455,8 @@
       "id": "treesitter",
       "mod_version": "3",
       "name": "Treesitter",
-      "remote": "https://github.com/pragtical/treesitter:1aed7fbdf6d6f0ca2013fb21650d9fb9636e5e41",
-      "version": "0.6.2"
+      "remote": "https://github.com/pragtical/treesitter:340847628d442ed470273e392d7366c31b068ca8",
+      "version": "0.6.3"
     },
     {
       "description": "Extend Pragtical's treeview menu *([screenshot](https://raw.githubusercontent.com/juliardi/pragtical-treeview-extender/main/screenshot.png))*",
@@ -2473,20 +2473,20 @@
       "id": "tui",
       "mod_version": "3.14.0",
       "name": "Terminal UI",
-      "remote": "https://github.com/pragtical/tui:02847030acf6484d8ba3f619709316f7a2992daa",
+      "remote": "https://github.com/pragtical/tui:7939ae50b2206c153cc627972a637b907be01e9b",
       "tags": [
         "terminal",
         "tui",
         "text user interface"
       ],
-      "version": "0.1"
+      "version": "0.1.1"
     },
     {
       "description": "Displays your current typing speed in characters and words per minute in the status bar",
       "id": "typingspeed",
       "mod_version": "3",
       "path": "plugins/typingspeed.lua",
-      "version": "0.1"
+      "version": "0.1.1"
     },
     {
       "description": "Allows scrolling outside the bounds of a document",
@@ -2506,15 +2506,15 @@
       "description": "VI(vim?) bindings with a hint of DOOM Emacs, for pragtical",
       "id": "vibe",
       "mod_version": "3",
-      "remote": "https://github.com/pragtical/vibe:5517e374f8e4083a8a30b69ccd45fb8773542cdf",
-      "version": "0.1.1"
+      "remote": "https://github.com/pragtical/vibe:e65f212d522fbe0799f8ea929436a7f142f49723",
+      "version": "0.1.2"
     },
     {
       "description": "Audio visualizer for Pragtical using cava",
       "id": "visu",
       "mod_version": "3",
       "path": "plugins/visu.lua",
-      "version": "0.2.8"
+      "version": "0.2.9"
     },
     {
       "description": "Adds in a word count to the statusview.",

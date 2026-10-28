@@ -14,6 +14,7 @@ local config = require "core.config"
 local keymap = require "core.keymap"
 local style = require "core.style"
 local View = require "core.view"
+local RootView = require "core.rootview"
 local Doc = require "core.doc"
 local CommandView = require "core.commandview"
 
@@ -1014,21 +1015,20 @@ function core.exit(quit_fn, force)
   return core_exit(quit_fn, force)
 end
 
--- monitor mode or project dir changes
+-- Project and settings changes already cause editor updates.
 local last_mode = config.plugins.todotreeview.todo_mode
-core.add_thread(function()
-  while true do
-    if
-      core.root_project().path ~= view.current_project_dir
-      or
-      last_mode ~= config.plugins.todotreeview.todo_mode
-    then
-      last_mode = config.plugins.todotreeview.todo_mode
-      view:refresh_cache()
-    end
-    coroutine.yield(5)
+local root_update = RootView.update
+---Refresh the cached grouping when project or mode changes reach the view tree.
+function RootView:update(...)
+  local project = core.root_project()
+  if project and (project.path ~= view.current_project_dir
+    or last_mode ~= config.plugins.todotreeview.todo_mode)
+  then
+    last_mode = config.plugins.todotreeview.todo_mode
+    view:refresh_cache()
   end
-end)
+  return root_update(self, ...)
+end
 
 -- update todo tags on file save
 local doc_save = Doc.save

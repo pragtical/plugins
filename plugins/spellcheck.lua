@@ -28,6 +28,7 @@ config.plugins.spellcheck = common.merge({
 }, config.plugins.spellcheck)
 
 local last_input_time = 0
+local redraw_pending = false
 local words, word_pattern = nil, "%a+"
 local cursor_x, cursor_y = 0, 0
 local forced_spellcheck = false
@@ -273,6 +274,20 @@ local text_input = Doc.text_input
 function Doc:text_input(...)
   text_input(self, ...)
   last_input_time = system.get_time()
+  if not redraw_pending and (check_doc(self)
+    or words and config.plugins.spellcheck.enabled and config.plugins.spellcheck.check_comments)
+  then
+    redraw_pending = true
+    core.add_thread(function()
+      while true do
+        local delay = last_input_time + 0.5 - system.get_time()
+        if delay <= 0 then break end
+        coroutine.yield(delay)
+      end
+      redraw_pending = false
+      core.redraw = true
+    end)
+  end
 end
 
 

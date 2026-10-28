@@ -51,6 +51,7 @@ local wpm = 0
 core.add_thread(function()
 	while true do
     if config.plugins.typingspeed.enabled then
+      local previous_wpm, previous_cpm = wpm, cpm
       local t = os.date("*t")
       if t.sec <= time_last then
         words_last = words
@@ -61,6 +62,7 @@ core.add_thread(function()
       end
       wpm = words_last * (1-(t.sec)/60) + words
       cpm = chars_last * (1-(t.sec)/60) + chars
+      if wpm ~= previous_wpm or cpm ~= previous_cpm then core.redraw = true end
     end
 		coroutine.yield(1)
 	end

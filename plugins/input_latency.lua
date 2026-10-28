@@ -33,23 +33,11 @@ local EVENT_LAST_TIME = 0
 local TEXTINPUT_EVENT_EMITTED = false
 local INPUT_LATENCY_DATA = {}
 
-local core_step = core.step
-function core.step()
-  if config.plugins.input_latency.enabled then
-    local start_time = system.get_time()
-    local diddraw = core_step()
-    if not diddraw then
-      EVENT_LAST_TIME = start_time
-    end
-    return diddraw
-  end
-  return core_step()
-end
-
 local core_on_event = core.on_event
 function core.on_event(type, a, b, c, d)
   if config.plugins.input_latency.enabled and core.active_view:is(DocView) then
     if type == "textinput" then
+      if not TEXTINPUT_EVENT_EMITTED then EVENT_LAST_TIME = system.get_time() end
       TEXTINPUT_EVENT_EMITTED = true
     end
   end

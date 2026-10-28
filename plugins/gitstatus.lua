@@ -63,6 +63,32 @@ local git = {
   deletes = 0,
 }
 
+---Read the current branch without spawning Git, including linked worktrees.
+---@param root string Absolute project directory
+---@return string? branch Nil if metadata requires Git's own resolution
+local function read_branch(root)
+  local directory = root .. PATHSEP .. ".git"
+  local info = system.get_file_info(directory)
+  if info and info.type == "file" then
+    local marker = io.open(directory, "r")
+    if not marker then return end
+    local line = marker:read("*l") or ""
+    marker:close()
+    directory = line:match("^gitdir:%s*(.-)%s*$")
+    if not directory then return end
+    if not common.is_absolute_path(directory) then
+      directory = root .. PATHSEP .. directory
+    end
+  end
+  local head = io.open(directory .. PATHSEP .. "HEAD", "r")
+  if not head then return end
+  local line = head:read("*l") or ""
+  head:close()
+  local branch = line:match("^ref:%s+refs/heads/(.+)$")
+  if branch then return branch end
+  if line:match("^%x+$") then return "HEAD" end
+end
+
 local function exec(cmd)
   local proc = process.start(cmd, {cwd = core.root_project().path})
   -- Don't use proc:wait() here - that will freeze the app.
@@ -77,10 +103,12 @@ end
 
 
 core.add_thread(function()
+  local last_diff, last_project
   while true do
     if system.get_file_info(".git") then
       -- get branch name
-      git.branch = exec({"git", "rev-parse", "--abbrev-ref", "HEAD"}):match("[^\n]*")
+      local branch = read_branch(core.root_project().path)
+        or exec({"git", "rev-parse", "--abbrev-ref", "HEAD"}):match("[^\n]*")
 
       local inserts = 0
       local deletes = 0
@@ -96,38 +124,48 @@ core.add_thread(function()
         diff = diff .. diff2
       end
 
-      -- forget the old state
-      cached_color_for_item = {}
+      local root_project = core.root_project().path
+      if last_diff ~= diff or last_project ~= root_project then
+        -- forget the old state
+        cached_color_for_item = {}
 
-      local folder = core.root_project().path
-      local root_project = folder
-      for line in string.gmatch(diff, "[^\n]+") do
-        local submodule = line:match("^Entering '(.+)'$")
-        if submodule then
-          folder = core.root_project().path .. PATHSEP .. submodule
-        else
-          local ins, dels, path = line:match("(%d+)%s+(%d+)%s+(.+)")
-          if path then
-            inserts = inserts + (tonumber(ins) or 0)
-            deletes = deletes + (tonumber(dels) or 0)
-            local abs_path = folder .. PATHSEP .. path
-            -- Color this file, and each parent folder,
-            -- so you can see at a glance which folders
-            -- have modified files in them.
-            while abs_path do
-              cached_color_for_item[abs_path] = style.gitstatus_modification
-              abs_path = common.dirname(abs_path)
-              if abs_path == root_project then break end
+        local folder = core.root_project().path
+        for line in string.gmatch(diff, "[^\n]+") do
+          local submodule = line:match("^Entering '(.+)'$")
+          if submodule then
+            folder = core.root_project().path .. PATHSEP .. submodule
+          else
+            local ins, dels, path = line:match("(%d+)%s+(%d+)%s+(.+)")
+            if path then
+              inserts = inserts + (tonumber(ins) or 0)
+              deletes = deletes + (tonumber(dels) or 0)
+              local abs_path = folder .. PATHSEP .. path
+              -- Color this file, and each parent folder,
+              -- so you can see at a glance which folders
+              -- have modified files in them.
+              while abs_path do
+                cached_color_for_item[abs_path] = style.gitstatus_modification
+                abs_path = common.dirname(abs_path)
+                if abs_path == root_project then break end
+              end
             end
           end
         end
-      end
 
-      git.inserts = inserts
-      git.deletes = deletes
+        git.inserts = inserts
+        git.deletes = deletes
+      end
+      if git.branch ~= branch or last_diff ~= diff or last_project ~= root_project then
+        core.redraw = true
+      end
+      git.branch = branch
+      last_diff, last_project = diff, root_project
 
     else
+      if git.branch then core.redraw = true end
       git.branch = nil
+      cached_color_for_item = {}
+      last_diff, last_project = nil, nil
     end
 
     coroutine.yield(scan_rate)

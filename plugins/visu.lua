@@ -17,7 +17,6 @@ local visu_initialized = false
 config.plugins.visu = common.merge({
   enabled = true,
   fetchMode = "workers", -- workers, ondraw, both
-  workers = 1,
   pollRate = 60,
   cavaFrameRate = 60,
   barsNumber = 10,
@@ -58,19 +57,6 @@ config.plugins.visu = common.merge({
       on_apply = function(mode)
         if not visu_initialized then return end
         if visu.started then visu:start(nil, mode) end
-      end
-    },
-    {
-      label = "Workers",
-      description = "On 'workers' mode this is the amount of co-routines to "
-        .. "scan the spectrum data from cava (should be left at 1).",
-      path = "workers",
-      type = "NUMBER",
-      default = 1,
-      min = 1,
-      on_apply = function(value)
-        if not visu_initialized then return end
-        if visu.started then visu:start(nil, nil, value) end
       end
     },
     {
@@ -151,28 +137,25 @@ function Visu:new()
   self.proc = nil
   self.fetchMode = "workers"
   self.workers = false
-  self.redraw = false
   self.tmpConfFile = nil
   self.chunkSize = 0
   self.bars = 1
   self.barsInfo = nil
-  self.noSoundCounter = 0
   self.started = false
   self.pollRate = 1 / 200
 end
 
 ---@param bars? integer
 ---@param fetchMode? "workers" | "ondraw" | "both"
----@param workers? integer
-function Visu:start(bars, fetchMode, workers)
+function Visu:start(bars, fetchMode)
   self:stop()
 
   bars = bars or config.plugins.visu.barsNumber
-  workers = workers or config.plugins.visu.workers
   fetchMode = fetchMode or config.plugins.visu.fetchMode
   self.bars = bars
   self.fetchMode = fetchMode
   self.chunkSize = 2 * bars
+  self.dataFormat = Visu.byteFormat:rep(bars)
 
   local cavaConf = Visu.confFormat:format(
     bars, config.plugins.visu.cavaFrameRate, '/dev/stdout', '16bit'
@@ -202,69 +185,44 @@ function Visu:start(bars, fetchMode, workers)
 
     self.started = true
     self.pollRate = 1 / config.plugins.visu.pollRate
+    self.pendingInfo = ""
     self.barsInfo = self:getLatestInfo()
 
-    if self.fetchMode == "workers" or self.fetchMode == "both" then
-      for _ = 1, workers do
-        local wid = core.add_thread(function()
-          local frameTime = 1 / config.plugins.visu.cavaFrameRate
-          local nextFrame = system.get_time() + frameTime
-          while true do
-            local tmpInfo = self:getLatestInfo()
-            local newBarsInfo = tmpInfo
-            -- skip missed frames to prevent out of sync
-            while tmpInfo ~= nil do
-              tmpInfo = self:getLatestInfo()
-              if tmpInfo then newBarsInfo = tmpInfo end
-            end
-            self.redraw = false
-            if newBarsInfo ~= nil then
-              self.noSoundCounter = 0
-              self.barsInfo = newBarsInfo
-              for i = 1, self.bars do
-                local h = ((self.barsInfo[i] * 239)) * SCALE
-                -- wakeup rendering after no sound
-                if h > 0 then core.redraw = true self.redraw = true break end
-              end
-            else
-              self.noSoundCounter = self.noSoundCounter + 1
-            end
-            if self.noSoundCounter < 1000 then
-              -- use previous frame if no new info and prev info available
-              if not self.redraw and self.barsInfo then
-                for i = 1, self.bars do
-                  local h = ((self.barsInfo[i] * 239)) * SCALE
-                  if h > 0 then core.redraw = true self.redraw = true break end
-                end
-              end
-              local poll = self.pollRate
-              local now = system.get_time()
-              if nextFrame < now then
-                -- adjust the poll rate based on the delay of prev frame
-                poll = math.min(poll, frameTime - (now - nextFrame))
-              end
-              nextFrame = now + poll
-              coroutine.yield(poll)
-            else
-              self.noSoundCounter = 1000
-              coroutine.yield(2)
-            end
+    -- Cava has one output stream. One reader also wakes the On Draw mode.
+    core.add_thread(function()
+      local quiet_since = system.get_time()
+      while self.started and self.proc do
+        local latest = self:getLatestInfo()
+        if latest then
+          -- Skip queued old frames without letting a producer starve the UI.
+          for _ = 1, 64 do
+            local next_frame = self:getLatestInfo()
+            if not next_frame then break end
+            latest = next_frame
           end
-        end)
-        core.threads[wid].visu = true
+          local changed = not self.barsInfo
+          for i, value in ipairs(latest) do
+            local previous = self.barsInfo and self.barsInfo[i] or 0
+            changed = changed or value ~= previous
+          end
+          self.barsInfo = latest
+          if changed then core.redraw = true end
+          quiet_since = system.get_time()
+        end
+        local delay = math.max(.001, self.pollRate)
+        if system.get_time() - quiet_since >= 1 then delay = math.max(delay, .05) end
+        coroutine.yield(delay)
       end
-      self.workers = true
-    end
+    end, self)
+    self.workers = true
+    core.redraw = true
   end
 end
 
 function Visu:stop()
+  if self.started then core.redraw = true end
   if self.workers then
-    for _, thread in ipairs(core.threads) do
-      if thread.visu then
-        thread.cr = coroutine.create(function() end)
-      end
-    end
+    core.threads[self] = nil
     self.workers = false
   end
   if self.proc then
@@ -281,12 +239,17 @@ end
 ---@return table<integer,number> | nil
 function Visu:getLatestInfo()
   if not self.proc then return nil end
-  local data = self.proc:read_stdout(self.chunkSize)
+  local pending = self.pendingInfo or ""
+  local data = self.proc:read_stdout(self.chunkSize - #pending)
 
-  if not data or data:len() < self.chunkSize then return nil end
+  if not data or #data == 0 then return nil end
+  pending = pending .. data
+  self.pendingInfo = pending
+  if #pending < self.chunkSize then return nil end
+  data, self.pendingInfo = pending, ""
 
-  local fmt = Visu.byteFormat:rep(self.bars)
-  local bars = table.pack(string.unpack(fmt, data))
+  local bars = table.pack(string.unpack(self.dataFormat, data))
+  bars[self.bars + 1], bars.n = nil, nil
 
   for i, b in ipairs(bars) do
     bars[i] = b / Visu.byteMax
@@ -311,12 +274,10 @@ function Visu:render(rootview)
     end
   end
 
-  if self.redraw == true and self.barsInfo then
+  if self.barsInfo then
     for i = 1, self.bars do
       local h = ((self.barsInfo[i] * 239)) * SCALE
       if h > 0 then
-        core.redraw = true
-
         local color = not config.plugins.visu.barsCustomColor
           and style.text
           or config.plugins.visu.barsColor
@@ -354,8 +315,7 @@ core.add_thread(function()
   if config.plugins.visu.enabled then
     visu:start(
       config.plugins.visu.barsNumber,
-      config.plugins.visu.fetchMode,
-      config.plugins.visu.workers
+      config.plugins.visu.fetchMode
     )
   end
   visu_initialized = true
@@ -376,8 +336,7 @@ command.add(nil, {
   ['visu:start'] = function()
     visu:start(
       config.plugins.visu.barsNumber,
-      config.plugins.visu.fetchMode,
-      config.plugins.visu.workers
+      config.plugins.visu.fetchMode
     )
     core.log("Audio Visualizer: Started")
   end,

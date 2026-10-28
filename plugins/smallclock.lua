@@ -43,13 +43,15 @@ config.plugins.smallclock = common.merge({
 
 local time = ""
 
-local last_time = os.time()
+local last_time = 0
 local function update_time()
+  if core.request_update then core.request_update(60 - os.time() % 60) end
   if os.time() > last_time then
     local h = config.plugins.smallclock.clock_type == "24"
       and os.date("%H") or os.date("%I")
     local m = os.date("%M")
-    time = string.format("%02d:%02d", h, m)
+    local current = string.format("%02d:%02d", h, m)
+    if current ~= time then time = current; core.redraw = true end
     last_time = os.time()
   end
 end
