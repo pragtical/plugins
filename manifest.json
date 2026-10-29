@@ -2258,7 +2258,7 @@
       "id": "restoretabs",
       "mod_version": "3",
       "path": "plugins/restoretabs.lua",
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Displays current scale (zoom) in status view (depends on scale plugin)",
