@@ -1,21 +1,44 @@
 -- mod-version:3
 local syntax = require "core.syntax"
 
-syntax.add {
+local block_comment = { patterns = {}, symbols = {} }
+block_comment.patterns = {
+  { pattern = { "/%*", "%*/" }, type = "comment", syntax = block_comment },
+  { pattern = "[^/%*]+", type = "comment" },
+  { pattern = ".", type = "comment" },
+}
+
+local expression = { patterns = {}, symbols = {} }
+local function string_contents(escaped)
+  local patterns = {
+    { pattern = { "%${", "}" }, type = "keyword2", syntax = expression },
+    { pattern = "%$[%a_][%w_]*", type = "keyword2" },
+  }
+  if escaped then
+    patterns[#patterns + 1] = { pattern = "\\.", type = "character.special" }
+  end
+  patterns[#patterns + 1] = { pattern = escaped and '[^"$\\]+' or '[^"$]+', type = "string" }
+  patterns[#patterns + 1] = { pattern = ".", type = "string" }
+  return { patterns = patterns, symbols = {} }
+end
+
+local kotlin = {
   name = "Kotlin",
-  files = { "%.kt$" },
+  files = { "%.kt$", "%.kts$" },
   comment = "//",
   block_comment = { "/*", "*/" },
   patterns = {
     { pattern = "//.*",                              type = "comment"  }, -- Comment, single-line
-    { pattern = { "/%*", "%*/" },                    type = "comment"  }, -- Comment, multi-line
-    { pattern = { '"', '"', '\\' },                  type = "string"   }, -- String, quotation marks
+    { pattern = { "/%*", "%*/" },                    type = "comment", syntax = block_comment  }, -- Comment, multi-line
+    { pattern = { '"""', '"""' }, type = "string", syntax = string_contents(false) },
+    { pattern = { '"', '"', '\\' }, type = "string", syntax = string_contents(true) },
+    { pattern = { "{", "}" }, type = "normal", syntax = expression },
     { pattern = { "'", "'", '\\' },                  type = "string"   }, -- String, apices
     { pattern = "'\\x%x?%x?%x?%x'",                  type = "string"   }, -- Character hexadecimal escape sequence
     { pattern = "'\\u%x%x%x%x'",                     type = "string"   }, -- Character unicode escape sequence
     { pattern = "'\\?.'",                            type = "string"   }, -- Character literal
     { pattern = "-?0x%x+",                           type = "number"   }, -- ?
-    { pattern = "-?%d+[%deE]*f?",                    type = "number"   }, -- ?
+    { regex = "-?(?:\\d+\\.(?!\\.)\\d*|\\.\\d\\d*|\\d+)(?:[eE][+-]?\\d+)?f?",                    type = "number"   }, -- ?
     { pattern = "-?%.?%d+f?",                        type = "number"   }, -- ?
     { regex   = [[\-\>(?=\s)]],                      type = "operator" }, -- Lambda
     { regex   = [[\.{2}\<?\s?(?=[\\-]?[a-z0-9])]],   type = "operator" }, -- Range operators
@@ -122,3 +145,7 @@ syntax.add {
     ["null"]         = "literal",
   },
 }
+
+expression.patterns, expression.symbols = kotlin.patterns, kotlin.symbols
+
+syntax.add(kotlin)

@@ -1,5 +1,4 @@
 -- mod-version:3.1
-
 local syntax = require "core.syntax"
 
 syntax.add {
@@ -9,9 +8,9 @@ syntax.add {
   patterns = {
     -- Only lines that start with a # are comments; you can have #'s in fuse
     -- filesystem strings that aren't comments, so shouldn't be highlighted as such.
-    { regex   = "^#.*$",                    type = "comment" },
+    { pattern = "^%s*#.*",                  type = "comment" },
     { pattern = "[=/:.,]+",                 type = "operator" },
-    { pattern = "/.*/",                     type = "string"  },
+    { pattern = "/[^%s]+",                  type = "string"  },
     { pattern = "#",                        type = "operator" },
     -- {
     --   pattern = "%g+%s+()%g+%s+()%g+%s+()%g+%s+()[01]%s+()[012]%s*",
@@ -36,7 +35,7 @@ syntax.add {
     -- IPv4 Address
     { pattern = "%d+%.%d+%.%d+%.%d+",         type = "string" },
 
-    { pattern = " %d+ ",                      type = "number" },
+    { pattern = "%d+%f[^%w]",                 type = "number" },
     { pattern = "[%w_]+",                     type = "symbol" },
 
   },

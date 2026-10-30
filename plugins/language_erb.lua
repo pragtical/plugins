@@ -1,11 +1,24 @@
 -- mod-version:3
 local syntax = require "core.syntax"
 
+local attribute_expression = { pattern = { "<%%[-_=]?", "%-?%%>" }, syntax = ".rb", type = "function" }
+local function attribute_syntax(quote)
+  return {
+    patterns = {
+      attribute_expression,
+      { pattern = "[^<" .. quote .. "]+", type = "string" },
+      { pattern = ".", type = "string" },
+    },
+    symbols = {},
+  }
+end
+
 syntax.add {
   name = "html-eruby",
   files = { "%.html?%.erb$", "%.erb$" },
   block_comment = { "<!--", "-->" },
   patterns = {
+    { pattern = { "<%%#", "%-?%%>" }, type = "comment" },
     {
       pattern = {
         "<%s*[sS][cC][rR][iI][pP][tT]%f[%s>].->",
@@ -40,8 +53,8 @@ syntax.add {
     },
     { pattern = { "<!%-%-", "%-%->" },     type = "comment"  },
     { pattern = { '%f[^>][^<]', '%f[<]' }, type = "normal"   },
-    { pattern = { '"', '"', '\\' },        type = "string"   },
-    { pattern = { "'", "'", '\\' },        type = "string"   },
+    { pattern = { '"', '"' }, type = "string", syntax = attribute_syntax('"') },
+    { pattern = { "'", "'" }, type = "string", syntax = attribute_syntax("'") },
     { pattern = "0x[%da-fA-F]+",           type = "number"   },
     { pattern = "-?%d+[%d%.]*f?",          type = "number"   },
     { pattern = "-?%.?%d+f?",              type = "number"   },

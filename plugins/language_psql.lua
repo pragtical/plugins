@@ -1,6 +1,13 @@
 -- mod-version:3
 local syntax = require "core.syntax"
 
+local block_comment = { patterns = {}, symbols = {} }
+block_comment.patterns = {
+  { pattern = { "/%*", "%*/" }, type = "comment", syntax = block_comment },
+  { pattern = "[^/%*]+", type = "comment" },
+  { pattern = ".", type = "comment" },
+}
+
 -- In sql symbols can be lower case and upper case
 local keywords = {
   "CREATE", "SELECT", "ADD", "INSERT", "INTO", "UPDATE",
@@ -73,15 +80,18 @@ for _, literal in ipairs(literals) do
   symbols[literal] = "literal"
 end
 
-syntax.add {
+local definition = {
   name = "PostgreSQL",
   files = { "%.sql$", "%.psql$" },
   comment = "--",
   patterns = {
-    { pattern = "%-%-.-\n",                type = "comment"  },
-    { pattern = { "/%*", "%*/" },          type = "comment"  },
-    { pattern = { "'", "'", '\\' },        type = "string"   },
-    { pattern = "-?%d+[%d%.eE]*f?",        type = "number"   },
+    { pattern = "%-%-.*",                type = "comment"  },
+    { pattern = { "/%*", "%*/" },          type = "comment", syntax = block_comment  },
+    { pattern = { "[eE]'", "'", '\\' }, type = "string" },
+    { pattern = { "'", "'" }, type = "string" },
+    { pattern = { '"', '"' }, type = "symbol" },
+    { pattern = { "%$%$", "%$%$" }, type = "string" },
+    { regex = "-?(?:\\d+\\.(?!\\.)\\d*|\\.\\d\\d*|\\d+)(?:[eE][+-]?\\d+)?f?",        type = "number"   },
     { pattern = "-?%.?%d+f?",              type = "number"   },
     { pattern = "[%+%-=/%*%%<>!~|&@%?$#]", type = "operator" },
     { pattern = "[%a_][%w_]*%f[(]",        type = "function" },
@@ -90,3 +100,24 @@ syntax.add {
   symbols = symbols,
 }
 
+
+-- Match keywords independently of their spelling's case.
+local groups = {}
+for word, token_type in pairs(definition.symbols) do
+  local escaped = word:gsub("([^%w_])", "\\%1")
+  groups[token_type] = groups[token_type] or {}
+  table.insert(groups[token_type], escaped)
+end
+local token_types = {}
+for token_type in pairs(groups) do token_types[#token_types + 1] = token_type end
+table.sort(token_types)
+for _, token_type in ipairs(token_types) do
+  local words = groups[token_type]
+  table.sort(words)
+  table.insert(definition.patterns, 1, {
+    regex = "(?i:" .. table.concat(words, "|") .. ")(?![a-zA-Z0-9_])",
+    type = token_type,
+  })
+end
+
+syntax.add(definition)

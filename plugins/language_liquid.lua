@@ -5,11 +5,13 @@ local liquid_syntax = {
   patterns = {
     { pattern = { '"', '"', '\\' },        type = "string"   },
     { pattern = { "'", "'", '\\' },        type = "string"   },
-    { pattern = "-?%d+[%d%.]*f?",          type = "number"   },
-    { pattern = "-?%.?%d+f?",              type = "number"   },
-    { pattern = "%w+",                     type = "symbol" },
+    { pattern = "-?%d+%.?%d*", type = "number" },
+    { pattern = "[|:.,%[%]=<>]", type = "operator" },
+    { pattern = "[%a_][%w_%-]*", type = "symbol" },
   },
   symbols = {
+    ["empty"] = "literal",
+    ["blank"] = "literal",
     ["abs"] = "keyword2",
     ["and"] = "operator",
     ["append"] = "keyword2",
@@ -96,10 +98,24 @@ local liquid_syntax = {
   },
 }
 
+local attribute_expression = { pattern = { "{{%-?", "%-?}}" }, syntax = liquid_syntax, type = "function" }
+local function attribute_syntax(quote)
+  return {
+    patterns = {
+      attribute_expression,
+      { pattern = "[^<{" .. quote .. "]+", type = "string" },
+      { pattern = ".", type = "string" },
+    },
+    symbols = {},
+  }
+end
+
 syntax.add {
   name = "Liquid",
-  files = { "%.liquid?$" },
+  files = { "%.liquid$" },
   patterns = {
+    { pattern = { "{%%%-?%s*comment%s*%-?%%}", "{%%%-?%s*endcomment%s*%-?%%}" }, type = "comment" },
+    { pattern = { "{%%%-?%s*raw%s*%-?%%}", "{%%%-?%s*endraw%s*%-?%%}" }, type = "normal" },
     { pattern = { "{%%", "%%}" }, syntax = liquid_syntax, type = "function" },
     { pattern = { "{{", "}}" }, syntax = liquid_syntax, type = "function" },
     {
@@ -129,8 +145,8 @@ syntax.add {
     },
     { pattern = { "<!%-%-", "%-%->" },     type = "comment"  },
     { pattern = { '%f[^>][^<]', '%f[<{]' }, type = "normal"  },
-    { pattern = { '"', '"', '\\' },        type = "string"   },
-    { pattern = { "'", "'", '\\' },        type = "string"   },
+    { pattern = { '"', '"' }, type = "string", syntax = attribute_syntax('"') },
+    { pattern = { "'", "'" }, type = "string", syntax = attribute_syntax("'") },
     { pattern = "0x[%da-fA-F]+",           type = "number"   },
     { pattern = "-?%d+[%d%.]*f?",          type = "number"   },
     { pattern = "-?%.?%d+f?",              type = "number"   },

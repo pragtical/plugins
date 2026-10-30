@@ -1,20 +1,13 @@
 -- mod-version:3.1
 local syntax = require "core.syntax"
+require "plugins.language_sh"
+local shell = syntax.get("file.sh")
 
-syntax.add {
+local pkgbuild = {
   name = "PKGBUILD",
   files = PATHSEP .. "PKGBUILD$",
   comment = "#",
   patterns = {
-    -- Don't colorize number of arguments expression as comment
-    { pattern = "$#",                          type = "keyword2" },
-    { pattern = "#.*\n",                       type = "comment"  },
-    -- Strings
-    { pattern = { '"', '"', '\\' },            type = "string"   },
-    { pattern = { "'", "'", '\\' },            type = "string"   },
-    { pattern = { '`', '`', '\\' },            type = "string"   },
-    -- Ignore numbers that start with dots or slashes
-    { pattern = "%f[%w_%.%/]%d[%d%.]*%f[^%w_%.]", type = "number"   },
     -- Custom keyword matches
     { pattern = "source%f[=]",                 type = "literal"  },
     { pattern = "[ \t]source ",                type = "keyword"  },
@@ -31,29 +24,6 @@ syntax.add {
     { pattern = "[ \t]cmake ",                 type = "keyword"  },
     { pattern = "[ \t]waf ",                   type = "keyword"  },
     { pattern = "[ \t]%./configure[%s%c]+",    type = "keyword"  },
-    -- Operators
-    { pattern = "[!<>|&%[%]:=*]",              type = "operator" },
-    -- Match parameters
-    { pattern = "%f[%S][%+%-][%w%-_:]+",       type = "function" },
-    { pattern = "%f[%S][%+%-][%w%-_]+%f[=]",   type = "function" },
-    -- Prevent parameters with assignments from been matched as variables
-    {
-      pattern = "%s%-%a[%w_%-]*%s+()%d[%d%.]+",
-      type = { "function", "number" }
-    },
-    {
-      pattern = "%s%-%a[%w_%-]*%s+()%a[%a%-_:=]+",
-      type = { "function", "symbol" }
-    },
-    -- Match variable assignments
-    { pattern = "[_%a][%w_]+%f[%+=]",          type = "keyword2" },
-    -- Match variable expansions
-    { pattern = "${.-}",                       type = "keyword2" },
-    { pattern = "$[%d$%a_@*][%w_]*",           type = "keyword2" },
-    -- Functions
-    { pattern = "[%a_%-][%w_%-]*[%s]*%f[(]",   type = "function" },
-    -- Everything else
-    { pattern = "[%a_][%w_]*",                 type = "symbol"   },
   },
   symbols = {
     -- Bash keywords
@@ -249,3 +219,13 @@ syntax.add {
     ["b2sums_x86_64"]        = "literal",
   },
 }
+
+for _, pattern in ipairs(shell.patterns) do
+  pkgbuild.patterns[#pkgbuild.patterns + 1] = pattern
+end
+
+for word, token_type in pairs(shell.symbols) do
+  if not pkgbuild.symbols[word] then pkgbuild.symbols[word] = token_type end
+end
+
+syntax.add(pkgbuild)

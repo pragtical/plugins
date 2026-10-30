@@ -1,18 +1,30 @@
 -- mod-version:3
 local syntax = require "core.syntax"
 
-syntax.add {
+local expression = { patterns = {}, symbols = {} }
+local string_contents = {
+  patterns = {
+    { pattern = "\\.", type = "character.special" },
+    { pattern = { "#{", "}" }, type = "keyword2", syntax = expression },
+    { pattern = "[^\"#\\]+", type = "string" },
+    { pattern = ".", type = "string" },
+  },
+  symbols = {},
+}
+
+local definition = {
   name = "MoonScript",
   files = "%.moon$",
   headers = "^#!.*[ /]moon",
   comment = "--",
   patterns = {
-    { pattern = { '"', '"', '\\' },       type = "string"   },
+    { pattern = { '"', '"', '\\' }, type = "string", syntax = string_contents },
+    { pattern = { "{", "}" }, type = "normal", syntax = expression },
     { pattern = { "'", "'", '\\' },       type = "string"   },
     { pattern = { "%[%[", "%]%]" },       type = "string"   },
-    { pattern = "%-%-.-\n",               type = "comment"  },
+    { pattern = "%-%-.*",               type = "comment"  },
     { pattern = "-?0x%x+",                type = "number"   },
-    { pattern = "-?%d+[%d%.eE]*",         type = "number"   },
+    { regex = "-?(?:\\d+\\.(?!\\.)\\d*|\\.\\d\\d*|\\d+)(?:[eE][+-]?\\d+)?",         type = "number"   },
     { pattern = "-?%.?%d+",               type = "number"   },
     { pattern = "%.%.%.?",                type = "keyword2" },
     { pattern = "[<>~=]=",                type = "keyword2" },
@@ -61,4 +73,8 @@ syntax.add {
     ["nil"]      = "literal",
   },
 }
+
+expression.patterns, expression.symbols = definition.patterns, definition.symbols
+
+syntax.add(definition)
 

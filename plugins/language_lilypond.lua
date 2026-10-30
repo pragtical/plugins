@@ -11,7 +11,7 @@ syntax.add {
     { pattern = {"%%{", "%%}"},           type = "comment"  },
     { pattern = "%%.*",                   type = "comment"  },
     { pattern = "#[%w_-]*",               type = "keyword2" },
-    { pattern = "\\%a%w+",                type = "keyword"  },
+    { pattern = "\\%a[%w_%-]*",           type = "keyword"  },
     { pattern = "\\\\",                   type = "operator" },
     { pattern = "[%(%){}%[%]<>=/~%-%_']", type = "operator" },
     { pattern = {'"', '"', "\\"},         type = "string"   },

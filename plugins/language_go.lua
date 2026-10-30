@@ -7,16 +7,21 @@ syntax.add {
   comment = "//",
   block_comment = {"/*", "*/"},
   patterns = {
-    { pattern = "//.-\n",               type = "comment"  },
+    { pattern = "//.*",               type = "comment"  },
     { pattern = { "/%*", "%*/" },       type = "comment"  },
     { pattern = { '"', '"', '\\' },     type = "string"   },
-    { pattern = { "`", "`", '\\' },     type = "string"   },
+    { pattern = { "`", "`" },           type = "string"   },
+    { pattern = "%.%.%.",               type = "operator" },
     { pattern = { "'", "'", '\\' },     type = "string"   },
-    { pattern = "0[oO_][0-7]+i?",       type = "number"   },
-    { pattern = "-?0x[%x_]+i?",         type = "number"   },
-    { pattern = "-?%d+_%di?",           type = "number"   },
-    { pattern = "-?%d+[%d%.eE]*f?i?",   type = "number"   },
-    { pattern = "-?%.?%d+f?i?",         type = "number"   },
+    { regex = [[0[xX](?:[\da-fA-F_]+(?:\.[\da-fA-F_]*)?|\.[\da-fA-F_]+)[pP][+-]?[\d_]+i?]],
+      type = "number"
+    },
+    { pattern = "0[oO][0-7_]+i?", type = "number" },
+    { pattern = "0[bB][01_]+i?", type = "number" },
+    { pattern = "0[xX][%x_]+i?", type = "number" },
+    { regex = [[(?:\d[\d_]*\.(?!\.)[\d_]*|\.\d[\d_]*|\d[\d_]*)(?:[eE][+-]?\d[\d_]*)?i?]],
+      type = "number"
+    },
     -- goto label
     { pattern = "^%s+()[%a_][%w%_]*()%s*:%s$", -- this is to fix `default:`
       type = { "normal", "function", "normal" }
@@ -194,11 +199,11 @@ syntax.add {
 }
 
 syntax.add {
-  name = "Go",
-  files = { "go%.mod" },
+  name = "Go Mod",
+  files = { PATHSEP .. "go%.mod$", "^go%.mod$" },
   comment = "//",
   patterns = {
-    { pattern = "//.-\n", type = "comment"},
+    { pattern = "//.*", type = "comment"},
     { pattern = "module() %S+()",
       type = { "keyword", "string", "normal"}
     },
@@ -217,8 +222,8 @@ syntax.add {
 }
 
 syntax.add {
-  name = "Go",
-  files = { "go%.sum" },
+  name = "Go Sum",
+  files = { PATHSEP .. "go%.sum$", "^go%.sum$" },
   patterns = {
     { pattern = "%S+() v[^/]-() h1:()%S+()=",
       type = { "string", "keyword", "normal", "string", "normal" }
@@ -229,4 +234,3 @@ syntax.add {
   },
   symbols = {}
 }
-

@@ -6,10 +6,10 @@ local syntax = require "core.syntax"
 
 syntax.add {
   name = "RISC-V Assembly",
-  files = { "%.asm$", "%.[sS]$" },
+  files = { "%.riscv%.[sS]$", "%.asm$", "%.[sS]$" },
   comment = "#",
   patterns = {
-    { pattern = "#.*\n", type = "comment" },
+    { pattern = "#.*", type = "comment" },
     { pattern = { '"', '"', '\\' }, type = "string" },
     { pattern = { "'", "'", '\\' }, type = "string" },
     { pattern = "0[bB][0-1]+%W", type = "number" },
@@ -122,7 +122,7 @@ syntax.add {
     ["f29"] = "literal",
     ["f30"] = "literal",
     ["f31"] = "literal",
-    
+
     ["ft0"] = "literal",
     ["ft1"] = "literal",
     ["ft2"] = "literal",
@@ -131,10 +131,10 @@ syntax.add {
     ["ft5"] = "literal",
     ["ft6"] = "literal",
     ["ft7"] = "literal",
-    
+
     ["fs0"] = "literal",
     ["fs1"] = "literal",
-    
+
     ["fa0"] = "literal",
     ["fa1"] = "literal",
     ["fa2"] = "literal",
@@ -143,7 +143,7 @@ syntax.add {
     ["fa5"] = "literal",
     ["fa6"] = "literal",
     ["fa7"] = "literal",
-    
+
     ["fa2"] = "literal",
     ["fa3"] = "literal",
     ["fa4"] = "literal",
@@ -154,12 +154,12 @@ syntax.add {
     ["fa9"] = "literal",
     ["fa10"] = "literal",
     ["fa11"] = "literal",
-    
+
     ["ft8"] = "literal",
     ["ft9"] = "literal",
     ["ft10"] = "literal",
     ["ft11"] = "literal",
-    
+
     -- Vector Registers
     ["v0"] = "literal",
     ["v1"] = "literal",
@@ -193,7 +193,7 @@ syntax.add {
     ["v29"] = "literal",
     ["v30"] = "literal",
     ["v31"] = "literal",
-    
+
     ["vl"] = "literal",
     ["vtype"] = "literal",
     ["vzrm"] = "literal",
@@ -259,10 +259,10 @@ syntax.add {
     ["sllw"] = "keyword",
     ["srlw"] = "keyword",
     ["sraw"] = "keyword",
-    
+
     -- Zifencei instructions
     ["fence.i"] = "keyword",
-    
+
     -- Zicsr instructions
     ["csrrw"] = "keyword",
     ["csrrs"] = "keyword",
@@ -270,7 +270,7 @@ syntax.add {
     ["csrrwi"] = "keyword",
     ["csrrsi"] = "keyword",
     ["csrrci"] = "keyword",
-    
+
     -- RV32M instructions
     ["mul"] = "keyword",
     ["mulh"] = "keyword",
@@ -280,14 +280,14 @@ syntax.add {
     ["divu"] = "keyword",
     ["rem"] = "keyword",
     ["remu"] = "keyword",
-    
+
     -- RV64M instructions
     ["mulw"] = "keyword",
     ["divw"] = "keyword",
     ["divuw"] = "keyword",
     ["remw"] = "keyword",
     ["remuw"] = "keyword",
-    
+
     -- RV32A instructions
     ["lr.w"] = "keyword",
     ["sc.w"] = "keyword",
@@ -300,7 +300,7 @@ syntax.add {
     ["amomax.w"] = "keyword",
     ["amominu.w"] = "keyword",
     ["amomaxu.w"] = "keyword",
-    
+
     -- RV64A instructions
     ["lr.d"] = "keyword",
     ["sc.d"] = "keyword",
@@ -313,7 +313,7 @@ syntax.add {
     ["amomax.d"] = "keyword",
     ["amominu.d"] = "keyword",
     ["amomaxu.d"] = "keyword",
-    
+
     -- RV32F instructions
     ["flw"] = "keyword",
     ["fsw"] = "keyword",
@@ -341,13 +341,13 @@ syntax.add {
     ["fcvt.s.w"] = "keyword",
     ["fcvt.s.wu"] = "keyword",
     ["fmv.w.x"] = "keyword",
-    
+
     -- RV64F instructions
     ["fcvt.l.s"] = "keyword",
     ["fcvt.lu.s"] = "keyword",
     ["fcvt.s.l"] = "keyword",
     ["fcvt.s.lu"] = "keyword",
-    
+
     -- RV32D instructions
     ["fld"] = "keyword",
     ["fsd"] = "keyword",
@@ -375,7 +375,7 @@ syntax.add {
     ["fcvt.wu.d"] = "keyword",
     ["fcvt.d.w"] = "keyword",
     ["fcvt.d.wu"] = "keyword",
-    
+
     -- RV64D instructions
     ["fcvt.l.d"] = "keyword",
     ["fcvt.lu.d"] = "keyword",
@@ -383,7 +383,7 @@ syntax.add {
     ["fcvt.d.l"] = "keyword",
     ["fcvt.d.lu"] = "keyword",
     ["fmv.d.x"] = "keyword",
-    
+
     -- RV32Q instructions
     ["flq"] = "keyword",
     ["fsq"] = "keyword",
@@ -413,13 +413,13 @@ syntax.add {
     ["fcvt.wu.q"] = "keyword",
     ["fcvt.q.w"] = "keyword",
     ["fcvt.q.wu"] = "keyword",
-    
+
     -- RV64Q instructions
     ["fcvt.l.q"] = "keyword",
     ["fcvt.lu.q"] = "keyword",
     ["fcvt.q.l"] = "keyword",
     ["fcvt.q.lu"] = "keyword",
-    
+
     -- RV32Zfh instructions
     ["flh"] = "keyword",
     ["fsh"] = "keyword",
@@ -493,7 +493,7 @@ syntax.add {
     ["ret"] = "keyword",
     ["call"] = "keyword",
     ["tail"] = "keyword",
-    
+
     -- Other
     [".2byte"] = "keyword2",
     [".4byte"] = "keyword2",
@@ -510,15 +510,15 @@ syntax.add {
     [".string"] = "keyword2",
     [".incbin"] = "keyword2",
     [".zero"] = "keyword2",
-    
+
     [".align"] = "keyword2",
     [".balign"] = "keyword2",
     [".p2align"] = "keyword2",
-    
+
     [".globl"] = "keyword2",
     [".local"] = "keyword2",
     [".equ"] = "keyword2",
-    
+
     [".text"] = "keyword2",
     [".data"] = "keyword2",
     [".rodata"] = "keyword2",
@@ -526,7 +526,7 @@ syntax.add {
     [".comm"] = "keyword2",
     [".common"] = "keyword2",
     [".section"] = "keyword2",
-    
+
     [".option"] = "keyword2",
     [".macro"] = "keyword2",
     [".endm"] = "keyword2",

@@ -17,7 +17,7 @@ syntax.add {
     { pattern = "%d+",                      type = "number"   },
     { pattern = "[%+%-=/%*%^%%<>!~|&]",     type = "operator" },
     { pattern = "[%a_][%w_]*%f[(]",         type = "function" },
-    { pattern = "%a[%w_]+",                 type = "symbol"   },
+    { pattern = "[%a_][%w_]*",              type = "symbol"   },
   },
   -- https://bladelang.com/tutorial/reserved.html#reserved-words
   symbols = {

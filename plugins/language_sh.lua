@@ -1,14 +1,17 @@
 -- mod-version:3.1
 local syntax = require "core.syntax"
 
-local hex = { pattern = "\\[xX][%da-fA-F][%da-fA-F]", type = "function" }
-local backslash_escape = { pattern = "\\.", type = "function" }
+local hex = { pattern = "\\[xX][%da-fA-F][%da-fA-F]", type = "character.special" }
+local backslash_escape = { pattern = "\\.", type = "character.special" }
 local unicode = {
   pattern = "\\[uU][%da-fA-F][%da-fA-F][%da-fA-F][%da-fA-F]",
-  type = "function",
+  type = "character.special",
 }
 
 local string_interpolation_syntax = { patterns = {}, symbols = {} }
+local parameter_syntax = { patterns = {}, symbols = {} }
+local arithmetic_syntax = { patterns = {}, symbols = {} }
+local expansions = {}
 
 local sh_syntax = {
   name = "Shell script",
@@ -21,9 +24,7 @@ local sh_syntax = {
   headers = "^#!.*bin.*sh%s*.*$",
   comment = "#",
   patterns = {
-    -- $# is a bash special variable and the '#' shouldn't be interpreted
-    -- as a comment.
-    { pattern = "$[%a_@*#][%w_]*", type = "keyword2" },
+    backslash_escape,
     -- Comments
     { pattern = "#.*", type = "comment" },
     -- Strings
@@ -40,13 +41,16 @@ local sh_syntax = {
           unicode,
           hex,
           backslash_escape,
-          { pattern = "[%S][%w]*", type = "string" },
+          { pattern = "[^'\\]+", type = "string" },
+          { pattern = ".", type = "string" },
         },
         symbols = {},
       },
     },
-    { pattern = { "'", "'", "\\" }, type = "string" },
-    { pattern = { "`", "`", "\\" }, type = "string" },
+    { pattern = { "'", "'" }, type = "string" },
+    { pattern = { "`", "`", "\\" }, type = "keyword2", syntax = ".sh" },
+    { pattern = { "[<>]%(", "%)" }, type = "keyword2", syntax = ".sh" },
+    { pattern = { "%(", "%)" }, type = "operator", syntax = ".sh" },
     -- Ignore numbers that start with dots or slashes
     { pattern = "%f[%w_%.%/]%d[%d%.]*%f[^%w_%.]", type = "number" },
     -- Operators
@@ -59,10 +63,7 @@ local sh_syntax = {
     { pattern = "%s%-%a[%w_%-]*%s+()%d[%d%.]+", type = { "function", "number" } },
     { pattern = "%s%-%a[%w_%-]*%s+()%a[%a%-_:=]+", type = { "function", "symbol" } },
     -- Match variable assignments
-    { pattern = "[_%a][%w_]+%f[%+=]", type = "keyword2" },
-    -- Match variable expansions
-    { pattern = "${.-}", type = "keyword2" },
-    { pattern = "$[%d$%a_@*][%w_]*", type = "keyword2" },
+    { pattern = "[_%a][%w_]*%f[%+=]", type = "keyword2" },
     -- Functions
     { pattern = "[%a_%-][%w_%-]*[%s]*%f[(]", type = "function" },
     -- Everything else
@@ -125,16 +126,39 @@ local sh_syntax = {
 
 local function merge_tables(a, b) for _, v in pairs(b) do table.insert(a, v) end end
 
-merge_tables(string_interpolation_syntax.patterns, {
-  unicode,
-  hex,
-  backslash_escape,
-  { pattern = "%$[%w_]+", type = "keyword2" },
-  { pattern = "%$[@#]", type = "keyword2" },
-  { pattern = "%${.-}", type = "keyword2" },
-  { pattern = { "%$%(%(", "%)%)" }, type = "keyword2", syntax = sh_syntax },
+expansions = {
+  { pattern = { "%$%(%(", "%)%)" }, type = "keyword2", syntax = arithmetic_syntax },
   { pattern = { "%$%(", "%)" }, type = "keyword2", syntax = sh_syntax },
-  { pattern = "[%S][%w]*", type = "string" },
+  { pattern = { "%${", "}" }, type = "keyword2", syntax = parameter_syntax },
+  { pattern = "%$[%a_][%w_]*", type = "keyword2" },
+  { pattern = "%$[@#?*!$%-%d]", type = "keyword2" },
+}
+for i = #expansions, 1, -1 do table.insert(sh_syntax.patterns, 2, expansions[i]) end
+
+merge_tables(parameter_syntax.patterns, expansions)
+merge_tables(parameter_syntax.patterns, {
+  backslash_escape,
+  { pattern = { '"', '"', '\\' }, type = "string", syntax = string_interpolation_syntax },
+  { pattern = { "'", "'" }, type = "string" },
+  { pattern = "[^}$'\"\\]+", type = "keyword2" },
+  { pattern = ".", type = "keyword2" },
+})
+merge_tables(arithmetic_syntax.patterns, expansions)
+merge_tables(arithmetic_syntax.patterns, {
+  { pattern = { "%(", "%)" }, type = "operator", syntax = arithmetic_syntax },
+  { pattern = "0[xX]%x+", type = "number" },
+  { pattern = "%d+#[%w@_]+", type = "number" },
+  { pattern = "%d+", type = "number" },
+  { pattern = "[%a_][%w_]*", type = "symbol" },
+  { pattern = "[%+%-*/%%<>=!~&|^?:,]+", type = "operator" },
+})
+
+merge_tables(string_interpolation_syntax.patterns, expansions)
+merge_tables(string_interpolation_syntax.patterns, {
+  { pattern = "\\[$`\"\\\n]", type = "character.special" },
+  { pattern = { "`", "`", "\\" }, type = "keyword2", syntax = sh_syntax },
+  { pattern = '[^"$`\\]+', type = "string" },
+  { pattern = ".", type = "string" },
 })
 
 syntax.add(sh_syntax)

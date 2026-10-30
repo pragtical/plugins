@@ -1,11 +1,8 @@
 -- mod-version:3
 local syntax = require "core.syntax"
 
-
 local typst_math = {
-
 	patterns = {
-
 		{ pattern = { "/%*", "%*/" },              type = "comment"  },
 		{ pattern = "//.*",                        type = "comment"  },
 
@@ -25,7 +22,6 @@ local typst_math = {
 		{ pattern = "!=",                          type = "operator" },
 		{ pattern = "[%+%-=/%*%^%%<>~|_^\\]",      type = "operator" },
 		{ pattern = "%a%a+",                       type = "symbol"   },
-
 	},
 
 	symbols = {
@@ -85,7 +81,6 @@ local typst_math = {
 -- (probably becuase the tokenizer prioritizes subsyntaxes over clasic start-end patterns)
 -- so in order to fix this issue, I had to create this extra sub-syntax.
 local typst_string = {
-
 	patterns = {
 		{ pattern = "\\.",     type = "string" },
 		{ pattern = '[^"\\]+', type = "string" }
@@ -94,11 +89,8 @@ local typst_string = {
 	symbols = {}
 }
 
-
 local typst_script = {
-
 	patterns = {
-
 		{ pattern = { "/%*", "%*/" },              type = "comment"                       },
 		{ pattern = "//.*",                        type = "comment"                       },
 
@@ -116,9 +108,7 @@ local typst_script = {
 		{ pattern = "%d+()%a*",                    type = {"number", "keyword2"}          },
 
 		{ pattern = "%a%a+",                       type = "symbol"                        },
-
 	},
-
 
 	symbols = {
 		["set"]      = "keyword",
@@ -145,19 +135,25 @@ local typst_script = {
 	}
 }
 
-table.insert(typst_script.patterns, 1, { pattern = { "%(", "%)" }, syntax = typst_script })
-table.insert(typst_script.patterns, 1, { pattern = { "{",  "}"  }, syntax = typst_script })
+table.insert(
+	typst_script.patterns,
+	1,
+	{	pattern = { "%(", "%)" }, type = "normal", syntax = typst_script }
+)
+table.insert(
+	typst_script.patterns,
+	1,
+	{ pattern = { "{",  "}"  }, type = "normal", syntax = typst_script }
+)
 
-
-
-local typst_syntax = {
+syntax.add {
 	name = "Typst",
 	files = { "%.typ$" },
 	comment = "//",
 	block_comment = { "/*", "*/" },
 
 	patterns = {
-		{ pattern = { "%[", "%]" }, syntax = ".typ" },
+		{ pattern = { "%[", "%]" }, type = "normal", syntax = ".typ" },
 		{
 			pattern = { "#()import", "\n"    },
 			type    = { "literal", "keyword" },
@@ -223,9 +219,3 @@ local typst_syntax = {
 
 	symbols = {}
 }
-
-
-
-
-
-syntax.add(typst_syntax)

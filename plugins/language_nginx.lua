@@ -12,8 +12,8 @@ syntax.add {
   comment = "#",
   patterns = {
     { pattern = "#.*",             type = "comment"  },
-    { pattern = { '"', '"', },     type = "string"   },
-    { pattern = { "'", "'", },     type = "string"   },
+    { pattern = { '"', '"', '\\' }, type = "string"   },
+    { pattern = { "'", "'", '\\' }, type = "string"   },
     { pattern = "[0-9]",           type = "number"   },
     { pattern = "[%a_][%w_]*",     type = "symbol"   },
     { pattern = "%$[%w_]+",        type = "keyword2" }

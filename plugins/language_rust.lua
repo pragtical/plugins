@@ -1,27 +1,39 @@
 -- mod-version:3
 local syntax = require "core.syntax"
 
+local block_comment = { patterns = {}, symbols = {} }
+block_comment.patterns = {
+  { pattern = { "/%*", "%*/" }, type = "comment", syntax = block_comment },
+  { pattern = "[^/%*]+", type = "comment" },
+  { pattern = ".", type = "comment" },
+}
+
 syntax.add {
   name = "Rust",
   files = { "%.rs$" },
   comment = "//",
   block_comment = { "/*", "*/" },
   patterns = {
-    { pattern = "//.-\n",                                          type = "comment"  },
-    { pattern = { "/%*", "%*/" },                                  type = "comment"  },
-    { pattern = { 'r#"', '"#', '\\' },                             type = "string"   },
+    { pattern = "//.*",                                          type = "comment"  },
+    { pattern = { "/%*", "%*/" },                                  type = "comment", syntax = block_comment  },
+    { pattern = { '[bc]?r###"', '"###' }, type = "string" },
+    { pattern = { '[bc]?r##"', '"##' }, type = "string" },
+    { pattern = { '[bc]?r#"', '"#' }, type = "string" },
+    { pattern = { '[bc]?r"', '"' }, type = "string" },
+    { pattern = { '[bc]"', '"', '\\' }, type = "string" },
     { pattern = { '"', '"', '\\' },                                type = "string"   },
-    { pattern = "'.'",                                             type = "string"   },
+    { pattern = "b?'\\u{%x+}'", type = "string" },
+    { pattern = "b?'\\x%x%x'", type = "string" },
+    { pattern = "b?'\\.'", type = "string" },
+    { pattern = "b?'[^'\\\n]'", type = "string" },
     { pattern = "'[%a_][%a%d_]*",                                  type = "keyword2" },
-    { pattern = "0[oO_][0-7]+",                                    type = "number"   },
-    { pattern = "-?0x[%x_]+",                                      type = "number"   },
-    { pattern = "-?%d+_%d",                                        type = "number"   },
-    { pattern = "-?%d+[%d%.eE]*f?",                                type = "number"   },
-    { pattern = "-?%.?%d+f?",                                      type = "number"   },
-    { pattern = "[%+%-=/%*%^%%<>!~|&]",                            type = "operator" },
-    { regex   = "[[:alpha:]_][\\w]*(?=\\s*<[\\w\\s,']+>\\s*\\()",  type = "function" },
+    { pattern = "%.%.%.?=?", type = "operator" },
+    { regex = [[(?:0b[01_]+|0o[0-7_]+|0x[0-9a-fA-F_]+|\d[\d_]*(?:\.(?![.a-df-zA-DF-Z_])[\d_]*)?(?:[eE][+-]?[\d_]+)?)(?:[A-Za-z_][A-Za-z0-9_]*)?]], type = "number" },
+    { pattern = "[%+%-=/%*%^%%<>!~|&.?:]", type = "operator" },
+    { regex   = "[a-zA-Z_]\\w*(?=\\s*<[\\w\\s,']+>\\s*\\()", type = "function" },
     { pattern = "[%a_][%w_]*!%f[%[(]",                             type = "function" },
     { pattern = "[%a_][%w_]*%f[(]",                                type = "function" },
+    { pattern = "r#[%a_][%w_]*", type = "symbol" },
     { pattern = "[%a_][%w_]*",                                     type = "symbol"   },
   },
   symbols = {
@@ -70,6 +82,7 @@ syntax.add {
     ["u16"]      = "keyword2",
     ["u32"]      = "keyword2",
     ["u64"]      = "keyword2",
+    ["u128"]     = "keyword2",
     ["usize"]    = "keyword2",
     ["isize"]    = "keyword2",
     ["f32"]      = "keyword2",

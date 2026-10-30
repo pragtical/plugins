@@ -1,34 +1,52 @@
 -- mod-version:3
 -- Support for the Julia programming language:
 -- Covers the most used keywords up to Julia version 1.6.4
-
 local syntax = require "core.syntax"
 
-syntax.add {
+local block_comment = { patterns = {}, symbols = {} }
+block_comment.patterns = {
+  { pattern = { "#=", "=#" }, type = "comment", syntax = block_comment },
+  { pattern = "[^#=]+", type = "comment" },
+  { pattern = ".", type = "comment" },
+}
+
+local expression = { patterns = {}, symbols = {} }
+local interpolated_string = {
+  patterns = {
+    { pattern = "\\.", type = "character.special" },
+    { pattern = { "%$%(", "%)" }, type = "keyword2", syntax = expression },
+    { pattern = "%$[%a_][%w_]*", type = "keyword2" },
+    { pattern = '[^"$\\]+', type = "string" },
+    { pattern = ".", type = "string" },
+  },
+  symbols = {},
+}
+
+local julia = {
   name = "Julia",
   files = { "%.jl$" },
   comment = "#",
   patterns = {
-    {pattern = {"#=", "=#"},            type="comment"    },
+    {pattern = {"#=", "=#"},            type = "comment", syntax = block_comment    },
     {pattern = "#.*$",                  type="comment"    },
     { pattern = { 'icxx"""', '"""' },     type = "string", syntax = ".cpp" },
     { pattern = { 'cxx"""', '"""' },     type = "string", syntax = ".cpp" },
     { pattern = { 'py"""', '"""' },     type = "string", syntax = ".py" },
     { pattern = { 'js"""', '"""' },     type = "string", syntax = ".js" },
     { pattern = { 'md"""', '"""' },     type = "string", syntax = ".md" },
-    { pattern = "%d%w*[%.-+*//]",       type = "number"   },
     { pattern = "0[oO_][0-7]+",         type = "number"   },
     { pattern = "-?0x[%x_]+",           type = "number"   },
     { pattern = "-?0b[%x_]+",           type = "number"   },
     { pattern = "-?%d+_%d",             type = "number"   },
-    { pattern = "-?%d+[%d%.eE]*f?",     type = "number"   },
+    { regex = "-?(?:\\d+\\.(?!\\.)\\d*|\\.\\d\\d*|\\d+)(?:[eE][+-]?\\d+)?f?",     type = "number"   },
     { pattern = "-?%.?%d+f?",           type = "number"   },
     { pattern = "[^%d%g]%:%a*",         type = "function" },
     { pattern = "[%+%-=/%*%^%%<>!~|&%:]",type = "operator"},
-    { pattern = '""".*"""', type = "string" },
-    { pattern = '".*"',     type = "string" },
-    { pattern = '[bv]".*"', type = "string" },
-     { pattern = 'r".*$',   type = "string" },
+    { pattern = { '[%a_][%w_]*"""', '"""', '\\' }, type = "string" },
+    { pattern = { '[%a_][%w_]*"', '"', '\\' }, type = "string" },
+    { pattern = { '"""', '"""', '\\' }, type = "string", syntax = interpolated_string },
+    { pattern = { '"', '"', '\\' }, type = "string", syntax = interpolated_string },
+    { pattern = { "%(", "%)" }, type = "normal", syntax = expression },
     { pattern = "'\\.*'",   type = "string" },
     { pattern = "'.'",      type = "string" },
     { pattern = "[%a_][%w_]*%f[(]",       type = "function" },
@@ -110,3 +128,7 @@ syntax.add {
     ["NaN"]              = "literal",
   }
 }
+
+expression.patterns, expression.symbols = julia.patterns, julia.symbols
+
+syntax.add(julia)

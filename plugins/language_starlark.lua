@@ -71,10 +71,17 @@ local LITERALS = {
 
 ---- PATTERNS ----
 local PATTERNS = {
+  { pattern = { '[rR]"""', '"""' }, type = "string" },
+  { pattern = { "[rR]'''", "'''" }, type = "string" },
+  { pattern = { '[rR]"', '"' }, type = "string" },
+  { pattern = { "[rR]'", "'" }, type = "string" },
+  { pattern = { '"""', '"""', '\\' }, type = "string" },
+  { pattern = { "'''", "'''", '\\' }, type = "string" },
+  { pattern = { "'", "'", '\\' }, type = "string" },
   { pattern = { '"', '"', '\\' }, type = "string"   },  -- tested ok
   { pattern = "#.*",              type = "comment"  },  -- tested ok
   { pattern = "[!%-/*?:=><]",     type = "operator" },  -- tested ok
-  { pattern = "-?%d+[%d%.eE_]*",  type = "number"   },  -- tested ok
+  { regex = "-?(?:\\d[\\d_]*\\.(?!\\.)[\\d_]*|\\.\\d[\\d_]*|\\d[\\d_]*)(?:[eE][+-]?\\d[\\d_]*)?",  type = "number"   },  -- tested ok
   { pattern = '[%a_][%w_]*%f[(]', type = 'function' },  -- tested ok
   { pattern = "[%a_][%w_]*",      type = "normal"   }   -- tested ok
 }
@@ -93,7 +100,7 @@ for _, literal in ipairs(LITERALS) do
 end
 syntax_highlight.add {
   name = "Starlark",
-  files = {"%.bazel$","%.bzl$"},
+  files = {"%.bazel$", "%.bzl$", "%.star$", "[/\\]BUILD$", "^BUILD$", "[/\\]WORKSPACE$", "^WORKSPACE$"},
   comment = "#",
   patterns = PATTERNS,
   symbols = SYMBOLS,

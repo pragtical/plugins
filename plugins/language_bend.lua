@@ -1,7 +1,5 @@
--- Author: Rohan Vashisht https://github.com/RohanVashisht1234
-
 -- mod-version:3
-
+-- Author: Rohan Vashisht https://github.com/RohanVashisht1234
 local syntax = require "core.syntax"
 
 syntax.add {
@@ -27,7 +25,7 @@ syntax.add {
         { pattern = "identity()%s+()[%a_][%w_]*", type = { "keyword", "normal", "literal" } }, -- tested ok
         { pattern = "lambda()%s+()[%a_][%w_]*",   type = { "keyword", "normal", "literal" } }, -- tested ok
         { pattern = "0x[%da-fA-F]+",              type = "number" },
-        { pattern = "-?%d+[%d%.eE]*",             type = "number" },
+        { regex = "-?(?:\\d+\\.(?!\\.)\\d*|\\.\\d\\d*|\\d+)(?:[eE][+-]?\\d+)?",             type = "number" },
         { pattern = "-?%.?%d+",                   type = "number" },
     },
     symbols = {

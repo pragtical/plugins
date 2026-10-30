@@ -17,12 +17,12 @@ local function string_syntax(delimiter, token_type, interpolated)
   if interpolated then
     patterns = {
       { pattern = { "#{", "}" }, type = "keyword", syntax = elixir_syntax },
-      { pattern = "\\u{%x+}", type = "function" },
-      { pattern = "\\u%x%x%x%x", type = "function" },
-      { pattern = "\\x%x%x", type = "function" },
+      { pattern = "\\u{%x+}", type = "character.special" },
+      { pattern = "\\u%x%x%x%x", type = "character.special" },
+      { pattern = "\\x%x%x", type = "character.special" },
     }
   end
-  table.insert(patterns, { pattern = "\\.", type = interpolated and "function" or token_type })
+  table.insert(patterns, { pattern = "\\.", type = interpolated and "character.special" or token_type })
   -- Stop before any possible closer so the tokenizer can check it first.
   table.insert(patterns, {
     pattern = "[^#\\" .. escape_pattern(delimiter:sub(1, 1)) .. "]+", type = token_type
@@ -143,24 +143,102 @@ elixir_syntax.symbols = {
   ["nil"]              = "literal",
 }
 
+local template_expression = {
+  pattern = { '<%%=?', '%%>' }, type = "keyword2", syntax = elixir_syntax,
+}
+local function attribute_syntax(quote)
+  return {
+    patterns = {
+      template_expression,
+      { pattern = "[^<" .. quote .. "]+", type = "string" },
+      { pattern = ".", type = "string" },
+    },
+    symbols = {},
+  }
+end
+
+local curly_expression = { pattern = { "{", "}" }, type = "keyword2", syntax = elixir_syntax }
+local function embedded_syntax(extension)
+  require("plugins.language_" .. (extension == ".js" and "js" or "css"))
+  local base = syntax.get("file" .. extension)
+  local patterns = { template_expression }
+  for _, rule in ipairs(base.patterns) do
+    local opener = rule.pattern and type(rule.pattern) == "table" and rule.pattern[1]
+    if opener == '"' or opener == "'" or opener == "`" then
+      patterns[#patterns + 1] = {
+        pattern = rule.pattern, type = rule.type, syntax = attribute_syntax(opener),
+      }
+    else
+      patterns[#patterns + 1] = rule
+    end
+  end
+  return { patterns = patterns, symbols = base.symbols }
+end
+local script_syntax, style_syntax = embedded_syntax(".js"), embedded_syntax(".css")
+local literal_template = { patterns = {}, symbols = {} }
+literal_template.patterns = {
+  { pattern = { '<%%#', '%%>' }, type = "comment" },
+  { pattern = { '<%%!%-%-', '%-%-%%>' }, type = "comment" },
+  template_expression,
+  { pattern = { "<!%-%-", "%-%->" }, type = "comment" },
+  { regex = [[<(?i:area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)(?=\s|/?>)[^>]*>]], type = "function" },
+  { regex = [[<[A-Za-z_.:][\w.:-]*(?:[^>"']|"[^"]*"|'[^']*')*/>]], type = "function" },
+  { regex = { [[<[A-Za-z_.:][\w.:-]*(?:[^>"']|"[^"]*"|'[^']*')*>]], [[</[A-Za-z_.:][\w.:-]*\s*>]] }, type = "function", syntax = literal_template },
+  { pattern = "[^<]+", type = "normal" },
+  { pattern = ".", type = "normal" },
+}
+local function template_syntax(heex)
+  local tag = {
+    patterns = {
+      template_expression,
+      { pattern = { '"', '"' }, type = "string", syntax = attribute_syntax('"') },
+      { pattern = { "'", "'" }, type = "string", syntax = attribute_syntax("'") },
+      { pattern = "[:@]?[%a_][%w_.:%-]*", type = "keyword" },
+      { pattern = "=", type = "operator" },
+    },
+    symbols = {},
+  }
+  local patterns = {
+    { pattern = { '<%%#', '%%>' }, type = "comment" },
+    { pattern = { '<%%!%-%-', '%-%-%%>' }, type = "comment" },
+    { pattern = "<%%%%", type = "normal" },
+    template_expression,
+    { pattern = { "<!%-%-", "%-%->" }, type = "comment" },
+    { pattern = { "<[sS][cC][rR][iI][pP][tT]%f[%s>][^>]*>", "</[sS][cC][rR][iI][pP][tT]%s*>" }, type = "function", syntax = script_syntax },
+    { pattern = { "<[sS][tT][yY][lL][eE]%f[%s>][^>]*>", "</[sS][tT][yY][lL][eE]%s*>" }, type = "function", syntax = style_syntax },
+    { pattern = { "</?[%a_.:][%w_.:%-]*", "/?>" }, type = "function", syntax = tag },
+    { pattern = heex and "[^<{]+" or "[^<]+", type = "normal" },
+    { pattern = ".", type = "normal" },
+  }
+  if heex then
+    table.insert(tag.patterns, 1, curly_expression)
+    table.insert(patterns, 1, curly_expression)
+    table.insert(patterns, 1, {
+      regex = {
+        [[<(?!(?i:area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)(?=\s|/?>))[A-Za-z][\w.:-]*(?=\s|>)(?=(?:[^>"']|"[^"]*"|'[^']*')*\sphx-no-curly-interpolation(?=\s|/?>))(?:[^>"']|"[^"]*"|'[^']*')*(?<!/)>]],
+        [[</[A-Za-z][\w.:-]*\s*>]],
+      },
+      type = "function", syntax = literal_template,
+    })
+  end
+  return {
+    name = heex and "HEEx" or "Elixir Template",
+    files = heex and { "%.heex$" } or { "%.eex$", "%.leex$" },
+    patterns = patterns,
+    symbols = {},
+  }
+end
+local heex = template_syntax(true)
+-- ~H uses HEEx's own interpolation, not Elixir string interpolation.
+for _, delimiter in ipairs { { "'", "'" }, { '"', '"' }, { '"""', '"""' } } do
+  table.insert(elixir_syntax.patterns, 1, {
+    pattern = { "~H" .. delimiter[1], (#delimiter[2] == 3 and "^[ \t]*" or "") .. delimiter[2] },
+    type = "string", syntax = heex,
+  })
+end
+
 syntax.add(elixir_syntax)
 
-syntax.add {
-  files = { "%.l?eex$", "%.h?eex$" },
-  patterns = {
-    { pattern = { "<!%-%-", "%-%->" },     type = "comment"  },
-    { pattern = { '%f[^>][^<]', '%f[<]' }, type = "normal"   },
-    { pattern = { '<%%=?', '%%>' },        type = "normal"   },
-    { pattern = { '"', '"', '\\' },        type = "string"   },
-    { pattern = { "'", "'", '\\' },        type = "string"   },
-    { pattern = "0x[%da-fA-F]+",           type = "number"   },
-    { pattern = "-?%d+[%d%.]*f?",          type = "number"   },
-    { pattern = "-?%.?%d+f?",              type = "number"   },
-    { pattern = "%f[^<]![%a_][%w_]*",      type = "keyword2" },
-    { pattern = "%f[^<][%a_][%w_]*",       type = "function" },
-    { pattern = "%f[^<]/[%a_][%w_]*",      type = "function" },
-    { pattern = "[%a_][%w_]*",             type = "keyword"  },
-    { pattern = "[/<>=]",                  type = "operator" },
-  },
-  symbols = {},
-}
+syntax.add(template_syntax(false))
+
+syntax.add(heex)

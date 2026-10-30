@@ -15,7 +15,7 @@ syntax.add {
     { pattern = { '"', '"', '\\' },              type = "string"   }, -- String, double quotes
     { pattern = { "'", "'", '\\' },              type = "string"   }, -- String, apices
     { pattern = "-?0x%x+",                       type = "number"   }, -- ?
-    { pattern = "-?%d+[%d%.eE]*[a-zA-Z]?",       type = "number"   }, -- ?
+    { regex = "-?(?:\\d+\\.\\d*|\\.\\d+|\\d+)(?:[eE][+-]?\\d+)?",       type = "number"   }, -- ?
     { pattern = "-?%.?%d+",                      type = "number"   }, -- ?
     { pattern = "[%+%-=/%*%^%%<>!~|&%?%:]",      type = "operator" }, -- Operators
     { pattern = "[%a_][%w_]*%f[(]",              type = "function" }, -- Functions

@@ -6,18 +6,18 @@ syntax.add {
   files = "%.lobster$",
   comment = "//",
   patterns = {
-    { pattern = "//.-\n",                  type = "comment" },
+    { pattern = "//.*",                  type = "comment" },
     { pattern = { "/%*", "%*/" },          type = "comment" },
 
     { pattern = "struct%s()[%a_][%w_]*",   type = { "keyword", "keyword2" } },
     { pattern = "class%s()[%a_][%w_]*",    type = { "keyword", "keyword2" } },
     { pattern = "[%w_]+%s*%f[{]",          type = "keyword2" },
 
+    { pattern = { '"""', '"""' },          type = "string"   },
     { pattern = { '"', '"', '\\' },        type = "string"  },
     { pattern = { "'", "'", '\\' },        type = "string"  },
-    { pattern = { '"""', '"""' },          type = "string"   },
     { pattern = "0x%x+",                   type = "number"  },
-    { pattern = "%d+[%d%.eE]*f?",          type = "number"  },
+    { regex = "(?:\\d+\\.(?!\\.)\\d*|\\.\\d\\d*|\\d+)(?:[eE][+-]?\\d+)?f?",          type = "number"  },
     { pattern = "%.?%d+f?",                type = "number"  },
     { pattern = "[%+%-=/%*%^%%<>!~|&%?]",  type = "operator" },
     { pattern = "[%a_][%w_]*%f[(]",        type = "function" },

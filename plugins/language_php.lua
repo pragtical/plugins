@@ -1,12 +1,9 @@
 -- mod-version:3
---[[
-  language_php.lua
-  provides php syntax support allowing mixed html, css and js
-  version: 20220614_1
---]]
+-- provides php syntax support allowing mixed html, css and js
 local syntax = require "core.syntax"
 local common = require "core.common"
 local config = require "core.config"
+local tokenizer = require "core.tokenizer"
 
 -- load syntax dependencies to add additional rules
 require "plugins.language_css"
@@ -14,6 +11,33 @@ require "plugins.language_js"
 
 local psql_found = pcall(require, "plugins.language_psql")
 local sql_strings = {}
+local syntax_php
+
+local function apply_sql_strings(enabled)
+  if not syntax_php then return end
+  local patterns = syntax_php.patterns
+  local changed = false
+  for i = #patterns, 1, -1 do
+    if patterns[i] == sql_strings[1] or patterns[i] == sql_strings[2] then
+      table.remove(patterns, i)
+      changed = true
+    end
+  end
+  if enabled and psql_found then
+    -- SQL rules must precede ordinary quoted strings, not comments or attributes.
+    for i, rule in ipairs(patterns) do
+      if type(rule.pattern) == "table" and rule.type == "string" then
+        table.insert(patterns, i, sql_strings[2])
+        table.insert(patterns, i, sql_strings[1])
+        changed = true
+        break
+      end
+    end
+  end
+  if changed and tokenizer.clear_native_cache then
+    tokenizer.clear_native_cache(syntax_php)
+  end
+end
 
 config.plugins.language_php = common.merge({
   sql_strings = true,
@@ -27,31 +51,29 @@ config.plugins.language_php = common.merge({
       path = "sql_strings",
       type = "toggle",
       default = true,
-      on_apply = function(enabled)
-        local syntax_php = syntax.get("file.phps")
-        if enabled and psql_found then
-          if
-            not syntax_php.patterns[6].syntax
-            or
-            syntax_php.patterns[6].syntax ~= '.sql'
-          then
-            table.insert(syntax_php.patterns, 5, sql_strings[1])
-            table.insert(syntax_php.patterns, 6, sql_strings[2])
-          end
-        elseif
-          syntax_php.patterns[6].syntax
-          and
-          syntax_php.patterns[6].syntax == '.sql'
-        then
-          table.remove(syntax_php.patterns, 5)
-          table.remove(syntax_php.patterns, 5)
-        end
-      end
+      on_apply = apply_sql_strings
     }
   }
 }, config.plugins.language_php)
 
--- Patterns to match some of the string inline variables
+-- PHP escape sequences in interpolated strings.
+local string_escapes = {
+  { pattern = '\\[nrtvef\\$"]', type = "character.special" },
+  { pattern = "\\[0-7][0-7]?[0-7]?", type = "character.special" },
+  { pattern = "\\[xX]%x%x?", type = "character.special" },
+  { pattern = "\\u{%x+}", type = "character.special" },
+}
+
+local single_quoted = {
+  patterns = {
+    { pattern = "\\[\\']", type = "character.special" },
+    { pattern = "[^'\\]+", type = "string" },
+    { pattern = ".", type = "string" },
+  },
+  symbols = {},
+}
+
+-- Patterns to match some of the string inline variables.
 local inline_variables = {
   { pattern = "%s+",           type = "string" },
   { pattern = "\\%$",          type = "string" },
@@ -97,14 +119,18 @@ local function combine_patterns(t1, t2)
   return temp
 end
 
-local function clone(tbl)
+local interpolated_patterns = combine_patterns(string_escapes, inline_variables)
+
+local function clone(tbl, seen)
+  seen = seen or {}
+  if seen[tbl] then return seen[tbl] end
   local t = {}
+  if tbl then seen[tbl] = t end
   if tbl then
     for k, v in pairs(tbl) do
-      if type(v) == "table" then
-        t[k] = clone(v)
-      else
-        t[k] = v
+      -- Compiled tokenizer caches belong to the original syntax, not its copy.
+      if k ~= "_regex" and not tostring(k):match("^_tokenizer") then
+        t[k] = type(v) == "table" and clone(v, seen) or v
       end
     end
   end
@@ -126,6 +152,10 @@ if psql_found then
   for i=4, 9 do
     table.insert(syntax_phpsql.patterns, i, inline_variables[i])
   end
+  syntax_phpsql.patterns = combine_patterns(string_escapes, syntax_phpsql.patterns)
+  local single_quoted_sql = clone(syntax.get("file.sql"))
+  single_quoted_sql.name = "PHP SQL"
+  table.insert(single_quoted_sql.patterns, 1, single_quoted.patterns[1])
 
   -- SQL strings
   sql_strings = {
@@ -136,14 +166,14 @@ if psql_found then
     },
     {
         regex  = { "'(?=[\\s(]*(?i:"..sql_regex..")\\s+)", '\'', '\\' },
-        syntax = '.sql',
+        syntax = single_quoted_sql,
         type   = "string"
     },
   }
 end
 
 -- define the core php syntax coloring
-syntax.add {
+syntax_php = {
   name = "PHP Source",
   files = { "%.phps$" },
   headers = "^<%?php",
@@ -153,8 +183,8 @@ syntax.add {
     -- Attributes
     { pattern = {"#%[", "%]"},               type = "normal"   },
     -- Comments
-    { pattern = "//.-\n",                    type = "comment"  },
-    { pattern = "#.-\n",                     type = "comment"  },
+    { pattern = "//.*",                    type = "comment"  },
+    { pattern = "#.*",                     type = "comment"  },
     { pattern = { '/%*%*%s+', '%*/'}, -- Subsyntax for Doc comments
       syntax = {
         patterns = {
@@ -301,14 +331,14 @@ syntax.add {
     },
     { pattern = { "/%*", "%*/" },            type = "comment"  },
     -- Single quote string
-    { pattern = { "'", "'", '\\' },          type = "string"   },
+    { pattern = { "'", "'", '\\' }, type = "string", syntax = single_quoted },
     { pattern = { "<<<'%a%w*'\n", "^%s*%a%w*%f[;]", '\\' },
       type = "string"
     },
     -- Strings with support for some inline variables syntax
     { pattern = { "<<<%a%w*\n", "^%s*%a%w*%f[;]", '\\' },
       syntax = {
-        patterns = combine_patterns(inline_variables, {
+        patterns = combine_patterns(interpolated_patterns, {
           -- prevent matching outside of the parent string
           { pattern = "^%s*%a%w*();$",
             type = { "string", "normal" }
@@ -321,7 +351,7 @@ syntax.add {
     },
     { pattern = { '"', '"', '\\' },
       syntax = {
-        patterns = combine_patterns(inline_variables, {
+        patterns = combine_patterns(interpolated_patterns, {
           -- prevent matching outside of the parent string
           { pattern = "[^\"]",         type = "string" },
           { pattern = "%p+%f[\"]",     type = "string" },
@@ -333,7 +363,8 @@ syntax.add {
     },
     { pattern = { '`', '`', '\\' },
       syntax = {
-        patterns = combine_patterns(inline_variables, {
+        patterns = combine_patterns(interpolated_patterns, {
+          { pattern = "\\`", type = "character.special" },
           -- prevent matching outside of the parent string
           { pattern = "[^`]",          type = "string" },
           { pattern = "%p+%f[`]",      type = "string" },
@@ -468,12 +499,8 @@ syntax.add {
   },
 }
 
--- insert sql string rules after the "/%*", "%*/" pattern
-if psql_found and config.plugins.language_php.sql_strings then
-  local syntax_php = syntax.get("file.phps")
-  table.insert(syntax_php.patterns, 5, sql_strings[1])
-  table.insert(syntax_php.patterns, 6, sql_strings[2])
-end
+syntax.add(syntax_php)
+apply_sql_strings(config.plugins.language_php.sql_strings)
 
 -- allows html, css and js coloring on php files
 syntax.add {

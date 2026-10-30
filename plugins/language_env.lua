@@ -1,13 +1,12 @@
 -- mod-version:3
-
 local syntax = require "core.syntax"
 
 local key_pattern = '[a-zA-Z_]+[a-zA-Z0-9_]*'
 local unicode_sequence = "'?\\u%x%x%x%x'?"
 local escaped_literals = "\\[nrtfb\\\"']"
-local null_pattern = '%s*[Nn][Uu][Ll][Ll]%s*'
-local true_pattern = '%s*[Tt][Rr][Uu][Ee]%s*'
-local false_pattern = '%s*[Ff][Aa][Ll][Ss][Ee]%s*'
+local null_pattern = '[Nn][Uu][Ll][Ll]%f[^%w_]'
+local true_pattern = '[Tt][Rr][Uu][Ee]%f[^%w_]'
+local false_pattern = '[Ff][Aa][Ll][Ss][Ee]%f[^%w_]'
 
 local synt_key = {
   symbols = {},
@@ -31,12 +30,12 @@ local synt_dqs = {
 
 syntax.add {
   name = "language_env",
-  files = { "%.env$" },
+  files = { "%.env$", "[/\\]%.env%.[%w_.%-]+$", "^%.env%.[%w_.%-]+$" },
   comment = '#',
   symbols = {},
   patterns = {
     { pattern = "#.*$",           type = "comment"  },
-    { pattern = "export",         type = "function" },
+    { pattern = "export%f[^%w_]",  type = "function" },
     { pattern = null_pattern,     type = "literal"  },
     { pattern = true_pattern,     type = "literal"  },
     { pattern = false_pattern,    type = "literal"  },
@@ -60,9 +59,9 @@ syntax.add {
     -- },
     { pattern = key_pattern..'%s*()=%s*', type = { "keyword2", "operator" }},
     -- quoted strings
-    { pattern = {'"', '"', '\\'},     type = "string",  syntax = synt_dqs},
-    { pattern = {"'", "'", '\\'},     type = "string"   },
     { pattern = {'"""', '"""', '\\'}, type = "string"   },
     { pattern = {"'''", "'''", '\\'}, type = "string"   },
+    { pattern = {'"', '"', '\\'},     type = "string",  syntax = synt_dqs},
+    { pattern = {"'", "'", '\\'},     type = "string"   },
   },
 }

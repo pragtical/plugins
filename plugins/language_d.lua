@@ -1,25 +1,32 @@
 -- mod-version:3
 local syntax = require "core.syntax"
 
+local block_comment = { patterns = {}, symbols = {} }
+block_comment.patterns = {
+  { pattern = { "/%+", "%+/" }, type = "comment", syntax = block_comment },
+  { pattern = "[^/%+]+", type = "comment" },
+  { pattern = ".", type = "comment" },
+}
+
 syntax.add {
   name = "D",
   files = { "%.d$", "%.di$" },
   comment = "//",
   patterns = {
-    { pattern = "//.-\n",               type = "comment"  },
-    { pattern = { "/%*", "%*/" },       type = "comment"  },
-    { pattern = { "/%+", "%+/" },       type = "comment"  },
-    { pattern = { '`', '`', '\\' },     type = "string"   },
-    { pattern = { '"', '"', '\\' },     type = "string"   },
-    { pattern = { "'", "'", '\\' },     type = "string"   },
-    { pattern = "-?0x[%x_]+",           type = "number"   },
-    { pattern = "-?[%d_]+[%d%.eE]*f?",  type = "number"   },
-    { pattern = "-?%.?%d+f?",           type = "number"   },
+    { pattern = "//.*",                    type = "comment"  },
+    { pattern = { "/%*", "%*/" },          type = "comment"  },
+    { pattern = { "/%+", "%+/" },          type = "comment", syntax = block_comment  },
+    { pattern = { '`', '`', '\\' },        type = "string"   },
+    { pattern = { '"', '"', '\\' },        type = "string"   },
+    { pattern = { "'", "'", '\\' },        type = "string"   },
+    { pattern = "-?0x[%x_]+",              type = "number"   },
+    { pattern = "-?[%d_]+[%d%.eE]*f?",     type = "number"   },
+    { pattern = "-?%.?%d+f?",              type = "number"   },
     { pattern = "[%+%-=/%*%^%%<>!~|&%$]+", type = "operator" },
-    { pattern = "[%a_][%w_]*!?()[%(.]",        type = {"function", "normal"} }, -- highlight templates
-    { pattern = "@safe",               type = "keyword"   },
-    { pattern = "@trusted",            type = "keyword"   },
-    { pattern = "@nogc",               type = "keyword"   },
+    { pattern = "[%a_][%w_]*!?()[%(.]",    type = {"function", "normal"} }, -- highlight templates
+    { pattern = "@safe",                   type = "keyword"   },
+    { pattern = "@trusted",                type = "keyword"   },
+    { pattern = "@nogc",                   type = "keyword"   },
   },
   symbols = {
     ["abstract"] = "keyword",

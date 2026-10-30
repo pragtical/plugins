@@ -6,6 +6,7 @@ syntax.add {
   files = { "%.tau$" },
   comment = "#",
   patterns = {
+    { pattern = "#.*", type = "comment" },
     { pattern = { '{', '}' },      type = "operator",               syntax = ".tau" },
     -- funtion declaration
     {
@@ -27,21 +28,23 @@ syntax.add {
       pattern = { '"', '"', '\\' },
       type    = "string",
       syntax  = {
-        -- TODO: formatted strings has still some issues with inner {} blocks like if { .. } else { ... }  and escaped \"strings\"
         patterns = {
+          { pattern = "\\.", type = "character.special" },
+          { pattern = "{{", type = "string" },
+          { pattern = "}}", type = "string" },
           { pattern = { '{', '}' }, type = "operator", syntax = ".tau" },
-          { pattern = '[^%s"]+',    type = "string"                    },
+          { pattern = '[^"{\\]+', type = "string" },
+          { pattern = ".", type = "string" },
         },
         symbols = {},
       },
     },
 
     -- numbers and values
-    { pattern = "0b[01]{0,64}",       type = "number"   },
-    { pattern = "0o[0-7]{0,24}",      type = "number"   },
-    { pattern = "0x[%da-fA-F]{0,16}", type = "number"   },
-    { pattern = "-?%d{0,20}",         type = "number"   },
-    { pattern = "-?%d+[%d%.eE]*",     type = "number"   },
+    { pattern = "0b[01]+",            type = "number"   },
+    { pattern = "0o[0-7]+",           type = "number"   },
+    { pattern = "0x%x+",             type = "number"   },
+    { regex = "-?(?:\\d+\\.(?!\\.)\\d*|\\.\\d\\d*|\\d+)(?:[eE][+-]?\\d+)?",     type = "number"   },
     { pattern = "-?%.?%d+",           type = "number"   },
 
     -- others

@@ -1,10 +1,9 @@
 -- mod-version:3
 -- Support for the Fennel programming language: https://fennel-lang.org
 -- Covers all the keywords up to Fennel version 1.2.0
-
+--
 -- Currently only covers highlighting, not indentation, delimiter
 -- matching, or evaluation.
-
 local syntax = require("core.syntax")
 
 syntax.add({
@@ -12,7 +11,7 @@ syntax.add({
     files = "%.fnl$",
     name = "Fennel",
     patterns = {
-        { pattern = ";.-\n", type = "comment" },
+        { pattern = ";.*", type = "comment" },
         { pattern = { '"', '"', "\\" }, type = "string" },
         { pattern = "0x[%da-fA-F]+", type = "number" },
         { pattern = "-?%d+[%d%.]*", type = "number" },

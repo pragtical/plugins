@@ -10,10 +10,7 @@ syntax.add {
 		{ pattern = { '"', '"' },          type = "string"   },
 		{ pattern = "[<>!=]=",             type = "operator" },
 		{ pattern = "[%+%-%*%/%^@<>:]",    type = "operator" },
-		{ pattern = "%d%.%d*[eE][-+]?%d+", type = "number"   },
-		{ pattern = "%d%.%d*",             type = "number"   },
-		{ pattern = "%.?%d*[eE][-+]?%d+",  type = "number"   },
-		{ pattern = "%.?%d+",              type = "number"   },
+		{ regex = [[(?:\d+\.\d*|\.\d+|\d+)(?:[eE][+-]?\d+)?]], type = "number" },
 		{ pattern = "[%a_][%w_]*",         type = "symbol"   },
 	},
 	symbols = {

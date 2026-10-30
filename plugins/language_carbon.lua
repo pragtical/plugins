@@ -1,6 +1,5 @@
--- Author: Rohan Vashisht: https://github.com/rohanvashisht1234/
-
 -- mod-version:3
+-- Author: Rohan Vashisht: https://github.com/rohanvashisht1234/
 local syntax = require "core.syntax"
 
 syntax.add {
@@ -10,9 +9,9 @@ syntax.add {
     },
     comment = "//",                                                                            -- tested ok
     patterns = {
-        { pattern = { '"', '"', '\\' },           type = "string" },                           -- tested ok
         { pattern = { '"""', '"""', '\\' },       type = "string" },                           -- tested ok
         { pattern = { "'''", "'''", '\\' },       type = "string" },                           -- tested ok
+        { pattern = { '"', '"', '\\' },           type = "string" },                           -- tested ok
         { pattern = "//.*",                       type = "comment" },                          -- tested ok
         { pattern = "[!%-/*?:=><+]",              type = "operator" },                         -- tested ok
         { pattern = "[%a_][%w_]*%f[(]",           type = "function" },                         -- tested ok
@@ -23,7 +22,7 @@ syntax.add {
         { pattern = "class()%s+()[%a_][%w_]*",    type = { "keyword", "normal", "literal" } }, -- tested ok
         { pattern = "var()%s+()[%a_][%w_]*",      type = { "keyword", "normal", "literal" } }, -- tested ok
         { pattern = "package()%s+()[%a_][%w_]*",  type = { "keyword", "normal", "literal" } }, -- tested ok
-        { pattern = "-?%d+[%d%.eE_]*",            type = "number" },                           -- tested ok
+        { regex = "-?(?:\\d[\\d_]*\\.(?!\\.)[\\d_]*|\\.\\d[\\d_]*|\\d[\\d_]*)(?:[eE][+-]?\\d[\\d_]*)?",            type = "number" },                           -- tested ok
         { pattern = "-?%.?%d+",                   type = "number" },                           -- tested ok
         { pattern = "[%a_][%w_]*",                type = "normal" },                           -- tested ok
     },

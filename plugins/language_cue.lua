@@ -13,7 +13,9 @@ syntax.add {
     { pattern = "0[oO_][0-7]+i?",            type = "number" },
     { pattern = "-?0x[%x_]+i?",              type = "number" },
     { pattern = "-?%d+_%di?",                type = "number" },
-    { pattern = "-?%d+[%d%.eE]*f?i?",        type = "number" },
+    { regex = "-?(?:\\d+\\.(?!\\.)\\d*|\\.\\d\\d*|\\d+)(?:[eE][+-]?\\d+)?f?i?",
+      type = "number"
+    },
     { pattern = "-?%.?%d+f?i?",              type = "number" },
     { pattern = "[%a_][%w_]*%.",             type = "literal" },
     { pattern = "[%a_][%w_]*",               type = "symbol" },

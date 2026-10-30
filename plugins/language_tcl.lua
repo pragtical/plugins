@@ -1,17 +1,34 @@
 -- mod-version:3
 local syntax = require "core.syntax"
 
-syntax.add {
+local expression = { patterns = {}, symbols = {} }
+local array_index = { patterns = {}, symbols = {} }
+local substitutions = {
+  { pattern = "\\.", type = "character.special" },
+  { pattern = { "%[", "%]" }, type = "operator", syntax = expression },
+  { pattern = "%${[^}]+}", type = "literal" },
+  { pattern = { "%$[%w_:]*%(", "%)" }, type = "literal", syntax = array_index },
+  { pattern = "%$[%w_:]+", type = "literal" },
+}
+for _, rule in ipairs(substitutions) do array_index.patterns[#array_index.patterns + 1] = rule end
+array_index.patterns[#array_index.patterns + 1] = { pattern = { "%(", "%)" }, type = "literal", syntax = array_index }
+array_index.patterns[#array_index.patterns + 1] = { pattern = "[^()$%[\\]+", type = "literal" }
+array_index.patterns[#array_index.patterns + 1] = { pattern = ".", type = "literal" }
+local quoted = { patterns = {}, symbols = {} }
+for _, rule in ipairs(substitutions) do quoted.patterns[#quoted.patterns + 1] = rule end
+quoted.patterns[#quoted.patterns + 1] = { pattern = '[^"$%[\\]+', type = "string" }
+quoted.patterns[#quoted.patterns + 1] = { pattern = ".", type = "string" }
+
+local tcl = {
   name = "Tcl",
   files = { "%.tcl$" },
   comment = "#",
   patterns = {
-    { pattern = "#.-\n",                 type = "comment" },
-    { pattern = { '"', '"', '\\' },      type = "string"  },
+    { pattern = "#.*",                 type = "comment" },
+    { pattern = { '"', '"', '\\' }, type = "string", syntax = quoted },
     { pattern = "0x%x+",                 type = "number"  },
-    { pattern = "%d+[%d%.eE]*f?",        type = "number"  },
+    { regex = "(?:\\d+\\.(?!\\.)\\d*|\\.\\d\\d*|\\d+)(?:[eE][+-]?\\d+)?f?",        type = "number"  },
     { pattern = "%.?%d+f?",              type = "number"  },
-    { pattern = "%$[%a_][%w_]*",         type = "literal" },
     { pattern = "[%+%-=/%*%^%%<>!~|&]",  type = "operator" },
     { pattern = "::[%a_][%w_]*",         type = "function" },
     { pattern = "[%a_][%w_]*%f[:]",      type = "function" },
@@ -30,8 +47,8 @@ syntax.add {
     ["package"]   = "keyword",
     ["list"]   = "keyword",
     ["dict"]   = "keyword",
-    ["split"]    = "join",
-    ["concat"]    = "join",
+    ["split"]    = "keyword",
+    ["join"]     = "keyword",
     ["lappend"]   = "keyword",
     ["lset"]   = "keyword",
     ["lassign"]   = "keyword",
@@ -66,4 +83,8 @@ syntax.add {
     ["error"]    = "keyword2",
   },
 }
+for i = #substitutions, 1, -1 do table.insert(tcl.patterns, 1, substitutions[i]) end
 
+expression.patterns, expression.symbols = tcl.patterns, tcl.symbols
+
+syntax.add(tcl)

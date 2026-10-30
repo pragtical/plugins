@@ -1,7 +1,18 @@
 -- mod-version:3.1
 local syntax = require "core.syntax"
 
-syntax.add {
+local expression = { patterns = {}, symbols = {} }
+local interpolated_string = {
+  patterns = {
+    { pattern = "\\.", type = "character.special" },
+    { pattern = { "#{", "}" }, type = "keyword2", syntax = expression },
+    { pattern = '[^"#\\]+', type = "string" },
+    { pattern = ".", type = "string" },
+  },
+  symbols = {},
+}
+
+local ruby = {
   name = "Ruby",
   files = {
     "%.rb$", PATHSEP .. "%.gemspec$", PATHSEP .. "Gemfile$", PATHSEP .. "Gemfile%.lock$"
@@ -9,19 +20,21 @@ syntax.add {
   headers = "^#!.*[ /]ruby",
   comment = "#",
   patterns = {
-    { pattern = { '"', '"', '\\' },     type = "string"   },
+    { pattern = { '"', '"', '\\' }, type = "string", syntax = interpolated_string },
+    { pattern = { "{", "}" }, type = "normal", syntax = expression },
     { pattern = { "'", "'", '\\' },     type = "string"   },
+    { pattern = "%.%.%.?", type = "operator" },
     { pattern = "-?0x%x+",              type = "number"   },
-    { pattern = "%#.-\n",               type = "comment"  },
-    { pattern = "-?%d+[%d%.eE]*f?",     type = "number"   },
+    { pattern = "%#.*",               type = "comment"  },
+    { regex = "-?(?:\\d+\\.(?!\\.)\\d*|\\.\\d\\d*|\\d+)(?:[eE][+-]?\\d+)?f?",     type = "number"   },
     { pattern = "-?%.?%d+f?",           type = "number"   },
     { pattern = "[%+%-=/%*%^%%<>!~|&]", type = "operator" },
-    { pattern = "[%a_][%w_]*%f[(]",     type = "function" },
+    { pattern = "[%a_][%w_]*[!?]?%f[(]", type = "function" },
     { pattern = "@?@[%a_][%w_]*",       type = "keyword2" },
     { pattern = "::[%w_]*",             type = "symbol" },
     { pattern = ":[%w_]*",              type = "keyword2" },
-    { pattern = "[%a_][%w_]*:[^:]",     type = "keyword2" },
-    { pattern = "[%a_][%w_]*",          type = "symbol"   },
+    { regex = [[\w+:(?!:)]],            type = "keyword2" },
+    { pattern = "[%a_][%w_]*[!?]?",     type = "symbol"   },
   },
   symbols = {
     ["nil"]  = "literal",
@@ -72,3 +85,7 @@ syntax.add {
     ["yield"] = "keyword"
   },
 }
+
+expression.patterns, expression.symbols = ruby.patterns, ruby.symbols
+
+syntax.add(ruby)

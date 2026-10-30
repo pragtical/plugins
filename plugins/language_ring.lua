@@ -1,6 +1,5 @@
 -- mod-version:3
 -- Refrence: https://ring-lang.github.io/doc1.21.2/syntaxflexibility.html
-
 local syntax = require "core.syntax"
 
 -- Keywords
@@ -83,7 +82,7 @@ syntax.add {
     { pattern = "[%a_][%w_]*%f[(]",     type = "function" },
     { pattern = "[Dd][Ee][Ff]()%s+()[%a_][%w_]*",         type = { "keyword", "normal", "function" } },
     { pattern = "[Ff][Uu][Nn][Cc]()%s+()[%a_][%w_]*",     type = { "keyword", "normal", "function" } },
-    { pattern = "[Cc][Ll][Aa][Ss][Ss]()%s+()[%a_][%w_]*", type = { "keyword", "normal", "function" } },   
+    { pattern = "[Cc][Ll][Aa][Ss][Ss]()%s+()[%a_][%w_]*", type = { "keyword", "normal", "function" } },
     { pattern = "[%a_][%w_]*",          type = "symbol"   },
     { pattern = "%?",                   type = "keyword"  },
     { pattern = ":[%a_][%w_]*",         type = "literal"  },

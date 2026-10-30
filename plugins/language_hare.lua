@@ -11,7 +11,9 @@ syntax.add {
     { pattern = { '"', '"', '\\' },     type = "string"   },
     { pattern = { "'", "'", '\\' },     type = "string"   },
     { pattern = "-?0x%x+",              type = "number"   },
-    { pattern = "-?%d+[%d%.eE]*f?",     type = "number"   },
+    { regex = "-?(?:\\d+\\.(?!\\.)\\d*|\\.\\d\\d*|\\d+)(?:[eE][+-]?\\d+)?f?",
+      type = "number"
+    },
     { pattern = "-?%.?%d+f?",           type = "number"   },
     { pattern = "[%+%-=/%*%^%%<>!~|&]", type = "operator" },
     { pattern = "[%a_][%w_]*%f[(]",     type = "function" },
@@ -80,7 +82,7 @@ syntax.add {
     ["rconst"]   = "keyword2",
     ["fconst"]   = "keyword2",
     ["iconst"]   = "keyword2",
-    
+
     ["fmt"]      = "literal",
     ["true"]     = "literal",
     ["false"]    = "literal",

@@ -711,7 +711,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for Intel x86 assembly",
@@ -721,7 +721,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for RISC-V assembly",
@@ -731,7 +731,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for the [AutoHotkey](https://www.autohotkey.com)(v1) programming language",
@@ -741,7 +741,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for the [Awk](https://en.wikipedia.org/wiki/AWK)(v1) programming language",
@@ -751,7 +751,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for Windows [Batch Files](https://en.wikipedia.org/wiki/Batch_file)",
@@ -761,7 +761,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for [Bend](https://higherorderco.com/) programming language files.",
@@ -771,7 +771,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for [BibTex](https://en.wikipedia.org/wiki/BibTeX) files",
@@ -781,7 +781,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for [Blade](https://github.com/blade-lang/blade/) files",
@@ -791,7 +791,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for the [Blueprint](https://jwestman.pages.gitlab.gnome.org/blueprint-compiler/) markup language",
@@ -801,7 +801,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for the [Brainfuck](https://en.wikipedia.org/wiki/Brainfuck) programming language",
@@ -811,7 +811,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for the [Buzz](https://buzz-lang.dev/) programming language.",
@@ -821,7 +821,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.2"
+      "version": "0.3"
     },
     {
       "description": "Syntax for the [C3](https://c3-lang.org/) programming language",
@@ -831,7 +831,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.2"
+      "version": "0.3"
     },
     {
       "description": "Syntax for the modifications to [fe](https://github.com/rxi/fe/) used in [cel7](https://rxi.itch.io/cel7)",
@@ -851,7 +851,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.3.1"
+      "version": "0.3.2"
     },
     {
       "description": "Syntax for the [Carbon programming language](https://github.com/carbon-language/carbon-lang).",
@@ -861,7 +861,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.3"
+      "version": "0.4"
     },
     {
       "description": "Syntax for the [Clojure](https://clojure.org/) programming language",
@@ -871,7 +871,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.3"
+      "version": "0.4"
     },
     {
       "description": "Syntax for the CMake build system language",
@@ -881,7 +881,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.2"
+      "version": "0.3"
     },
     {
       "description": "Syntax for [Containerfile](https://github.com/containers/common/blob/main/docs/Containerfile.5.md)/[Dockerfile](https://docs.docker.com/engine/reference/builder/)",
@@ -911,7 +911,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for the [CUE](http://cuelang.org) definition and validation programming language",
@@ -921,7 +921,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for the [D](https://dlang.org/) programming language",
@@ -931,7 +931,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.2"
+      "version": "0.3"
     },
     {
       "description": "Syntax for the [Dart](https://dart.dev/) programming languiage",
@@ -941,7 +941,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for diff and patch files",
@@ -971,7 +971,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for the [EJS](https://ejs.co/) javascript template engine",
@@ -981,7 +981,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for the [Elixir](https://elixir-lang.org) programming language",
@@ -991,7 +991,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.3"
+      "version": "0.4"
     },
     {
       "description": "Syntax for the [Elm](https://elm-lang.org) programming language",
@@ -1001,7 +1001,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for the [env](https://hexdocs.pm/dotenvy/dotenv-file-format.html) (dotenv) files",
@@ -1011,7 +1011,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for the [ERB](https://github.com/ruby/erb) programming language. Also known as eRuby or Embedded Ruby.",
@@ -1021,7 +1021,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for the [fe](https://github.com/rxi/fe) programming language",
@@ -1041,7 +1041,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for the [fortran](https://fortran-lang.org/) programming language",
@@ -1051,7 +1051,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.2"
+      "version": "0.3"
     },
     {
       "description": "Syntax for the [fstab](https://en.wikipedia.org/wiki/Fstab) config files",
@@ -1061,7 +1061,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.2"
+      "version": "0.3"
     },
     {
       "description": "Syntax for the [GABC](https://gregorio-project.github.io/gabc) music typesetting language",
@@ -1081,7 +1081,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for the [GLSL](https://www.khronos.org/registry/OpenGL/specs/gl/) programming language",
@@ -1091,7 +1091,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for the [Gemtext](https://gemini.circumlunar.space/docs/gemtext.gmi) markup language",
@@ -1101,7 +1101,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for the [Go](https://golang.org/) programming language",
@@ -1111,7 +1111,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for the [GraphQL](https://graphql.org/) query language, and server-side runtime for executing queries using a type system.",
@@ -1121,7 +1121,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.2"
+      "version": "0.3"
     },
     {
       "description": "Syntax for the [Gravity](https://marcobambini.github.io/gravity/) programming language.",
@@ -1131,7 +1131,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for the [Groovy](https://en.wikipedia.org/wiki/Apache_Groovy) programming language",
@@ -1141,7 +1141,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.2.1"
+      "version": "0.2.2"
     },
     {
       "description": "Syntax for the [Hare](https://harelang.org) programming language",
@@ -1151,7 +1151,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for the [Haxe](https://haxe.org) programming language",
@@ -1161,7 +1161,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for the [HLSL](https://docs.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl) programming language",
@@ -1171,7 +1171,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for the [Haskell](https://www.haskell.org/) programming language",
@@ -1181,7 +1181,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.2"
+      "version": "0.3"
     },
     {
       "description": "Syntax for [.htaccess](https://httpd.apache.org/docs/2.4/howto/htaccess.html) files.",
@@ -1191,7 +1191,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.2"
+      "version": "0.3"
     },
     {
       "description": "Syntax for [.gitignore](https://git-scm.com/docs/gitignore), [.dockerignore](https://docs.docker.com/engine/reference/builder/#dockerignore-file) and some other `.*ignore` files",
@@ -1201,7 +1201,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1.2"
+      "version": "0.1.3"
     },
     {
       "description": "Syntax for [ini](https://en.wikipedia.org/wiki/INI_file) files",
@@ -1211,7 +1211,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1.3"
+      "version": "0.1.4"
     },
     {
       "description": "Syntax for [Inno Setup Script](https://jrsoftware.org/ishelp/) files",
@@ -1242,7 +1242,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1.3"
+      "version": "0.1.4"
     },
     {
       "description": "Syntax for the [jiyu](https://github.com/machinamentum/jiyu) programming language",
@@ -1252,7 +1252,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for the [JSX](https://reactjs.org/docs/introducing-jsx.html) language for the React framework in JavaScript",
@@ -1262,7 +1262,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.2"
+      "version": "0.3"
     },
     {
       "description": "Syntax for the [JSON](https://www.json.org/json-en.html) language",
@@ -1272,7 +1272,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1.1"
+      "version": "0.1.2"
     },
     {
       "description": "Syntax for the [Julia](https://julialang.org/) programming language",
@@ -1282,7 +1282,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for the [KDL](https://kdl.dev) document language",
@@ -1292,7 +1292,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for the [Kotlin](https://kotlinlang.org/docs/home.html) programming language",
@@ -1302,7 +1302,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.2"
+      "version": "0.3"
     },
     {
       "checksum": "08a9f8635b09a98cec9dfca8bb65f24fd7b6585c7e8308773e7ddff9a3e5a60f",
@@ -1323,7 +1323,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for [Liquid](https://shopify.github.io/liquid/) templating language",
@@ -1333,7 +1333,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for [Lobster](https://strlen.com/lobster/) programming language",
@@ -1343,7 +1343,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.2"
+      "version": "0.3"
     },
     {
       "description": "Syntax for the [Lox](http://craftinginterpreters.com/the-lox-language.html) programming language, featured in the book '[Crafting Interpreters](http://craftinginterpreters.com/)'.",
@@ -1353,7 +1353,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for the Make build system language",
@@ -1363,7 +1363,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.2"
+      "version": "0.3"
     },
     {
       "description": "Syntax for [MARTe2](https://vcis.f4e.europa.eu/marte2-docs/master/html/index.html) configuration language",
@@ -1383,7 +1383,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.2.1"
+      "version": "0.2.2"
     },
     {
       "description": "Syntax for the [MiniScript](https://miniscript.org) programming language",
@@ -1393,7 +1393,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for the [MoonScript](https://moonscript.org) scripting language",
@@ -1403,7 +1403,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.2"
+      "version": "0.3"
     },
     {
       "description": "Syntax for [Nelua](http://nelua.io/) programming",
@@ -1413,7 +1413,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1.1"
+      "version": "0.1.2"
     },
     {
       "description": "Syntax for [Nginx](https://www.nginx.com/) config files",
@@ -1423,7 +1423,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1.1"
+      "version": "0.1.2"
     },
     {
       "description": "Syntax for the [Nim](https://nim-lang.org) programming language",
@@ -1433,7 +1433,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.2"
+      "version": "0.3"
     },
     {
       "description": "Syntax for the [Nix](https://nixos.wiki/wiki/Overview_of_the_Nix_Language) expression language",
@@ -1443,7 +1443,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for the [Objective C](https://en.wikipedia.org/wiki/Objective-C) programming language",
@@ -1453,7 +1453,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for the [Odin](https://github.com/odin-lang/Odin) programming language",
@@ -1463,7 +1463,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.2"
+      "version": "0.3"
     },
     {
       "description": "Syntax for the [OpenSCAD](https://openscad.org/) programming language",
@@ -1473,7 +1473,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for [Pascal](https://en.wikipedia.org/wiki/Pascal_(programming_language)) programming language",
@@ -1483,7 +1483,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for the [Perl](https://perl.org) programming language",
@@ -1493,7 +1493,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.2"
+      "version": "0.3"
     },
     {
       "description": "Syntax for the [PHP](https://php.net) programming language",
@@ -1503,7 +1503,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.2"
+      "version": "0.3"
     },
     {
       "description": "Syntax for [Pico-8](https://www.lexaloffle.com/pico-8.php) cartridge files",
@@ -1513,9 +1513,12 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
+      "dependencies": {
+        "language_sh": {}
+      },
       "description": "Syntax for [PKGBUILD](https://wiki.archlinux.org/title/PKGBUILD) package description files",
       "id": "language_pkgbuild",
       "mod_version": "3.1",
@@ -1523,7 +1526,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.2"
+      "version": "0.3"
     },
     {
       "description": "Syntax for [PO](https://www.gnu.org/software/gettext/manual/html_node/PO-Files.html) translation files",
@@ -1533,7 +1536,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for [Pony](https://www.ponylang.io/) programming language",
@@ -1553,7 +1556,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for the postgresql database access language",
@@ -1563,7 +1566,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1.1"
+      "version": "0.1.2"
     },
     {
       "description": "Syntax for [R](https://www.r-project.org/) scripting language",
@@ -1574,7 +1577,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for the [ReScript](https://rescript-lang.org/) programming language",
@@ -1584,7 +1587,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for the [Ring](https://ring-lang.net/) programming language",
@@ -1594,7 +1597,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for the [Rivet](https://github.com/rivet-lang/rivet) programming language",
@@ -1604,7 +1607,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.4.5"
+      "version": "0.4.6"
     },
     {
       "description": "Syntax for the [Ruby](https://www.ruby-lang.org/) programming language",
@@ -1614,7 +1617,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.2.1"
+      "version": "0.2.2"
     },
     {
       "description": "Syntax for the [Rust](https://rust-lang.org/) programming language",
@@ -1624,7 +1627,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.3"
+      "version": "0.4"
     },
     {
       "description": "Syntax for the [Sass](https://sass-lang.com/) CSS preprocessor",
@@ -1634,7 +1637,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for the [Scala](https://scala-lang.org/) programming language",
@@ -1644,7 +1647,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for the [Swift](https://developer.apple.com/swift/) programming language",
@@ -1654,7 +1657,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.2"
+      "version": "0.3"
     },
     {
       "description": "Syntax for shell scripting language",
@@ -1664,7 +1667,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.2.5"
+      "version": "0.2.6"
     },
     {
       "description": "Syntax for ssh & sshd config files",
@@ -1674,7 +1677,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.2"
+      "version": "0.3"
     },
     {
       "description": "Syntax for PLC Structured Text IEC 61131-3 standard.",
@@ -1684,7 +1687,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.2"
+      "version": "0.3"
     },
     {
       "description": "Syntax for [Bazel](https://bazel.build/) build tool files.",
@@ -1697,7 +1700,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.2"
+      "version": "0.3"
     },
     {
       "description": "Syntax for the [Uxntal](https://wiki.xxiivv.com/site/uxntal) assembly language",
@@ -1717,7 +1720,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for the [Umka](https://github.com/vtereshkov/umka-lang) programming language.",
@@ -1727,7 +1730,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for the [Tcl](https://www.tcl.tk/) programming language",
@@ -1737,7 +1740,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for the [Teal](https://github.com/teal-language/tl) programming language, a typed dialect of Lua.",
@@ -1747,7 +1750,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for the [LaTeX](https://www.latex-project.org/) typesetting language",
@@ -1757,7 +1760,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for the [TOML](https://toml.io/en/) configuration language",
@@ -1767,7 +1770,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.2"
+      "version": "0.3"
     },
     {
       "description": "Syntax for the [TypeScript](https://www.typescriptlang.org/) programming language, a typed dialect of JavaScript.",
@@ -1777,7 +1780,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for [TSX](https://www.typescriptlang.org/docs/handbook/jsx.html) language",
@@ -1787,7 +1790,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.2"
+      "version": "0.3"
     },
     {
       "description": "Syntax for [Typst](https://typst.app/) markup language",
@@ -1797,7 +1800,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.2"
+      "version": "0.3"
     },
     {
       "description": "Syntax for the [V](https://vlang.io/) programming language",
@@ -1807,7 +1810,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.2"
+      "version": "0.3"
     },
     {
       "description": "Syntax for the [Vale](https://vale.dev) programming language",
@@ -1827,7 +1830,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "description": "Syntax for [YAML](https://yaml.org/) serialization language",
@@ -1837,7 +1840,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.1"
+      "version": "0.2"
     },
     {
       "checksum": "9694b88c585d35ad37cdcd4278839710e9c3c64d8420538862213b56cd032911",
@@ -1858,7 +1861,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.2"
+      "version": "0.3"
     },
     {
       "description": "Automatically inserts indentation and closing bracket/text after newline",

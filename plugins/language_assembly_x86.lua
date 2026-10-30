@@ -2,7 +2,6 @@
 -- Support for the intel syntax x86-64 assembly
 -- Simply add it to lite-xl's plugins folder (located somewhere at home/.config/lite-xl/plugins)
 -- https://github.com/DMClVG
-
 local syntax = require "core.syntax"
 
 syntax.add {
@@ -10,14 +9,16 @@ syntax.add {
   files = { "%.asm$", "%.[sS]$" },
   comment = ";",
   patterns = {
-    { pattern = ";.-\n", type = "comment" },
+    { pattern = ";.*", type = "comment" },
     { pattern = { '"', '"', '\\' }, type = "string" },
     { pattern = { "'", "'", '\\' }, type = "string" },
     { pattern = "0[bB][0-1]+%W", type = "number" },
     { pattern = "[0-1]+[bB]%W", type = "number" },
     { pattern = "0[xX]%x+", type = "number" },
     { pattern = "%x+[hH]%W", type = "number" },
-    { pattern = "%d+[%d%.eE]*f?", type = "number" },
+    { regex = "(?:\\d+\\.(?!\\.)\\d*|\\.\\d\\d*|\\d+)(?:[eE][+-]?\\d+)?f?",
+      type = "number"
+    },
     { pattern = "%.?%d+f?", type = "number" },
     { pattern = "%%+[%a_][%w_]*", type = "keyword" },
     { pattern = "[%+%-=/%*%^%%<>!~|&%$]", type = "operator" },

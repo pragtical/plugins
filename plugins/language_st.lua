@@ -21,14 +21,14 @@ syntax.add {
     { regex   = [[[-+]?\d+\.{2,4}[-+]?\d+]],                type = "number"   }, -- Number Range
     { pattern = "[%+%-=/%*%^%%<>!~|&:]",                    type = "operator" }, -- Operators
     { pattern = "-?0x%x+",                                  type = "number"   }, -- Number
-    { pattern = "-?%d+[%deE]*f?",                           type = "number"   }, -- Number
+    { regex = "-?(?:\\d+\\.(?!\\.)\\d*|\\.\\d\\d*|\\d+)(?:[eE][+-]?\\d+)?f?",                           type = "number"   }, -- Number
     { pattern = "-?%.?%d+f?",                               type = "number"   }, -- Number
   },
   symbols = {
     ["PROGRAM"] = "keyword",
     ["PROGRAM_INIT"] = "keyword",
     ["PROGRAM_CYCLIC"] = "keyword",
-    
+
     ["PROGRAM_CLOSE"] = "keyword",
     ["END_PROGRAM"] = "keyword",
     ["FUNCTION_BLOCK"] = "keyword",
@@ -41,7 +41,7 @@ syntax.add {
     ["END_IMPLEMENTATION"] = "keyword",
     ["INTERFACE"] = "keyword",
     ["END_INTERFACE"] = "keyword",
-    
+
     ["IF"] = "keyword",
     ["THEN"] = "keyword",
     ["ELSE"] = "keyword",
@@ -64,15 +64,15 @@ syntax.add {
     ["UNTIL"] = "operator",
     ["EXIT"] = "keyword",
     ["RETURN"] = "keyword",
-    
+
     ["AND"] = "keyword",
     ["NOT"] = "keyword",
     ["OR"] = "keyword",
     ["XOR"] = "keyword",
-    
+
     ["NAMESPACE"] = "keyword",
     ["END_NAMESPACE"] = "keyword",
-    
+
     ["VAR"] = "keyword",
     ["VAR_GLOBAL"] = "keyword",
     ["VAR_INPUT"] = "keyword",
@@ -86,20 +86,20 @@ syntax.add {
     ["END_VAR"] = "keyword",
     ["CONST"] = "keyword",
     ["END_CONST"] = "keyword",
-    
+
     ["TYPE"] = "keyword",
     ["END_TYPE"] = "keyword",
     ["STRUCT"] = "keyword",
     ["END_STRUCT"] = "keyword",
-    
+
     ["ORGANIZATION_BLOCK"] = "keyword",
     ["END_ORGANIZATION_BLOCK"] = "keyword",
-    
+
     ["TRUE"] = "literal",
     ["FALSE"] = "literal",
     ["true"] = "literal",
     ["false"] = "literal",
-    
+
     ["SINT"] = "keyword2",
     ["INT"] = "keyword2",
     ["DINT"] = "keyword2",

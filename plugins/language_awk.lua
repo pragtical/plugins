@@ -7,40 +7,20 @@ syntax.add {
   headers = "^#!.*bin.*awk",
   comment = "#",
   patterns = {
-    -- $# is a awk special variable and the '#' shouldn't be interpreted
-    -- as a comment.
-    { pattern = "%$[%a_@*#][%w_]*",               type = "keyword2" },
     -- Comments
-    { pattern = "#.*",                            type = "comment"  },
+    { pattern = "#.*",                           type = "comment"  },
+    { regex = [=[/(?!/)(?:[^\\[/\r\n]++|\\.|\[(?:[^\\\]\r\n]++|\\.)*+\])*+/]=], type = "string" },
     -- Strings
-    { pattern = { '"', '"', '\\' },               type = "string"   },
-    { pattern = { "'", "'", '\\' },               type = "string"   },
-    { pattern = { '`', '`', '\\' },               type = "string"   },
-    -- Ignore numbers that start with dots or slashes
-    { pattern = "%f[%w_%.%/]%d[%d%.]*%f[^%w_%.]", type = "number"   },
+    { pattern = { '"', '"', '\\' },              type = "string"   },
+    { regex = [[(?:\d+\.\d*|\.\d+|\d+)(?:[eE][+-]?\d+)?]],
+      type = "number"
+    },
     -- Operators
-    { pattern = "[!<>|&%[%]:=*]",                 type = "operator" },
-    -- Match parameters
-    { pattern = "%f[%S][%+%-][%w%-_:]+",          type = "function" },
-    { pattern = "%f[%S][%+%-][%w%-_]+%f[=]",      type = "function" },
-    -- Prevent parameters with assignments from been matched as variables
-    {
-      pattern = "%s%-%a[%w_%-]*()%s+()%d[%d%.]+",
-      type = { "function", "normal", "number" }
-    },
-    {
-      pattern = "%s%-%a[%w_%-]*()%s+()%a[%a%-_:=]+",
-      type = { "function", "normal", "symbol" }
-    },
-    -- Match variable assignments
-    { pattern = "[_%a][%w_]+%f[%+=]",              type = "keyword2" },
-    -- Match variable expansions
-    { pattern = "%${.-}",                          type = "keyword2" },
-    { pattern = "%$[%d%$%a_@*][%w_]*",             type = "keyword2" },
+    { pattern = "[!<>|&%[%]:=*+%-%^/%%~?$]",     type = "operator" },
     -- Functions
-    { pattern = "[%a_%-][%w_%-]*()%s*%f[(]",       type = { "function", "normal" } },
+    { pattern = "[%a_][%w_]*()%s*%f[(]",         type = { "function", "normal" } },
     -- Everything else
-    { pattern = "[%a_][%w_]*",                     type = "symbol"   },
+    { pattern = "[%a_][%w_]*",                   type = "symbol"   },
   },
   symbols = {
     ["break"]       = "keyword",

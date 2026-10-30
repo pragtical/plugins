@@ -1,5 +1,4 @@
 -- mod-version:3
-
 local syntax = require "core.syntax"
 
 syntax.add {
@@ -23,7 +22,7 @@ syntax.add {
     { pattern = "0o[0-7_]+",                          type = "number"   },
     { pattern = "0b[01_]+",                           type = "number"   },
     { pattern = "%d[%d_]*%.?[%d_]*[eE][%-+]?[%d_]+",  type = "number"   },
-    { pattern = "%d[%d_]*%.?[$d_]*",                  type = "number"   },
+    { pattern = "%d[%d_]*%.?[%d_]*",                  type = "number"   },
     { pattern = "%f[-+%w_][-+]%f[%w%.]",              type = "number"   },
 
     { pattern = "[%+%-:TZ]",                          type = "operator" },

@@ -1,23 +1,42 @@
 -- mod-version:3
 local syntax = require "core.syntax"
 
-syntax.add {
+local expression = { patterns = {}, symbols = {} }
+local function string_contents(quote, escape)
+  return {
+    patterns = {
+      { pattern = escape, type = "character.special" },
+      { pattern = { "%${", "}" }, type = "keyword2", syntax = expression },
+      { pattern = "%$[%a_][%w_]*[%.%w_]*", type = "keyword2" },
+      { pattern = "[^$\\" .. quote .. "]+", type = "string" },
+      { pattern = ".", type = "string" },
+    },
+    symbols = {},
+  }
+end
+
+local groovy = {
   name = "Groovy",
   files = { "%.groovy$", PATHSEP .. "Jenkinsfile$" },
   comment = "//",
   block_comment = { "/*", "*/" },
   patterns = {
+    { pattern = { '"""', '"""', '\\' }, type = "string", syntax = string_contents('"', "\\.") },
+    { pattern = { "'''", "'''", '\\' }, type = "string" },
     { pattern = "//.*",                          type = "comment"  }, -- Single-line comment
     { pattern = { "/%*", "%*/" },                type = "comment"  }, -- Multi-line comment
-    { pattern = { '"', '"', '\\' },              type = "string"   }, -- String, double quotes
+    { pattern = { '"', '"', '\\' }, type = "string", syntax = string_contents('"', "\\.") },
     { pattern = { "'", "'", '\\' },              type = "string"   }, -- String, apices
-    { pattern = { "%/", "%/", '\\' },            type = "string"   }, -- Slashy string
-    { pattern = { "%$%/", "%/%$", '\\' },        type = "string"   }, -- Dollar slashy string
+    { pattern = { "%$%/", "%/%$", "$" }, type = "string", syntax = string_contents("/", "%$[$/]") },
+    { regex = { [[/(?![/*])(?=(?:[^/\\\r\n]|\\.)+/\s*(?:[,;)}\].]|$))]], "/", "\\" }, type = "string", syntax = string_contents("/", "\\/") },
+    { pattern = { "{", "}" }, type = "operator", syntax = expression },
     { pattern = "'\\x%x?%x?%x?%x'",              type = "string"   }, -- character hexadecimal escape sequence
     { pattern = "'\\u%x%x%x%x'",                 type = "string"   }, -- character unicode escape sequence
     { pattern = "'\\?.'",                        type = "string"   }, -- character literal
     { pattern = "-?0x%x+",                       type = "number"   }, -- ?
-    { pattern = "-?%d+[%d%.eE]*[a-zA-Z]?",       type = "number"   }, -- ?
+    { regex = "-?(?:\\d[\\d_]*\\.(?!\\.)[\\d_]*|\\.\\d[\\d_]*|\\d[\\d_]*)(?:[eE][+-]?\\d[\\d_]*)?[fFdDgGlLiI]?",
+      type = "number"
+    }, -- ?
     { pattern = "-?%.?%d+",                      type = "number"   }, -- ?
     { pattern = "-?[%d_+]+[a-zA-Z]?",            type = "number"   }, -- ?
     { pattern = "[%+%-=/%*%^%%<>!~|&]",          type = "operator" }, -- Operators
@@ -66,23 +85,25 @@ syntax.add {
     ["strictfp"]           = "keyword",
     ["super"]              = "keyword",
     ["switch"]             = "keyword",
-    ["synchronizedthis"]   = "keyword",
+    ["synchronized"]       = "keyword",
+    ["this"]               = "keyword",
     ["threadsafe"]         = "keyword",
     ["throw"]              = "keyword",
     ["throws"]             = "keyword",
     ["transient"]          = "keyword",
     ["try"]                = "keyword",
     ["while"]              = "keyword",
-    
+
     -- Contextual keywords
     ["as"]                 = "keyword",
     ["in"]                 = "keyword",
-    ["permitsrecord"]      = "keyword",
+    ["permits"]            = "keyword",
+    ["record"]             = "keyword",
     ["sealed"]             = "keyword",
     ["trait"]              = "keyword",
     ["var"]                = "keyword",
     ["yields"]             = "keyword",
-    
+
     -- ?
     ["true"]               = "literal",
     ["false"]              = "literal",
@@ -97,7 +118,7 @@ syntax.add {
     ["long"]               = "keyword",
     ["float"]              = "keyword",
     ["double"]             = "keyword",
-    
+
     ["Integer"]            = "keyword",
     ["BigInteger"]         = "keyword",
     ["Long"]               = "keyword",
@@ -107,3 +128,7 @@ syntax.add {
     ["String"]             = "keyword",
   },
 }
+
+expression.patterns, expression.symbols = groovy.patterns, groovy.symbols
+
+syntax.add(groovy)
