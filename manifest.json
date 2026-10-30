@@ -2325,11 +2325,11 @@
       "version": "1.1"
     },
     {
-      "description": "Sorts selected lines alphabetically",
+      "description": "Sort selected lines",
       "id": "sort",
       "mod_version": "3",
       "path": "plugins/sort.lua",
-      "version": "0.2.1"
+      "version": "0.4.0"
     },
     {
       "description": "Sort selected CSS properties alphabetically or using the concentric model. *([demo](https://raw.githubusercontent.com/felixsanz/lite-xl-sortcss/master/demo.gif))*",
