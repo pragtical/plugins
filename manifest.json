@@ -991,7 +991,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.2"
+      "version": "0.3"
     },
     {
       "description": "Syntax for the [Elm](https://elm-lang.org) programming language",
