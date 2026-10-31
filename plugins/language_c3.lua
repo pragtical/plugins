@@ -72,11 +72,13 @@ end
 -- C3 Specification --
 ----------------------
 
+-- https://c3-lang.org/implementation-details/specification/#identifiers
+
 local c3_keywords = [[
-alias      asm        assert     attrdef    bitstruct
-break      case       catch      const      constdef
+alias      asm        assert     attrmacro  bitstruct
+break      case       catch      const      constset
 continue   default    defer      do         else
-enum       extern                faultdef   fn
+enum       excuse     extern                fn
 for        foreach    foreach_r  if         import
 inline     interface  lengthof   macro      module
 nextcase              return     static     struct
@@ -85,7 +87,13 @@ union      var        while
 ]]
 
 local c3_literal_keywords = [[
-true false null
+
+                                 false
+
+
+           null
+                      true
+
 ]]
 
 local c3_builtin_types = [[
