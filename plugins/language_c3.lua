@@ -29,7 +29,7 @@ syntax.add {
       syntax = {
         patterns = {
           -- Leave the closing marker for the enclosing documentation syntax.
-          { regex = { [[^[ \t]*@(?:require|ensure)\b]], [[\n|(?=\*>)]] },
+          { regex = { [[^[ \t]*@(?:require|ensure|param|return)\b]], [[\n|(?=\*>)]] },
             type = "keyword", syntax = ".c3"
           },
           { pattern = "@[%a_][%w_]*%??", type = "keyword" },

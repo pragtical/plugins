@@ -831,7 +831,7 @@
       "tags": [
         "language"
       ],
-      "version": "0.3"
+      "version": "0.4"
     },
     {
       "description": "Syntax for the modifications to [fe](https://github.com/rxi/fe/) used in [cel7](https://rxi.itch.io/cel7)",
