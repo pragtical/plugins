@@ -127,6 +127,7 @@
         "language_elm": {},
         "language_env": {},
         "language_erb": {},
+        "language_erlang": {},
         "language_fe": {},
         "language_fennel": {},
         "language_fortran": {},
@@ -210,7 +211,7 @@
       "id": "meta_languages",
       "mod_version": "3",
       "type": "meta",
-      "version": "0.1.22"
+      "version": "0.1.23"
     },
     {
       "description": "Align multiple carets and selections *([clip](https://user-images.githubusercontent.com/2798487/165631951-532f8d24-d596-4dd0-9d21-ff53c71ed32f.mp4))*",
@@ -1022,6 +1023,16 @@
         "language"
       ],
       "version": "0.2"
+    },
+    {
+      "description": "Syntax for the [Erlang](https://www.erlang.org/) programming language",
+      "id": "language_erlang",
+      "mod_version": "3",
+      "path": "plugins/language_erlang.lua",
+      "tags": [
+        "language"
+      ],
+      "version": "0.1"
     },
     {
       "description": "Syntax for the [fe](https://github.com/rxi/fe) programming language",
