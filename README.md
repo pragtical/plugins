@@ -356,5 +356,5 @@ to follow with `extra.follow_branch`.*
 | [`font_symbols_nerdfont_mono_regular`](plugins/font_symbols_nerdfont_mono_regular.lua?raw=1) | [Nerd Font Symbols](https://github.com/ryanoasis/nerd-fonts/) font with mapping |
 | [`golang`](https://github.com/pragtical/lsp-servers.git)*                                    | Official Go builds.                                                             |
 | [`haxe`](https://github.com/pragtical/lsp-servers.git)*                                      | Official Haxe builds.                                                           |
-| [`jdk`](https://github.com/pragtical/lsp-servers.git)*                                       | Production and Early-Access OpenJDK Builds, from Oracle.                        |
+| [`jdk`](https://github.com/pragtical/lsp-servers.git)*                                       | Eclipse Temurin OpenJDK builds.                                                 |
 | [`nodejs`](https://github.com/pragtical/lsp-servers.git)*                                    | Official NodeJs builds.                                                         |
