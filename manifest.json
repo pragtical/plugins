@@ -633,9 +633,9 @@
       "description": "Official Go builds.",
       "id": "golang",
       "mod_version": "3",
-      "remote": "https://github.com/pragtical/lsp-servers.git:65656fa9bee94136195756df2acbec7e23176d4d",
+      "remote": "https://github.com/pragtical/lsp-servers.git:edbc8cb7586139c335155f9ab4ce371f7a140c37",
       "type": "library",
-      "version": "1.24.5"
+      "version": "1.27.3"
     },
     {
       "description": "Draw configurable background colors in the editor gutter.",
@@ -648,7 +648,7 @@
       "description": "Official Haxe builds.",
       "id": "haxe",
       "mod_version": "3",
-      "remote": "https://github.com/pragtical/lsp-servers.git:65656fa9bee94136195756df2acbec7e23176d4d",
+      "remote": "https://github.com/pragtical/lsp-servers.git:edbc8cb7586139c335155f9ab4ce371f7a140c37",
       "type": "library",
       "version": "4.3.7"
     },
@@ -681,12 +681,12 @@
       "version": "0.1.1"
     },
     {
-      "description": "Production and Early-Access OpenJDK Builds, from Oracle.",
+      "description": "Eclipse Temurin OpenJDK builds.",
       "id": "jdk",
       "mod_version": "3",
-      "remote": "https://github.com/pragtical/lsp-servers.git:65656fa9bee94136195756df2acbec7e23176d4d",
+      "remote": "https://github.com/pragtical/lsp-servers.git:edbc8cb7586139c335155f9ab4ce371f7a140c37",
       "type": "library",
-      "version": "24.0.2"
+      "version": "25.0.5"
     },
     {
       "description": "Simple *key HUD* display.",
@@ -1920,127 +1920,127 @@
       "description": "Automatic configuration/binary download for LSP completion for Bash with bash-language-server.",
       "id": "lsp_bash",
       "mod_version": "3",
-      "remote": "https://github.com/pragtical/lsp-servers.git:8fb287f8680cb2f3b570a9cc12911aff8a62fbce",
-      "version": "5.6.0"
+      "remote": "https://github.com/pragtical/lsp-servers.git:edbc8cb7586139c335155f9ab4ce371f7a140c37",
+      "version": "5.8.1"
     },
     {
       "description": "Automatic configuration/binary download for LSP completion for C/C++ with clangd.",
       "id": "lsp_c",
       "mod_version": "3",
-      "remote": "https://github.com/pragtical/lsp-servers.git:65656fa9bee94136195756df2acbec7e23176d4d",
-      "version": "20.1.8"
+      "remote": "https://github.com/pragtical/lsp-servers.git:edbc8cb7586139c335155f9ab4ce371f7a140c37",
+      "version": "23.1.0"
     },
     {
       "description": "Automatic configuration/binary download for LSP completion for clojure with clojure-lsp.",
       "id": "lsp_clojure",
       "mod_version": "3",
-      "remote": "https://github.com/pragtical/lsp-servers.git:65656fa9bee94136195756df2acbec7e23176d4d",
-      "version": "2025.06.13"
+      "remote": "https://github.com/pragtical/lsp-servers.git:edbc8cb7586139c335155f9ab4ce371f7a140c37",
+      "version": "2026.10.15"
     },
     {
       "description": "LSP support for CSS, LESS, and SCSS via vscode-css-languageserver.",
       "id": "lsp_css",
       "mod_version": "3",
-      "remote": "https://github.com/pragtical/lsp-servers.git:65656fa9bee94136195756df2acbec7e23176d4d",
-      "version": "1.122.1"
+      "remote": "https://github.com/pragtical/lsp-servers.git:edbc8cb7586139c335155f9ab4ce371f7a140c37",
+      "version": "1.144.0"
     },
     {
       "description": "Automatic configuration/binary download for LSP completion for D with serve_d.",
       "id": "lsp_d",
       "mod_version": "3",
-      "remote": "https://github.com/pragtical/lsp-servers.git:65656fa9bee94136195756df2acbec7e23176d4d",
+      "remote": "https://github.com/pragtical/lsp-servers.git:edbc8cb7586139c335155f9ab4ce371f7a140c37",
       "version": "0.7.6"
     },
     {
       "description": "Automatic configuration/binary download for LSP completion for Emmet with emmet-language-server.",
       "id": "lsp_emmet",
       "mod_version": "3",
-      "remote": "https://github.com/pragtical/lsp-servers.git:65656fa9bee94136195756df2acbec7e23176d4d",
-      "version": "2.7.0"
+      "remote": "https://github.com/pragtical/lsp-servers.git:edbc8cb7586139c335155f9ab4ce371f7a140c37",
+      "version": "2.8.0"
     },
     {
       "description": "Automatic configuration/binary download for LSP completion for Go with gopls.",
       "id": "lsp_go",
       "mod_version": "3",
-      "remote": "https://github.com/pragtical/lsp-servers.git:65656fa9bee94136195756df2acbec7e23176d4d",
-      "version": "0.19.1"
+      "remote": "https://github.com/pragtical/lsp-servers.git:edbc8cb7586139c335155f9ab4ce371f7a140c37",
+      "version": "0.24.0"
     },
     {
       "description": "Automatic configuration/binary download for LSP completion for Haxe with haxe-language-server.",
       "id": "lsp_haxe",
       "mod_version": "3",
-      "remote": "https://github.com/pragtical/lsp-servers.git:65656fa9bee94136195756df2acbec7e23176d4d",
+      "remote": "https://github.com/pragtical/lsp-servers.git:edbc8cb7586139c335155f9ab4ce371f7a140c37",
       "version": "2.34.2"
     },
     {
       "description": "LSP support for HTML via vscode-html-languageserver.",
       "id": "lsp_html",
       "mod_version": "3",
-      "remote": "https://github.com/pragtical/lsp-servers.git:65656fa9bee94136195756df2acbec7e23176d4d",
-      "version": "1.122.1"
+      "remote": "https://github.com/pragtical/lsp-servers.git:edbc8cb7586139c335155f9ab4ce371f7a140c37",
+      "version": "1.144.0"
     },
     {
       "description": "LSP support for JSON via vscode-json-languageserver with [SchemaStore integration](https://github.com/pragtical/lsp-servers/tree/latest/patches/vscode-json-languageserver).",
       "id": "lsp_json",
       "mod_version": "3",
-      "remote": "https://github.com/pragtical/lsp-servers.git:65656fa9bee94136195756df2acbec7e23176d4d",
-      "version": "1.122.1"
+      "remote": "https://github.com/pragtical/lsp-servers.git:edbc8cb7586139c335155f9ab4ce371f7a140c37",
+      "version": "1.144.0"
     },
     {
       "description": "Automatic configuration/binary download for LSP completion for Lua with lua-language-server (sumneko).",
       "id": "lsp_lua",
       "mod_version": "3",
-      "remote": "https://github.com/pragtical/lsp-servers.git:e1090654b869d9b54d6a8dc529cffdc1ca085a42",
-      "version": "3.18.2"
+      "remote": "https://github.com/pragtical/lsp-servers.git:edbc8cb7586139c335155f9ab4ce371f7a140c37",
+      "version": "3.19.2"
     },
     {
       "description": "Automatic configuration/binary download for LSP completion for Java with jdtls.",
       "id": "lsp_java",
       "mod_version": "3",
-      "remote": "https://github.com/pragtical/lsp-servers.git:65656fa9bee94136195756df2acbec7e23176d4d",
-      "version": "1.49.0"
+      "remote": "https://github.com/pragtical/lsp-servers.git:edbc8cb7586139c335155f9ab4ce371f7a140c37",
+      "version": "1.63.0"
     },
     {
       "description": "LSP support for PHP via Intelephense.",
       "id": "lsp_php",
       "mod_version": "3",
-      "remote": "https://github.com/pragtical/lsp-servers.git:2630d42915a08cdf2d3afaf78e2152fe73d7edc2",
-      "version": "1.18.4"
+      "remote": "https://github.com/pragtical/lsp-servers.git:edbc8cb7586139c335155f9ab4ce371f7a140c37",
+      "version": "1.18.5"
     },
     {
       "description": "Automatic configuration/binary download for LSP completion and linting for Python with Pyright and Ruff.",
       "id": "lsp_python",
       "mod_version": "3",
-      "remote": "https://github.com/pragtical/lsp-servers.git:7849803fa54a2674521ac0dbac4d160f25e6d674",
-      "version": "20260603"
+      "remote": "https://github.com/pragtical/lsp-servers.git:edbc8cb7586139c335155f9ab4ce371f7a140c37",
+      "version": "20261101"
     },
     {
       "description": "Automatic configuration/binary download for LSP linting for Javascript with quick-lint-js.",
       "id": "lsp_quicklintjs",
       "mod_version": "3",
-      "remote": "https://github.com/pragtical/lsp-servers.git:65656fa9bee94136195756df2acbec7e23176d4d",
+      "remote": "https://github.com/pragtical/lsp-servers.git:edbc8cb7586139c335155f9ab4ce371f7a140c37",
       "version": "3.2.0"
     },
     {
       "description": "Automatic configuration/binary download for LSP completion for Rust with rust-analyzer.",
       "id": "lsp_rust",
       "mod_version": "3",
-      "remote": "https://github.com/pragtical/lsp-servers.git:65656fa9bee94136195756df2acbec7e23176d4d",
-      "version": "20250804"
+      "remote": "https://github.com/pragtical/lsp-servers.git:edbc8cb7586139c335155f9ab4ce371f7a140c37",
+      "version": "20261026"
     },
     {
       "description": "Automatic configuration/binary download for LSP completion for TeX with texlab.",
       "id": "lsp_tex",
       "mod_version": "3",
-      "remote": "https://github.com/pragtical/lsp-servers.git:65656fa9bee94136195756df2acbec7e23176d4d",
-      "version": "5.23.1"
+      "remote": "https://github.com/pragtical/lsp-servers.git:edbc8cb7586139c335155f9ab4ce371f7a140c37",
+      "version": "5.26.0"
     },
     {
       "description": "Automatic configuration/binary download for LSP completion for Typescript and Javascript with typescript-language-server.",
       "id": "lsp_typescript",
       "mod_version": "3",
-      "remote": "https://github.com/pragtical/lsp-servers.git:65656fa9bee94136195756df2acbec7e23176d4d",
-      "version": "5.3.0"
+      "remote": "https://github.com/pragtical/lsp-servers.git:edbc8cb7586139c335155f9ab4ce371f7a140c37",
+      "version": "6.0.2"
     },
     {
       "description": "Adds LSP snippets support to the snippets plugin",
@@ -2053,15 +2053,15 @@
       "description": "LSP support for YAML via yaml-language-server.",
       "id": "lsp_yaml",
       "mod_version": "3",
-      "remote": "https://github.com/pragtical/lsp-servers.git:65656fa9bee94136195756df2acbec7e23176d4d",
-      "version": "1.23.0"
+      "remote": "https://github.com/pragtical/lsp-servers.git:edbc8cb7586139c335155f9ab4ce371f7a140c37",
+      "version": "2.0.0"
     },
     {
       "description": "Automatic configuration/binary download for LSP completion for Zig via zls.",
       "id": "lsp_zig",
       "mod_version": "3",
-      "remote": "https://github.com/pragtical/lsp-servers.git:65656fa9bee94136195756df2acbec7e23176d4d",
-      "version": "0.16.0"
+      "remote": "https://github.com/pragtical/lsp-servers.git:edbc8cb7586139c335155f9ab4ce371f7a140c37",
+      "version": "0.17.0"
     },
     {
       "description": "Remaps mac modkeys `command/option` to `ctrl/alt`",
@@ -2136,9 +2136,9 @@
       "description": "Official NodeJs builds.",
       "id": "nodejs",
       "mod_version": "3",
-      "remote": "https://github.com/pragtical/lsp-servers.git:65656fa9bee94136195756df2acbec7e23176d4d",
+      "remote": "https://github.com/pragtical/lsp-servers.git:edbc8cb7586139c335155f9ab4ce371f7a140c37",
       "type": "library",
-      "version": "22.18.0"
+      "version": "22.23.4"
     },
     {
       "dependencies": {
