@@ -15,20 +15,22 @@ jobs:
       - name: Generate table with `ppm`
         run: |
           wget https://github.com/pragtical/plugin-manager/releases/download/latest/ppm.x86_64-linux -O ppm-latest && chmod +x ppm-latest
+          PPM_USERDIR="$(mktemp -d)"
+          trap 'rm -rf "$PPM_USERDIR"' EXIT
           # Remove everything after the --- so we can regenerate it.
           perl -pi -e 'exit(0) if $_ =~ m/^\-\-\-/' README.md && echo -e "---" >> README.md
           echo -e "\n## Plugins\n" >> README.md
           export TABLE_COLUMNS='{{not addon and "plugin" or string.format("[`%s`](%s)", addon.id, (addon.extra and addon.extra.url or addon.url)) .. ((addon.extra and addon.extra.url or (addon.url and addon.url:find("http"))) and "*" or "")}},description'
-          ./ppm-latest init none --userdir . && ./ppm-latest add . --userdir .
-          #./ppm-latest list --table "$TABLE_COLUMNS" --header Plugin,Description --type plugin --tag '!language' --status '!core' --userdir . >> README.md
-          ./ppm-latest list --table "$TABLE_COLUMNS" --header Plugin,Description --type plugin --status '!core' --userdir . | grep -v "language_" >> README.md
+          ./ppm-latest init none --userdir "$PPM_USERDIR" && ./ppm-latest add . --userdir "$PPM_USERDIR"
+          #./ppm-latest list --table "$TABLE_COLUMNS" --header Plugin,Description --type plugin --tag '!language' --status '!core' --userdir "$PPM_USERDIR" >> README.md
+          ./ppm-latest list --table "$TABLE_COLUMNS" --header Plugin,Description --type plugin --status '!core' --userdir "$PPM_USERDIR" | grep -v "language_" >> README.md
           echo -e "\n## Languages\n" >> README.md
-          # ./ppm-latest list --table "$TABLE_COLUMNS" --header Language,Description --type plugin --tag 'language' --userdir .  >> README.md
-          ./ppm-latest list --table "$TABLE_COLUMNS" --header Language,Description --type plugin --status '!core' --userdir . | grep -P "(language_|\| Language|\| \-\-)" >> README.md
+          # ./ppm-latest list --table "$TABLE_COLUMNS" --header Language,Description --type plugin --tag 'language' --userdir "$PPM_USERDIR"  >> README.md
+          ./ppm-latest list --table "$TABLE_COLUMNS" --header Language,Description --type plugin --status '!core' --userdir "$PPM_USERDIR" | grep -P "(language_|\| Language|\| \-\-)" >> README.md
           echo -e "\n## Libraries\n" >> README.md
-          ./ppm-latest list --table "$TABLE_COLUMNS" --header Library,Description --type library --userdir .  >> README.md
-          ./ppm-latest exec 'common.write("manifest.json", json.encode(json.decode(common.read("manifest.json")), { pretty = true }) .. "\n")' --userdir .
-          ./ppm-latest purge --userdir .
+          ./ppm-latest list --table "$TABLE_COLUMNS" --header Library,Description --type library --userdir "$PPM_USERDIR"  >> README.md
+          ./ppm-latest exec 'common.write("manifest.json", json.encode(json.decode(common.read("manifest.json")), { pretty = true }) .. "\n")' --userdir "$PPM_USERDIR"
+          ./ppm-latest purge --userdir "$PPM_USERDIR"
           if ! git diff --exit-code -s README.md manifest.json; then
             git config --global user.name "Github Actions" && git config --global user.email "<>"
             git add README.md manifest.json
