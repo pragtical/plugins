@@ -3,12 +3,27 @@
 -- when there is no active document
 -- or the active document is empty.
 
+-- fortune is *nix only, return early to avoid unnecessary delay
+if PLATFORM == "Windows" then
+  return
+end
+
 local core = require("core")
 local common = require("core.common")
 local config = require("core.config")
 local style = require("core.style")
 local StatusView = require("core.statusview")
 local command = require("core.command")
+
+-- hide in these plugins, check "self.name"
+local hidden_views = {
+  ["About Pragtical"] = true,
+  ["Audio Player"] = true,
+  ["Log"] = true,
+  ["Plugin Manager"] = true,
+  ["Project Search and Replace"] = true,
+  ["Settings"] = true,
+}
 
 local DEFAULT_ARGUMENTS = "-n 80 -s"
 local MAX_LENGTH = 120
@@ -123,10 +138,14 @@ local function is_eligible()
   end
 
   local doc = view and view.doc or nil
-  -- hide in plugin manager and settings
+  -- reduce noise
   if view and type(view.get_name) == "function" then
     local view_name = view:get_name()
-    if view_name == "Plugin Manager" or view_name == "Settings" then
+    if
+      hidden_views[view_name]
+      -- Markdown Preivew
+      or view_name:match(" Preview$")
+    then
       return false, doc
     end
   end
