@@ -24,6 +24,7 @@ local filetype_overrides = {
   end,
   ["C"] = SS.get_level_ignore_open_bracket,
   ["C++"] = SS.get_level_ignore_open_bracket,
+  ["C3"] = SS.get_level_ignore_open_bracket,
   ["Plain Text"] = false
 }
 

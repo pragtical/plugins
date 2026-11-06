@@ -2372,7 +2372,7 @@
       "mod_version": "3.11",
       "name": "Sticky Scroll",
       "path": "plugins/sticky_scroll.lua",
-      "version": "2.0"
+      "version": "2.1"
     },
     {
       "description": "Save files that require root permissions. Needs `pkexec`.",
