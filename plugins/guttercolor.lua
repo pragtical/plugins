@@ -9,18 +9,18 @@ local DocView = require "core.docview"
 ---@field enabled boolean
 ---@field gutter_background boolean
 ---@field gutter_custom_color boolean
----@field gutter_color renderer.color
+---@field gutter_color renderer.color?
 ---@field selection_background boolean
 ---@field selection_custom_color boolean
----@field selection_color renderer.color
+---@field selection_color renderer.color?
 config.plugins.guttercolor = common.merge({
   enabled = true,
   gutter_background = true,
   gutter_custom_color = false,
-  gutter_color = style.line_highlight,
+  gutter_color = nil,
   selection_background = true,
   selection_custom_color = false,
-  selection_color = style.selection,
+  selection_color = nil,
   config_spec = {
     name = "Gutter Color",
     {
@@ -49,7 +49,8 @@ config.plugins.guttercolor = common.merge({
       description = "Custom color used for the gutter background.",
       path = "gutter_color",
       type = "color",
-      default = style.line_highlight
+      default = nil,
+      get_value = function(value) return value or style.line_highlight end
     },
     {
       label = "Selection Background",
@@ -70,7 +71,8 @@ config.plugins.guttercolor = common.merge({
       description = "Custom color used for selected lines gutter background.",
       path = "selection_color",
       type = "color",
-      default = style.selection
+      default = nil,
+      get_value = function(value) return value or style.selection end
     }
   }
 }, config.plugins.guttercolor)

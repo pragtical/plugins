@@ -39,7 +39,7 @@ config.plugins.audiovisu = common.merge({
   random_interval = 20,
   effect_speed = 1,
   effect_custom_color = false,
-  effect_color = { table.unpack(style.text) },
+  effect_color = nil,
   vertical_position = "bottom",
   horizontal_position = "right",
   bar_count = 24,
@@ -51,7 +51,7 @@ config.plugins.audiovisu = common.merge({
   sensitivity = 1,
   decay = 0.25,
   custom_color = false,
-  color = { table.unpack(style.text) },
+  color = nil,
   config_spec = {
     name = "Editor Audio Visualizer",
     {
@@ -81,7 +81,8 @@ config.plugins.audiovisu = common.merge({
     },
     {
       label = "Effect Color", path = "effect_color", type = "color",
-      default = { table.unpack(style.text) }, on_apply = redraw
+      default = nil,
+      get_value = function(value) return value or style.text end, on_apply = redraw
     },
     {
       label = "Vertical Position", path = "vertical_position", type = "selection",
@@ -107,7 +108,8 @@ config.plugins.audiovisu = common.merge({
     },
     {
       label = "Bar Color", path = "color", type = "color",
-      default = { table.unpack(style.text) }, on_apply = redraw
+      default = nil,
+      get_value = function(value) return value or style.text end, on_apply = redraw
     }
   }
 }, config.plugins.audiovisu)
@@ -559,10 +561,11 @@ end
 local function effect_color(scene, hue, brightness, alpha)
   brightness = common.clamp(brightness, 0, 1)
   local custom = settings()
-  if custom.effect_custom_color and type(custom.effect_color) == "table" then
+  local color = custom.effect_color or style.text
+  if custom.effect_custom_color and type(color) == "table" then
     return {
-      math.floor(custom.effect_color[1] * brightness), math.floor(custom.effect_color[2] * brightness),
-      math.floor(custom.effect_color[3] * brightness), alpha or custom.effect_color[4] or 255
+      math.floor(color[1] * brightness), math.floor(color[2] * brightness),
+      math.floor(color[3] * brightness), alpha or color[4] or 255
     }
   end
   local h = ((hue + scene.time * 0.025) % 1) * 6
@@ -626,7 +629,7 @@ local function feedback_image(scene, width, height)
     scene.rendered_frame = nil
   end
   local options = settings()
-  local palette_key = tostring(options.effect_custom_color) .. table.concat(options.effect_color or {}, ",")
+  local palette_key = tostring(options.effect_custom_color) .. table.concat(options.effect_color or style.text, ",")
   if scene.rendered_frame == scene.frame and scene.image_w == width and scene.image_h == height
     and scene.palette_key == palette_key then
     return scene.image
@@ -774,7 +777,7 @@ end
 
 local function vector_image(scene, width, height, draw)
   local options = settings()
-  local palette_key = tostring(options.effect_custom_color) .. table.concat(options.effect_color or {}, ",")
+  local palette_key = tostring(options.effect_custom_color) .. table.concat(options.effect_color or style.text, ",")
   if scene.image and scene.rendered_frame == scene.frame and scene.image_w == width
     and scene.image_h == height and scene.palette_key == palette_key then return scene.image end
   local scale = math.min(1, 560 / width, 320 / height)

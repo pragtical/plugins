@@ -50,17 +50,14 @@ local view
 config.plugins.todotreeview = common.merge({
   todo_tags = {"TODO", "BUG", "FIX", "FIXME", "IMPROVEMENT"},
   tag_colors = {
-    TODO        = {tag=style.text, tag_hover=style.accent, text=style.text, text_hover=style.accent},
-    BUG         = {tag=style.text, tag_hover=style.accent, text=style.text, text_hover=style.accent},
-    FIX         = {tag=style.text, tag_hover=style.accent, text=style.text, text_hover=style.accent},
-    FIXME       = {tag=style.text, tag_hover=style.accent, text=style.text, text_hover=style.accent},
-    IMPROVEMENT = {tag=style.text, tag_hover=style.accent, text=style.text, text_hover=style.accent},
+    TODO        = {},
+    BUG         = {},
+    FIX         = {},
+    FIXME       = {},
+    IMPROVEMENT = {},
   },
   enable_custom_file_color = false,
-  todo_file_color = {
-    name=style.text,
-    hover=style.accent
-  },
+  todo_file_color = {},
   ignore_paths = {},
   todo_expanded = true,
   todo_mode = "tag",
@@ -89,14 +86,16 @@ config.plugins.todotreeview = common.merge({
       description = "Custom color for file names.",
       path = "todo_file_color.name",
       type = "color",
-      default = table.pack(table.unpack(style.text)),
+      default = nil,
+      get_value = function(value) return value or style.text end,
     },
     {
       label = "Filename Hover Color",
       description = "Custom color for file names on hover.",
       path = "todo_file_color.hover",
       type = "color",
-      default = table.pack(table.unpack(style.accent)),
+      default = nil,
+      get_value = function(value) return value or style.accent end,
     },
     {
       label = "Ignore Path List",

@@ -21,7 +21,7 @@ config.plugins.visu = common.merge({
   cavaFrameRate = 60,
   barsNumber = 10,
   barsCustomColor = false,
-  barsColor = table.pack(table.unpack(style.text)),
+  barsColor = nil,
   -- The config specification used by the settings gui
   config_spec = {
     name = "Audio Visualizer",
@@ -110,7 +110,8 @@ config.plugins.visu = common.merge({
       description = "Color used for the spectrum bars.",
       path = "barsColor",
       type = "color",
-      default = table.pack(table.unpack(style.text))
+      default = nil,
+      get_value = function(value) return value or style.text end
     }
   }
 }, config.plugins.visu)
@@ -278,9 +279,9 @@ function Visu:render(rootview)
     for i = 1, self.bars do
       local h = ((self.barsInfo[i] * 239)) * SCALE
       if h > 0 then
-        local color = not config.plugins.visu.barsCustomColor
-          and style.text
-          or config.plugins.visu.barsColor
+        local color = config.plugins.visu.barsCustomColor
+          and config.plugins.visu.barsColor
+          or style.text
 
         -- y = self.size.y - core.status_view.size.y
 

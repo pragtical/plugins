@@ -27,74 +27,51 @@ local DocView = require "core.docview"
 
 
 config.plugins.custom_caret = common.merge({
-    shape = "line",
-    custom_color = true,
-    caret_color = table.pack(table.unpack(style.caret)),
-    surrounding_chars = false,
+  shape = "line",
+  custom_color = true,
+  caret_color = nil,
+  surrounding_chars = false,
+  config_spec = {
+    name = "Custom Caret",
+    {
+      label = "Shape",
+      description = "The Shape of the cursor.",
+      path = "shape",
+      type = "selection",
+      default = "line",
+      values = {
+        {"Line", "line"},
+        {"Block", "block"},
+        {"Underline", "underline"}
+      }
+    },
+    {
+      label = "Custom Color",
+      description = "Use a custom color for the caret as specified below.",
+      path = "custom_color",
+      type = "toggle",
+      default = true
+    },
+    {
+      label = "Caret Color",
+      description = "Custom color of the caret.",
+      path = "caret_color",
+      type = "color",
+      default = nil,
+      get_value = function(value) return value or style.caret end,
+    },
+    {
+      label = "Surrounding Characters",
+      description = "When using block caret, whether you want to show the characters around for a better character switch.",
+      path = "surrounding_chars",
+      type ="toggle",
+      default = false,
+    },
+  }
 }, config.plugins.custom_caret)
 
 -- Reference to plugin config
 local conf = config.plugins.custom_caret
-
--- Get real default caret color after everything is loaded up
-core.add_thread(function()
-  if
-    conf.caret_color[1] == 147 and conf.caret_color[2] == 221
-    and
-    conf.caret_color[3] == 250 and conf.caret_color[4] == 255
-    and
-    (
-      style.caret[1] ~= conf.caret_color[1] or style.caret[2] ~= conf.caret_color[2]
-      or
-      style.caret[3] ~= conf.caret_color[3] or style.caret[4] ~= conf.caret_color[4]
-    )
-  then
-    conf.caret_color = table.pack(table.unpack(style.caret))
-  end
-
-  local settings_loaded, settings = pcall(require, "plugins.settings")
-  if settings_loaded then
-    conf.config_spec = {
-      name = "Custom Caret",
-      {
-        label = "Shape",
-        description = "The Shape of the cursor.",
-        path = "shape",
-        type = "selection",
-        default = "line",
-        values = {
-          {"Line", "line"},
-          {"Block", "block"},
-          {"Underline", "underline"}
-        }
-      },
-      {
-        label = "Custom Color",
-        description = "Use a custom color for the caret as specified below.",
-        path = "custom_color",
-        type = "toggle",
-        default = true
-      },
-      {
-        label = "Caret Color",
-        description = "Custom color of the caret.",
-        path = "caret_color",
-        type = "color",
-        default = table.pack(table.unpack(style.caret)),
-      },
-      {
-        label = "Surrounding Characters",
-        description = "When using block caret, whether you want to show the characters around for a better character switch.",
-        path = "surrounding_chars",
-        type ="toggle",
-        default = false,
-      },
-    }
-
-    ---@cast settings plugins.settings
-    settings.ui:enable_plugin("custom_caret")
-  end
-end)
 
 function DocView:draw_caret(x, y, line, col)
   local caret_width = style.caret_width

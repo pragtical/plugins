@@ -234,7 +234,7 @@
       "mod_version": "3.12.5",
       "name": "Editor Audio Visualizer",
       "path": "plugins/audiovisu.lua",
-      "version": "0.1.0"
+      "version": "0.1.1"
     },
     {
       "description": "Automatically inserts closing brackets and quotes. Also allows selected text to be wrapped with brackets or quotes.",
@@ -354,7 +354,7 @@
       "id": "custom_caret",
       "mod_version": "3.1",
       "path": "plugins/custom_caret.lua",
-      "version": "0.4.1"
+      "version": "0.4.2"
     },
     {
       "description": "Insert date-, time- and date-time-stamps",
@@ -643,7 +643,7 @@
       "id": "guttercolor",
       "mod_version": "3",
       "path": "plugins/guttercolor.lua",
-      "version": "0.1"
+      "version": "0.1.1"
     },
     {
       "description": "Official Haxe builds.",
@@ -2463,7 +2463,7 @@
       "id": "todotreeview",
       "mod_version": "3.1",
       "path": "plugins/todotreeview.lua",
-      "version": "0.4.2"
+      "version": "0.4.3"
     },
     {
       "description": "Toggles symbols between `snake_case` and `camelCase`",
@@ -2536,7 +2536,7 @@
       "id": "visu",
       "mod_version": "3",
       "path": "plugins/visu.lua",
-      "version": "0.2.9"
+      "version": "0.2.10"
     },
     {
       "description": "Adds in a word count to the statusview.",
