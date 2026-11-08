@@ -2473,6 +2473,13 @@
       "version": "0.1.1"
     },
     {
+      "description": "Swaps characters around the cursor",
+      "id": "transpose",
+      "mod_version": "3",
+      "path": "plugins/transpose.lua",
+      "version": "1.0.0"
+    },
+    {
       "description": "Tree-sitter syntax highlighting through a direct LuaJIT FFI wrapper around the Tree-sitter runtime.",
       "id": "treesitter",
       "mod_version": "3",
