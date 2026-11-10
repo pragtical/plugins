@@ -138,15 +138,17 @@ local function is_eligible()
   end
 
   local doc = view and view.doc or nil
-  -- reduce noise
   if view and type(view.get_name) == "function" then
     local view_name = view:get_name()
-    if
-      hidden_views[view_name]
-      -- Markdown Preivew
-      or view_name:match(" Preview$")
-    then
-      return false, doc
+    if type(view_name) == "string" then
+      -- reduce noise
+      if
+        hidden_views[view_name]
+        -- Markdown Preivew
+        or view_name:match(" Preview$")
+      then
+        return false, doc
+      end
     end
   end
 
