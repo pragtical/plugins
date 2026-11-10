@@ -69,15 +69,20 @@ end
 
 local entries = load_emoji_data()
 local emoji_items = {}
-local registered = {}
 
 local function add_keyword(keyword, emoji)
-  if type(keyword) ~= "string" or keyword == "" or registered[keyword] then
+  if type(keyword) ~= "string" or keyword == "" then
     return
   end
-  registered[keyword] = true
+
+  -- allow mapping multiple emojis to the same keyword
+  local label = keyword .. "  " .. emoji
+  if emoji_items[label] then
+    return
+  end
+
   -- put emoji in text to render it correctly
-  emoji_items[keyword .. "  " .. emoji] = {
+  emoji_items[label] = {
     onselect = function()
       local view = core.active_view
       local doc = view and view.doc
@@ -96,13 +101,10 @@ local function add_keyword(keyword, emoji)
   }
 end
 
--- register description first, then fallback to aliases
-for _, entry in ipairs(entries) do
-  if entry.emoji then
-    add_keyword(entry.description, entry.emoji)
-
-    for _, alias in ipairs(entry.aliases or {}) do
-      add_keyword(alias, entry.emoji)
+for emoji, keywords in pairs(entries) do
+  if type(emoji) == "string" and type(keywords) == "table" then
+    for _, keyword in ipairs(keywords) do
+      add_keyword(keyword, emoji)
     end
   end
 end
@@ -110,7 +112,9 @@ end
 local original_on_text_input = RootView.on_text_input
 
 RootView.on_text_input = function(self, ...)
-  if original_on_text_input(self, ...) then return true end
+  if original_on_text_input(self, ...) then
+    return true
+  end
 
   local view = core.active_view
   local doc = view and view.doc
