@@ -7,7 +7,7 @@ Usage: Type `:monkey` to insert 🐒.
 
 ![preview](preview.webp)
 
-`emoji.json` is acquired from GitHub [gemoji][gemoji] and licensed under MIT.
+`emoji.json` is acquired from [emojilib][emojilib] and licensed under MIT.
 
 [ligatures]: https://pragtical.dev/docs/user-guide/font-ligatures#enable-ligatures
-[gemoji]: https://github.com/github/gemoji
+[emojilib]: https://github.com/muan/emojilib

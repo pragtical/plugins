@@ -466,7 +466,7 @@
       "id": "emoji",
       "mod_version": "3",
       "path": "plugins/emoji",
-      "version": "1.0.4"
+      "version": "2.0.0"
     },
     {
       "description": "Make sure the file ends with one blank line.",
