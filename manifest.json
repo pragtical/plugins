@@ -2096,6 +2096,14 @@
       "version": "0.1.1"
     },
     {
+      "description": "Local audio and video playback with playlists, artwork, visualizations and fullscreen through libmpv.",
+      "id": "mediaplayer",
+      "mod_version": "3.14.0",
+      "name": "Media Player",
+      "remote": "https://github.com/pragtical/mediaplayer.git:42df4bd08c15029eb1d16b9fd9ccf0740fcd6915",
+      "version": "0.1.0"
+    },
+    {
       "description": "Show memory usage in the status view",
       "id": "memoryusage",
       "mod_version": "3",
