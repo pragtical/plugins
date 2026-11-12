@@ -2554,6 +2554,14 @@
       "version": "0.2.10"
     },
     {
+      "description": "CEF browser tabs rendered inside Pragtical with native input and navigation.",
+      "id": "webbrowser",
+      "mod_version": "3.14.0",
+      "name": "Web Browser",
+      "remote": "https://github.com/pragtical/webbrowser.git:9229b36cce7d07abf558c85ff41490732cdf41e9",
+      "version": "0.1.0"
+    },
+    {
       "description": "Adds in a word count to the statusview.",
       "id": "wordcount",
       "mod_version": "3",
