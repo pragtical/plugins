@@ -1,20 +1,43 @@
 -- mod-version:3
 local syntax = require "core.syntax"
+local expression = { patterns = {}, symbols = {} }
+local function interpolated_string(escaped)
+  local patterns = {
+    { pattern = "%$%$", type = "string" },
+    { pattern = { "%${", "}" }, type = "keyword2", syntax = expression },
+    { pattern = "%$[%a_][%w_]*", type = "keyword2" },
+    { pattern = escaped and '[^"$\\]+' or '[^"$]+', type = "string" },
+    { pattern = ".", type = "string" },
+  }
+  if escaped then table.insert(patterns, 1, { pattern = "\\.", type = "character.special" }) end
+  return { patterns = patterns, symbols = {} }
+end
 
-syntax.add {
+local block_comment = { patterns = {}, symbols = {} }
+block_comment.patterns = {
+  { pattern = { "/%*", "%*/" }, type = "comment", syntax = block_comment },
+  { pattern = "[^/%*]+", type = "comment" },
+  { pattern = ".", type = "comment" },
+}
+
+local scala = {
   name = "Scala",
   files = { "%.sc$", "%.scala$" },
   comment = "//",
   patterns = {
-    { pattern = "//.-\n",                      type = "comment"  },
-    { pattern = { "/%*", "%*/" },              type = "comment"  },
-    { pattern = { '[ruU]?"', '"', '\\' },      type = "string"   },
+    { pattern = "//.*",                      type = "comment"  },
+    { pattern = { "/%*", "%*/" },              type = "comment", syntax = block_comment  },
+    { pattern = { '[%a_][%w_]*"""', '"""' }, type = "string", syntax = interpolated_string(false) },
+    { pattern = { 'raw"', '"', '\\' }, type = "string", syntax = interpolated_string(false) },
+    { pattern = { '[%a_][%w_]*"', '"', '\\' }, type = "string", syntax = interpolated_string(true) },
+    { pattern = { '"""', '"""' },            type = "string"   },
+    { pattern = { '"', '"', '\\' },          type = "string"   },
     { pattern = { "[ruU]?'", "'", '\\' },      type = "string"   },
+    { pattern = { "{", "}" }, type = "normal", syntax = expression },
     { pattern = "0x[%da-fA-F]+",               type = "number"   },
-    { pattern = "-?%d+[%d%.eE]*",              type = "number"   },
+    { regex = "-?(?:\\d+\\.(?!\\.)\\d*|\\.\\d\\d*|\\d+)(?:[eE][+-]?\\d+)?",              type = "number"   },
     { pattern = "-?%.?%d+",                    type = "number"   },
     { pattern = "[%+%-=/%*%^%%<>!~|&]",        type = "operator" },
-    { pattern = '[%a_][%w_]*"""*[%a_][%w_]*"""', type = "string"   },
     { pattern = "[%a_][%w_]*%f[(]",              type = "function" },
     { pattern = "[%a_][%w_]*",                   type = "symbol"   },
   },
@@ -78,3 +101,7 @@ syntax.add {
     ["false"]    = "literal",
   }
 }
+
+expression.patterns, expression.symbols = scala.patterns, scala.symbols
+
+syntax.add(scala)

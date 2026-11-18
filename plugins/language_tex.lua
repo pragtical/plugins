@@ -6,7 +6,10 @@ syntax.add {
   files = { "%.tex$", "%.dtx$", "%.sty$", "%.ins$", "%.cls$" },
   comment = "%%",
   patterns = {
-    { pattern = "%%.-\n",                  type = "comment"  },
+    { pattern = { "\\begin{verbatim%*}", "\\end{verbatim%*}" }, type = "string" },
+    { pattern = { "\\begin{verbatim}", "\\end{verbatim}" }, type = "string" },
+    { pattern = "\\[%%$&#_{}]", type = "string" },
+    { pattern = "%%.*",                  type = "comment"  },
     { pattern = "\\documentclass().-{()%a%w+()}",  type = {"keyword", "symbol", "function", "symbol"} },
     { pattern = "\\usepackage",            type = "keyword"  },
     { pattern = "\\chapter",               type = "keyword"  },

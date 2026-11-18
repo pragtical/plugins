@@ -1,0 +1,305 @@
+-- mod-version:3
+--------------------------------------------------------------------------------
+-- Plugin: Occurrences Highlight & Scrollbar Markers
+-- Description: VS Code-style occurrences highlight and scrollbar track indicators
+--------------------------------------------------------------------------------
+
+local core = require "core"
+local config = require "core.config"
+local style = require "core.style"
+local command = require "core.command"
+local common = require "core.common"
+local DocView = require "core.docview"
+
+-- Safe Plugin Configurations
+
+config.plugins.occurrences = common.merge({
+  enabled = true,
+  highlight_word_under_caret = nil,
+  match_whole_word = nil,
+  case_sensitive = true,
+  min_length = 2,
+  show_scrollbar_markers = true, 
+  colour = { 80, 160, 240, 70 }, -- Text highlight colour (RGBA translucent blue) 
+  marker_colour = { 255, 170, 40, 230 }, -- Scrollbar marker colour (RGBA bright amber/orange, VS Code style) 
+  config_spec = {
+    name = "Occurrences Highlight",
+    {
+      label = "Enabled",
+      description = "Activate cccurrences-highlight by default.",
+      path = "enabled",
+      type = "toggle",
+      default = true
+    },
+    {
+      label = "Highlight Word Under Caret",
+      description = "Enable to highlight word under caret",
+      path = "highlight_word_under_caret",
+      type = "toggle",
+      default = false
+    },
+    {
+      label = "Match Whole Word",
+      description = "Enable to match whole word",
+      path = "match_whole_word",
+      type = "toggle",
+      default = false
+    },
+    {
+      label = "Case Sensitive",
+      description = "Enable case sensitivity",
+      path = "case_sensitive",
+      type = "toggle",
+      default = true
+    },
+    {
+      label = "Minimum Length",
+      description = "The minimum required length of symbols applicable for highlighting.",
+      path = "min_length",
+      type = "number",
+      default = 2,
+      min = 1
+    },
+    {
+      label = "Show Scrollbar Markers",
+      description = "Draw matching symbol markers on the scrollbar.",
+      path = "show_scrollbar_markers",
+      type = "toggle",
+      default = true
+    },
+    {
+      label = "Colour",
+      description = "The color of highlighted symbols.",
+      path = "colour",
+      type = "color",
+      default = string.format("#%02X%02X%02X%02X",
+        80, 160, 240, 70
+      )
+    },
+    {
+      label = "Marker Colour",
+      description = "The color of markers on the scrollbar.",
+      path = "marker_colour",
+      type = "color",
+      default = string.format("#%02X%02X%02X%02X",
+        255, 170, 40, 230
+      )
+    },
+  }
+}, config.plugins.occurrences)
+
+local opts = config.plugins.occurrences
+
+
+-- Calculate character pixel offset using Font:get_width
+local function get_column_x(docview, line, col)
+  local font = docview:get_font()
+  local line_text = (docview.doc and docview.doc.lines[line]) or ""
+  if font and font.get_width then
+    return font:get_width(line_text:sub(1, col - 1))
+  end
+  return 0
+end
+
+-- Extract word under caret
+local function get_word_at_caret(doc, line, col)
+  local line_text = doc.lines[line]
+  if not line_text then return nil end
+
+  line_text = line_text:gsub("\r?\n$", "")
+
+  if col > #line_text or not line_text:sub(col, col):match("[%w_]") then
+    if col > 1 and line_text:sub(col - 1, col - 1):match("[%w_]") then
+      col = col - 1
+    else
+      return nil
+    end
+  end
+
+  local s = col
+  while s > 1 and line_text:sub(s - 1, s - 1):match("[%w_]") do
+    s = s - 1
+  end
+
+  local e = col
+  while e <= #line_text and line_text:sub(e, e):match("[%w_]") do
+    e = e + 1
+  end
+
+  if s < e then
+    return line_text:sub(s, e - 1)
+  end
+  return nil
+end
+
+-- Determine target word or selection
+local function get_target_string(doc)
+  local line1, col1, line2, col2 = doc:get_selection()
+  if line1 > line2 or (line1 == line2 and col1 > col2) then
+    line1, col1, line2, col2 = line2, col2, line1, col1
+  end
+
+  local is_selection = (line1 ~= line2) or (col1 ~= col2)
+
+  if is_selection then
+    if line1 == line2 then
+      local line_text = doc.lines[line1]
+      if line_text then
+        return line_text:sub(col1, col2 - 1)
+      end
+    end
+  elseif opts.highlight_word_under_caret then
+    return get_word_at_caret(doc, line1, col1)
+  end
+
+  return nil
+end
+
+-- Search entire file for occurrence locations
+local function search_occurrences(doc, target)
+  if not target or #target < opts.min_length then return nil end
+  if not target:match("[%w_]") then return nil end
+
+  local is_case = opts.case_sensitive
+  local is_whole = opts.match_whole_word
+  local needle = is_case and target or target:lower()
+  local results = {}
+
+  for i, line_text in ipairs(doc.lines) do
+    local haystack = is_case and line_text or line_text:lower()
+    local start_pos = 1
+
+    while start_pos <= #haystack do
+      local s, e = haystack:find(needle, start_pos, true)
+      if not s then break end
+
+      local valid = true
+      if is_whole then
+        local prev_char = s > 1 and line_text:sub(s - 1, s - 1) or ""
+        local next_char = e < #line_text and line_text:sub(e + 1, e + 1) or ""
+        if prev_char:match("[%w_]") or next_char:match("[%w_]") then
+          valid = false
+        end
+      end
+
+      if valid then
+        results[i] = results[i] or {}
+        table.insert(results[i], { col1 = s, col2 = e + 1 })
+      end
+
+      start_pos = s + 1
+    end
+  end
+
+  return results
+end
+
+-- Cache search results per render frame to keep rendering ultra-fast
+local function get_occurrences_cached(dv)
+  if not opts.enabled or not dv.doc then return nil end
+
+  local doc = dv.doc
+  local line1, col1, line2, col2 = doc:get_selection()
+  local change_id = doc.get_change_id and doc:get_change_id() or #doc.lines
+
+  if dv.occurrences_cache
+     and dv.occurrences_cache.doc == doc
+     and dv.occurrences_cache.change_id == change_id
+     and dv.occurrences_cache.line1 == line1
+     and dv.occurrences_cache.col1 == col1
+     and dv.occurrences_cache.line2 == line2
+     and dv.occurrences_cache.col2 == col2 then
+    return dv.occurrences_cache.results
+  end
+
+  local target = get_target_string(doc)
+  local results = search_occurrences(doc, target)
+
+  dv.occurrences_cache = {
+    doc = doc,
+    change_id = change_id,
+    line1 = line1,
+    col1 = col1,
+    line2 = line2,
+    col2 = col2,
+    results = results
+  }
+
+  return results
+end
+
+-- 1. Draw text inline highlights
+local draw_line_body = DocView.draw_line_body
+
+function DocView:draw_line_body(line, x, y)
+  if draw_line_body then
+    draw_line_body(self, line, x, y)
+  end
+
+  core.try(function()
+    local matches = get_occurrences_cached(self)
+    if matches and matches[line] then
+      local lh = self:get_line_height()
+
+      for _, match in ipairs(matches[line]) do
+        local x1 = x + get_column_x(self, line, match.col1)
+        local x2 = x + get_column_x(self, line, match.col2)
+        local w = x2 - x1
+
+        if w > 0 then
+          renderer.draw_rect(x1, y, w, lh, opts.colour)
+        end
+      end
+    end
+  end)
+end
+
+-- 2. Draw scrollbar indicators/markers on the scrollbar track
+local draw = DocView.draw
+
+function DocView:draw()
+  if draw then
+    draw(self)
+  end
+
+  core.try(function()
+    if not opts.enabled or not opts.show_scrollbar_markers or not self.doc then return end
+
+    local matches = get_occurrences_cached(self)
+    if not matches or next(matches) == nil then return end
+
+    local total_lines = #self.doc.lines
+    if total_lines <= 0 then return end
+
+    local lh = self:get_line_height()
+    local total_h = self.get_scrollable_size and self:get_scrollable_size() or (total_lines * lh)
+    if total_h <= 0 then total_h = total_lines * lh end
+
+    local view_h = self.size.y
+    local view_y = self.position.y
+    local sb_w = (style and style.scrollbar_size) or 10
+    local sb_x = self.position.x + self.size.x - sb_w
+    local marker_h = 3
+    local marker_colour = opts.marker_colour or { 255, 170, 40, 230 }
+
+    for line_num, _ in pairs(matches) do
+      local line_y = (line_num - 1) * lh
+      local ratio = line_y / total_h
+      local my = view_y + math.floor(ratio * (view_h - marker_h))
+
+      renderer.draw_rect(sb_x, my, sb_w, marker_h, marker_colour)
+    end
+  end)
+end
+
+-- Register command palette options
+command.add("core.docview", {
+  ["occurrences:toggle"] = function()
+    opts.enabled = not opts.enabled
+  end,
+  ["occurrences:toggle-markers"] = function()
+    opts.show_scrollbar_markers = not opts.show_scrollbar_markers
+  end
+})
+
+-- core.log("[Occurrences] Plugin with Scrollbar Markers loaded successfully.")

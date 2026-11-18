@@ -1,8 +1,6 @@
 -- mod-version:3
 local syntax = require "core.syntax"
 
-
-
 syntax.add {
   name = "Gemtext",
   files = { "%.gmi$" },
@@ -12,7 +10,7 @@ syntax.add {
     { pattern = "%*%s",                     type = "keyword2" },
     { pattern = "=>",                       type = "function" },
     { pattern = "https?://%S+",             type = "literal"  },
-    { pattern = "gemini?://%S+",            type = "literal"  },
+    { pattern = "gemini://%S+",             type = "literal"  },
     { pattern = ">.*",                      type = "comment"  },
     { pattern = ".*[>*#]",                  type = "normal"   },
     { pattern = ".*=>",                     type = "normal"   }

@@ -1,25 +1,35 @@
 -- mod-version:3
 local syntax = require "core.syntax"
 
-syntax.add {
+local quote_patterns = {}
+for _, delimiters in ipairs { { "{", "}" }, { "%(", "%)" }, { "%[", "%]" }, { "<", ">" } } do
+  local content = { patterns = {}, symbols = {} }
+  content.patterns = {
+    { pattern = "\\.", type = "string" },
+    { pattern = { delimiters[1], delimiters[2] }, type = "string", syntax = content },
+    { pattern = "[^\\" .. delimiters[1] .. delimiters[2] .. "]+", type = "string" },
+    { pattern = ".", type = "string" },
+  }
+  quote_patterns[#quote_patterns + 1] = {
+    pattern = { "%f[%w_]q[qwxr]?%s*" .. delimiters[1], delimiters[2], "\\" },
+    type = "string", syntax = content,
+  }
+end
+
+local perl = {
   name = "Perl",
   files = { "%.pm$", "%.pl$" },
   headers = "^#!.*[ /]perl",
   comment = "#",
   patterns = {
-    { pattern = "%#.-\n",                 type = "comment"  },
+    { pattern = "%#.*",                 type = "comment"  },
     { pattern = { '"', '"', '\\' },       type = "string"   },
     { pattern = { "'", "'", '\\' },       type = "string"   },
-    { pattern = { "qw%(", "%)", '\\' },     type = "string"   },
-    { pattern = { "qw%[", "%]", '\\' },     type = "string"   },
-    { pattern = { "qw%/", "%/", '\\' },     type = "string"   },
-    { pattern = { "qq?%(", "%)",  '\\' },     type = "string"   },
-    { pattern = { "qq?%[", "%]",  '\\' },     type = "string"   },
-    { pattern = { "qq?%/", "%/",  '\\' },     type = "string"   },
-    { pattern = { "^=%w+", "=cut" },   type = "comment" },
-    -- until we can get this workign with s///, just don't do any of them.
-    -- { pattern = { '/', '/', '\\' },       type = "string"   },
-    { pattern = "-?%d+[%d%.eE]*",         type = "number"   },
+    { pattern = { "%f[%w_]q[qwxr]?/", "/", '\\' }, type = "string" },
+    { pattern = { "^=%w+", "^=cut%f[%W]" }, type = "comment" },
+    { regex = [[s/(?:[^\\/\r\n]|\\.)*/(?:[^\\/\r\n]|\\.)*/[a-z]*]], type = "string" },
+    { regex = [[/(?!/)(?:[^\\[/\r\n]++|\\.|\[(?:[^\\\]\r\n]++|\\.)*+\])*+/[a-z]*]], type = "string" },
+    { regex = "-?(?:\\d+\\.(?!\\.)\\d*|\\.\\d\\d*|\\d+)(?:[eE][+-]?\\d+)?",         type = "number"   },
     { pattern = "-?%.?%d+",               type = "number"   },
     { pattern = "[%a_][%w_]*%f[(]",       type = "function" },
     { pattern = "[%@%$%*%%]+[%a_][%w_]*", type = "keyword2" },
@@ -289,3 +299,9 @@ syntax.add {
     ["STDOUT"] = "keyword2"
   }
 }
+
+for i = #quote_patterns, 1, -1 do
+  table.insert(perl.patterns, 1, quote_patterns[i])
+end
+
+syntax.add(perl)

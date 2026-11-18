@@ -60,16 +60,14 @@ local time_data = {
 
 local last_time = os.time()
 local function update_time()
+  if core.request_update then core.request_update(1) end
   if os.time() > last_time then
     local time_text = os.date(config.plugins.statusclock.time_format)
     local date_text = os.date(config.plugins.statusclock.date_format)
 
-    if time_data.time_text ~= time_text or time_data.time_text ~= date_text then
+    if time_data.time_text ~= time_text or time_data.date_text ~= date_text then
       time_data.time_text = time_text
       time_data.date_text = date_text
-    end
-    -- only redraw if seconds enabled
-    if config.plugins.statusclock.time_format:find("%S", 1, true) then
       core.redraw = true
     end
     last_time = os.time()

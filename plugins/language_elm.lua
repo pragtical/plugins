@@ -1,18 +1,27 @@
 -- mod-version:3
 local syntax = require "core.syntax"
 
+local block_comment = { patterns = {}, symbols = {} }
+block_comment.patterns = {
+  { pattern = { "{%-", "%-}" }, type = "comment", syntax = block_comment },
+  { pattern = "[^{}%-]+", type = "comment" },
+  { pattern = ".", type = "comment" },
+}
+
 syntax.add {
   name = "Elm",
   files = { "%.elm$" },
   comment = "%-%-",
   patterns = {
-    { pattern = {"%-%-", "\n"},          type = "comment"  },
-    { pattern = { "{%-", "%-}" },        type = "comment"  },
-    { pattern = { '"', '"', '\\' },      type = "string"   },
+    { pattern = "%-%-.*",          type = "comment"  },
+    { pattern = { "{%-", "%-}" },        type = "comment", syntax = block_comment  },
     { pattern = { '"""', '"""', '\\' },  type = "string"   },
+    { pattern = { '"', '"', '\\' },      type = "string"   },
     { pattern = { "'", "'", '\\' },      type = "string"   },
     { pattern = "-?0x%x+",               type = "number"   },
-    { pattern = "-?%d+[%d%.eE]*f?",      type = "number"   },
+    { regex = "-?(?:\\d+\\.(?!\\.)\\d*|\\.\\d\\d*|\\d+)(?:[eE][+-]?\\d+)?f?",
+      type = "number"
+    },
     { pattern = "-?%.?%d+f?",            type = "number"   },
     { pattern = "%.%.",                  type = "operator" },
     { pattern = "[=:|&<>%+%-%*\\/%^%%]", type = "operator" },

@@ -1,6 +1,8 @@
 -- mod-version:3
 local syntax = require "core.syntax"
 
+local expression = { patterns = {}, symbols = {} }
+
 local patterns = {}
 
 local symbols = {
@@ -20,7 +22,7 @@ local number_patterns = {
 
 local type_suffix_patterns = {}
 
-for _, size in ipairs({"", "8", "16", "32", "64"}) do
+for _, size in ipairs({"64", "32", "16", "8", ""}) do
   table.insert(type_suffix_patterns, "'?[fuiFUI]"..size)
 end
 
@@ -88,9 +90,9 @@ for _, type in ipairs(standard_generic_types) do
   table.insert(patterns, { pattern = type.." +%f[%w]", type = "keyword2" })
 end
 
-local function string_pattern(start, stop, syntax)
+local function string_pattern(start, stop, syntax, raw)
   return {
-    pattern = { start, stop, '\\' },
+    pattern = { start, stop, not raw and '\\' or nil },
     type    = "string",
     syntax  = syntax and {
       patterns = syntax,
@@ -99,26 +101,46 @@ local function string_pattern(start, stop, syntax)
   }
 end
 
-local interpolation_syntax = {
-  { pattern = { '{{', '}}' }, type = "string" },
-  { pattern = { '{', '}', '\\' }, type = "keyword2", syntax = ".nim" },
-  { pattern = "[%S][%w]*", type = "string" },
+local function interpolation_syntax(escaped)
+  local contents = {
+  { pattern = "{{", type = "string" },
+  { pattern = "}}", type = "string" },
+  { pattern = { '{', '}' }, type = "keyword2", syntax = expression },
+  { pattern = '[^{}"\\]+', type = "string" },
+  { pattern = ".", type = "string" },
+  }
+  if escaped then table.insert(contents, 1, { pattern = "\\.", type = "character.special" }) end
+  return contents
+end
+
+local block_comment = { patterns = {}, symbols = {} }
+local doc_comment = { patterns = {}, symbols = {} }
+local comment_patterns = {
+  { pattern = { "##%[", "%]##" }, type = "comment", syntax = doc_comment },
+  { pattern = { "#%[", "%]#" }, type = "comment", syntax = block_comment },
+  { pattern = "[^#%[%]]+", type = "comment" },
+  { pattern = ".", type = "comment" },
 }
+block_comment.patterns, doc_comment.patterns = comment_patterns, comment_patterns
 
 local user_patterns = {
   -- comments
-  { pattern = { "##?%[", "]##?" },            type = "comment" },
-  { pattern = "##?.-\n",                      type = "comment" },
+  comment_patterns[1],
+  comment_patterns[2],
+  { pattern = "##?.*",                      type = "comment" },
   -- strings and chars
+  { pattern = "\\[{}]", type = "character.special" },
+  { pattern = { "{", "}" }, type = "operator", syntax = expression },
   { pattern = { "'", "'", '\\' },             type = "literal" },
-  string_pattern('"""', '"""%f[^"]'),
+  { pattern = { '[rR]"', '"' }, type = "string" },
+  string_pattern('"""', '"""%f[^"]', nil, true),
   string_pattern('"'  , '"'        ),
   string_pattern('\\"', '\\"'      ), -- For highlighting strings inside iterpolated blocks
   -- string interpolation
-  string_pattern('%&"""' , '"""%f[^"]', interpolation_syntax),
-  string_pattern('fmt"""', '"""%f[^"]', interpolation_syntax),
-  string_pattern('%&"'   , '"'        , interpolation_syntax),
-  string_pattern('fmt"'  , '"'        , interpolation_syntax),
+  string_pattern('%&"""' , '"""%f[^"]', interpolation_syntax(false), true),
+  string_pattern('fmt"""', '"""%f[^"]', interpolation_syntax(false), true),
+  string_pattern('%&"'   , '"'        , interpolation_syntax(true)),
+  string_pattern('fmt"'  , '"'        , interpolation_syntax(false), true),
   -- function calls
   { pattern = "[a-zA-Z][a-zA-Z0-9_]*%f[(]",   type = "function" },
   -- identifiers
@@ -134,12 +156,12 @@ for _, pattern in ipairs(user_patterns) do
   table.insert(patterns, pattern)
 end
 
-local nim = {
+expression.patterns, expression.symbols = patterns, symbols
+
+syntax.add {
   name = "Nim",
   files = { "%.nim$", "%.nims$", "%.nimble$" },
   comment = "#",
   patterns = patterns,
   symbols = symbols,
 }
-
-syntax.add(nim)

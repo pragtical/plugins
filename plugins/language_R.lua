@@ -6,14 +6,14 @@ syntax.add{
   files = {"%.r$", "%.rds$", "%.rda$", "%.rdata$", "%.R$"},
   comment = "#",
   patterns = {
-    {pattern = {"#", "\n"}, type = "comment"},
-    {pattern = {'"', '"'}, type = "string"},
-    {pattern = {"'", "'"}, type = "string"},
+    {pattern = "#.*", type = "comment"},
+    {pattern = {'"', '"', '\\'}, type = "string"},
+    {pattern = {"'", "'", '\\'}, type = "string"},
     {pattern = "[%a_][%w_]*%f[(]", type = "function"},
     {pattern = "[%a_][%w_]*", type = "symbol"},
     {pattern = "[%+%-=/%*%^%%<>!|&]", type = "operator"},
     {pattern = "0x[%da-fA-F]+", type = "number"},
-    {pattern = "-?%d+[%d%.eE]*", type = "number"},
+    {regex = "-?(?:\\d+\\.(?!\\.)\\d*|\\.\\d\\d*|\\d+)(?:[eE][+-]?\\d+)?", type = "number"},
     {pattern = "-?%.?%d+", type = "number"},
   },
   symbols = {

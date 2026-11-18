@@ -1,28 +1,101 @@
 -- mod-version:3
 local syntax = require "core.syntax"
 
-syntax.add {
+local block_comment = { patterns = {}, symbols = {} }
+block_comment.patterns = {
+  { pattern = { "/%*", "%*/" }, type = "comment", syntax = block_comment },
+  { pattern = "[^/%*]+", type = "comment" },
+  { pattern = ".", type = "comment" },
+}
+
+local expression = { patterns = {}, symbols = {} }
+local function string_contents(quote, raw)
+  local patterns = {}
+  if not raw then
+    patterns = {
+      { pattern = { "%${", "}" }, type = "keyword2", syntax = expression },
+      { pattern = "%$[%a_][%w_]*", type = "keyword2" },
+      { pattern = "\\.", type = "character.special" },
+    }
+  end
+  patterns[#patterns + 1] = {
+    pattern = "[^" .. quote .. (raw and "" or "$\\") .. "]+",
+    type = "string"
+  }
+  patterns[#patterns + 1] = { pattern = ".", type = "string" }
+  return { patterns = patterns, symbols = {} }
+end
+
+local dart = {
   name = "Dart",
   files = { "%.dart$" },
   comment = "//",
   patterns = {
-    { pattern = "//.-\n",                   type = "comment"  },
-    { pattern = "///.-\n",                  type = "comment"  },
-    { pattern = { "/%*", "%*/" },           type = "comment"  },
-    { pattern = { '"', '"', '\\' },         type = "string"   },
-    { pattern = { "'", "'", '\\' },         type = "string"   },
+    { pattern = "//.*",                     type = "comment"  },
+    { pattern = { "/%*", "%*/" },           type = "comment", syntax = block_comment  },
+    { pattern = { 'r"""', '"""' },
+      type = "string",
+      syntax = string_contents('"', true)
+    },
+    { pattern = { "r'''", "'''" },
+      type = "string",
+      syntax = string_contents("'", true)
+    },
+    { pattern = { 'r"', '"' },
+      type = "string",
+      syntax = string_contents('"', true)
+    },
+    { pattern = { "r'", "'" },
+      type = "string",
+      syntax = string_contents("'", true)
+    },
+    { pattern = { '"""', '"""', '\\' },
+      type = "string",
+      syntax = string_contents('"')
+    },
+    { pattern = { "'''", "'''", '\\' },
+      type = "string",
+      syntax = string_contents("'")
+    },
+    { pattern = { '"', '"', '\\' },
+      type = "string",
+      syntax = string_contents('"')
+    },
+    { pattern = { "'", "'", '\\' },
+      type = "string",
+      syntax = string_contents("'")
+    },
+    { pattern = { "{", "}" }, type = "normal", syntax = expression },
     { pattern = "-?0x%x+",                  type = "number"   },
-    { pattern = "-?%d+[%d%.eE]*f?",         type = "number"   },
-    { pattern = "-?%.?%d+f?",               type = "number"   },
+    { regex = "-?(?:\\d+\\.(?!\\.)\\d*|\\.\\d+|\\d+)(?:[eE][+-]?\\d+)?",
+      type = "number"
+    },
     { pattern = "[%+%-=/%*%^%%<>!~|&]",     type = "operator" },
     { pattern = "%?%?",                     type = "operator" },
     { pattern = "%?%.",                     type = "operator" },
-    { pattern = { "[%$%@]?\"", '"', '\\' }, type = "string"   },
-    { pattern = "'\\x%x?%x?%x?%x'",         type = "string"   },
     { pattern = "[%a_][%w_]*%f[(]",         type = "function" },
     { pattern = "[%a_][%w_]*",              type = "symbol"   },
   },
   symbols = {
+    ["abstract"] = "keyword",
+    ["as"] = "keyword",
+    ["assert"] = "keyword",
+    ["async"] = "keyword",
+    ["extends"] = "keyword",
+    ["extension"] = "keyword",
+    ["external"] = "keyword",
+    ["implements"] = "keyword",
+    ["import"] = "keyword",
+    ["is"] = "keyword",
+    ["late"] = "keyword",
+    ["mixin"] = "keyword",
+    ["on"] = "keyword",
+    ["required"] = "keyword",
+    ["rethrow"] = "keyword",
+    ["super"] = "keyword",
+    ["var"] = "keyword",
+    ["with"] = "keyword",
+    ["yield"] = "keyword",
     ["await"]    = "keyword",
     ["bool"]     = "keyword2",
     ["break"]    = "keyword",
@@ -62,3 +135,6 @@ syntax.add {
   },
 }
 
+expression.patterns, expression.symbols = dart.patterns, dart.symbols
+
+syntax.add(dart)

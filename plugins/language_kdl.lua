@@ -5,7 +5,7 @@ local identifier = "\"?[^%d%s\\/%(%){}<>;%[%]=,\"][^%s\\/%(%){}<>;%[%]=,\"]*\"?"
 
 syntax.add {
   name = "KDL",
-  files = { "%.kdl" },
+  files = { "%.kdl$" },
   space_handling = false,
   comment = "//",
   block_comment = {"/*", "*/"},

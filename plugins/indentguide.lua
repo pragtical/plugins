@@ -1,4 +1,4 @@
--- mod-version:3
+-- mod-version:3.11
 local core = require "core"
 local command = require "core.command"
 local common = require "core.common"
@@ -88,8 +88,10 @@ function DocView:update()
   self.indentguide_indent_active = {}
 
   local minline, maxline = self:get_visible_line_range()
-  for i = minline, maxline do
-    self.indentguide_indents[i] = indentguide.get_line_indent_guide_spaces(self.doc, i)
+  for _, line in self:each_visible_line() do
+    if line and line >= 1 and line <= #self.doc.lines then
+      self.indentguide_indents[line] = indentguide.get_line_indent_guide_spaces(self.doc, line)
+    end
   end
 
   if not config.plugins.indentguide.highlight then
@@ -100,10 +102,13 @@ function DocView:update()
 
   local _, indent_size = self.doc:get_indent_info(self.doc)
   for _,line in self.doc:get_selections() do
+    local offset = self:offset_from_position(line, 1)
     if
-      (line > minline or minline-line < max_distance)
+      offset
       and
-      (line < maxline or line-maxline < max_distance)
+      (offset > minline or minline-offset < max_distance)
+      and
+      (offset < maxline or offset-maxline < max_distance)
     then
       local lvl = get_indent(line)
       local top, bottom
@@ -121,24 +126,29 @@ function DocView:update()
         end
 
         self.indentguide_indent_active[line] = lvl
+        local stop_lvl = math.max(0, lvl - indent_size)
 
-        -- check if the lines before the current are part of the block
-        local i = line - 1
-        if i > 0 and not top then
+        -- check if the visible lines before the current are part of the block
+        local offset_i = offset - 1
+        if offset_i >= minline and not top then
           repeat
-            if get_indent(i) <= lvl - indent_size then break end
+            local i = self:position_from_offset(offset_i)
+            if not i then break end
+            if get_indent(i) <= stop_lvl then break end
             self.indentguide_indent_active[i] = lvl
-            i = i - 1
-          until i < minline
+            offset_i = offset_i - 1
+          until offset_i < minline
         end
-        -- check if the lines after the current are part of the block
-        i = line + 1
-        if i <= #self.doc.lines and not bottom then
+        -- check if the visible lines after the current are part of the block
+        offset_i = offset + 1
+        if offset_i <= maxline and not bottom then
           repeat
-            if get_indent(i) <= lvl - indent_size then break end
+            local i = self:position_from_offset(offset_i)
+            if not i then break end
+            if get_indent(i) <= stop_lvl then break end
             self.indentguide_indent_active[i] = lvl
-            i = i + 1
-          until i > maxline
+            offset_i = offset_i + 1
+          until offset_i > maxline
         end
       end
     end
@@ -157,7 +167,7 @@ function DocView:draw_line_text(line, x, y)
     local spaces = self.indentguide_indents[line] or -1
     local _, indent_size = self.doc:get_indent_info()
     local w = indentguide.get_width()
-    local h = self:get_line_height()
+    local h = self:get_line_visual_height(line)
     local font = self:get_font()
     local space_sz = font:get_width(" ")
     for i = 0, spaces - 1, indent_size do

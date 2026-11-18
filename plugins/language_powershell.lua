@@ -1,7 +1,21 @@
 -- mod-version:3
 local syntax = require "core.syntax"
 
-syntax.add {
+local expression = { patterns = {}, symbols = {} }
+local string_contents = {
+  patterns = {
+    { pattern = "`.", type = "character.special" },
+    { pattern = { "%$%(", "%)" }, type = "keyword2", syntax = expression },
+    { pattern = "%${[^}\n]+}", type = "keyword2" },
+    { pattern = "%$[%a_][%w_:]*", type = "keyword2" },
+    { pattern = "%$[?%^$]", type = "keyword2" },
+    { pattern = '[^"$`]+', type = "string" },
+    { pattern = ".", type = "string" },
+  },
+  symbols = {},
+}
+
+local powershell = {
   name = "PowerShell",
   files = {
     "%.ps1$", "%.psm1$", "%.psd1$", "%.ps1xml$",
@@ -9,10 +23,17 @@ syntax.add {
   },
   comment = "#",
   patterns = {
-    {pattern = "#.*\n", type = "comment"},
-    {pattern = [[\.]], type = "normal"},
-    {pattern = {'"', '"'}, type = "string"},
+    { pattern = { "<#", "#>" }, type = "comment" },
+    {pattern = "#.*", type = "comment"},
+    { pattern = { '@"[ \t]*\n', '^"@' }, type = "string", syntax = string_contents },
+    { pattern = { "@'[ \t]*\n", "^'@" }, type = "string" },
+    { pattern = { '"', '"', '`' }, type = "string", syntax = string_contents },
     {pattern = {"'", "'"}, type = "string"},
+    { pattern = { "%(", "%)" }, type = "normal", syntax = expression },
+    { regex = [[\$(?i:true|false|null)\b]], type = "literal" },
+    { pattern = "`.", type = "character.special" },
+    { pattern = "0[xX]%x+", type = "number" },
+    { regex = [[(?:\d+\.\d*|\.\d+|\d+)(?:[eE][+-]?\d+)?]], type = "number" },
     {pattern = "%f[%w_][%d%.]+%f[^%w_]", type = "number"},
     {pattern = "[%+=/%*%^%%<>!~|&,:]+", type = "operator"},
     {pattern = "%f[%S]%-[%w%-_]+", type = "function"},
@@ -75,3 +96,7 @@ syntax.add {
     ["NOTE"] = "comment"
   }
 }
+
+expression.patterns, expression.symbols = powershell.patterns, powershell.symbols
+
+syntax.add(powershell)

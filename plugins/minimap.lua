@@ -1,4 +1,4 @@
--- mod-version:3
+-- mod-version:3.11
 local core = require "core"
 local command = require "core.command"
 local common = require "core.common"
@@ -7,7 +7,6 @@ local style = require "core.style"
 local Doc = require "core.doc"
 local DocView = require "core.docview"
 local Highlighter = require "core.doc.highlighter"
-local Object = require "core.object"
 local Scrollbar = require "core.scrollbar"
 
 -- Sample configurations:
@@ -356,14 +355,10 @@ function MiniMap:is_minimap_enabled()
   if self.enabled ~= nil then return self.enabled end
   if not config.plugins.minimap.enabled then return false end
   if config.plugins.minimap.avoid_small_docs then
-    local last_line = #self.dv.doc.lines
     if type(config.plugins.minimap.avoid_small_docs) == "number" then
-      return last_line > config.plugins.minimap.avoid_small_docs
+      return self.dv:visual_line_count() > config.plugins.minimap.avoid_small_docs
     else
-      local docview = self.dv
-      local _, y = docview:get_line_screen_position(last_line, #docview.doc.lines[last_line])
-      y = y + docview.scroll.y - docview.position.y + docview:get_line_height()
-      return y > docview.size.y
+      return self.dv:get_scrollable_size() > self.dv.size.y
     end
   end
   return true
@@ -376,23 +371,23 @@ function MiniMap:_on_mouse_pressed_normal(button, x, y, clicks)
   if overlaps == "track" then
     -- We need to adjust the percentage to scroll to the line in the minimap
     -- that was "clicked"
-    local minimap_line, _ = self:get_minimap_lines()
+    local minimap_row, _ = self:get_minimap_lines()
     local _, track_y, _, _ = self:_get_track_rect_normal()
-    local line = math.floor(minimap_line + (y - track_y) / line_spacing)
-    local _, y = self.dv:get_line_screen_position(line)
+    local row = math.floor(minimap_row + (y - track_y) / line_spacing)
+    row = common.clamp(row, 1, self.dv:visual_line_count())
     local _, oy = self.dv:get_content_offset()
+    local row_y = oy + style.padding.y + (row - 1) * self.dv:get_line_height()
     local nr = self.normal_rect
-    percent = common.clamp((y - oy - (self.dv.size.y) / 2) / (nr.scrollable - self.dv.size.y), 0, 1)
+    percent = common.clamp((row_y - oy - (self.dv.size.y) / 2) / (nr.scrollable - self.dv.size.y), 0, 1)
   end
   return percent
 end
 
 
-local function get_visible_minline(dv)
+local function get_visible_minrow(dv)
   local _, y, _, _ = dv:get_content_bounds()
   local lh = dv:get_line_height()
-  local minline = math.max(0, y / lh + 1)
-  return minline
+  return math.max(0, y / lh + 1)
 end
 
 
@@ -402,13 +397,14 @@ function MiniMap:get_minimap_lines()
 
   local nlines = math.floor(h / line_spacing)
 
-  local minline = get_visible_minline(self.dv)
+  local minline = get_visible_minrow(self.dv)
   local top_lines = (thumb_y - track_y) / line_spacing
   local lines_start, offset = math.modf(minline - top_lines)
-  if lines_start <= 1 and nlines >= #self.dv.doc.lines then
+  local visual_count = self.dv:visual_line_count()
+  if lines_start <= 1 and nlines >= visual_count then
     offset = 0
   end
-  return common.clamp(lines_start, 1, #self.dv.doc.lines), common.clamp(nlines, 1, #self.dv.doc.lines), offset * line_spacing
+  return common.clamp(lines_start, 1, visual_count), common.clamp(nlines, 1, visual_count), offset * line_spacing
 end
 
 
@@ -416,7 +412,7 @@ function MiniMap:set_size(x, y, w, h, scrollable)
   if not self:is_minimap_enabled() then return MiniMap.super.set_size(self, x, y, w, h, scrollable) end
   -- If possible, use the size needed to only manage the visible minimap lines.
   -- This allows us to let Scrollbar manage the thumb.
-  h = math.min(h, line_spacing * math.floor(scrollable / self.dv:get_line_height()))
+  h = math.min(h, line_spacing * self.dv:visual_line_count())
   MiniMap.super.set_size(self, x, y, w, h, scrollable)
 end
 
@@ -445,9 +441,11 @@ function MiniMap:draw()
   local selection_color = config.plugins.minimap.selection_color or style.dim
   local caret_color = config.plugins.minimap.caret_color or style.caret
 
-  for _, line1, _, line2, _ in dv.doc:get_selections() do
-    local selection1_y = y + (line1 - minimap_lines_start) * line_spacing - line_selection_offset
-    local selection2_y = y + (line2 - minimap_lines_start) * line_spacing - line_selection_offset
+  for _, line1, col1, line2, col2 in dv.doc:get_selections() do
+    local row1 = dv:visual_row_from_position(line1, col1)
+    local row2 = dv:visual_row_from_position(line2, col2)
+    local selection1_y = y + (row1 - minimap_lines_start) * line_spacing - line_selection_offset
+    local selection2_y = y + (row2 - minimap_lines_start) * line_spacing - line_selection_offset
     local selection_min_y = math.min(selection1_y, selection2_y)
     local selection_h = math.abs(selection2_y - selection1_y) + 1 + line_selection_offset
     renderer.draw_rect(x, selection_min_y, w, selection_h, selection_color)
@@ -517,74 +515,112 @@ function MiniMap:draw()
   else
     highlight_x = x + w - highlight_width
   end
-  local function render_highlight(idx, line_y)
-    local highlight_color = self:line_highlight_color(idx, self.dv)
+  local function render_highlight(line, line_y)
+    if not self.dv:is_line_visible(line) then return end
+    local highlight_color = self:line_highlight_color(line, self.dv)
     if highlight_color then
       renderer.draw_rect(highlight_x, line_y - line_selection_offset,
                          highlight_width, line_spacing + line_selection_offset, highlight_color)
     end
   end
 
-  local endidx = math.min(minimap_lines_start + minimap_lines_count, #self.dv.doc.lines)
+  local endidx = math.min(minimap_lines_start + minimap_lines_count - 1, self.dv:visual_line_count())
 
   if not highlighter_cache[dv.doc.highlighter] then
     highlighter_cache[dv.doc.highlighter] = {}
   end
 
-  -- per line
+  local function build_cache(line, start_col, end_col)
+    local cache = {}
+    -- per token
+    local col = 1
+    for _, type, text in dv.doc.highlighter:each_token(line) do
+      local text_len = #text
+      local token_start = col
+      local token_end = col + text_len
+      col = token_end
+      if not end_col or token_start < end_col then
+        if token_end > start_col then
+          if not config.plugins.minimap.syntax_highlight then
+            type = nil
+          end
+          local from = math.max(start_col, token_start) - token_start + 1
+          local to = end_col and math.min(end_col - 1, token_end - 1) - token_start + 1 or text_len
+          if from <= to then
+            text = text:sub(from, to)
+            local start = 1
+            while true do
+              -- find text followed spaces followed by newline
+              local s, e, w, eol = string.ufind(text, "[^%s]*()[ \t]*()\n?", start)
+              if not s then break end
+              local nchars = w - s
+              start = e + 1
+              batch_width = batch_width + char_spacing * nchars
+
+              local nspaces = 0
+              for i=w,e do
+                local whitespace = string.sub(text, i, i)
+                if whitespace == "\t" then
+                  nspaces = nspaces + config.plugins.minimap.tab_width
+                elseif whitespace == " " then
+                  nspaces = nspaces + 1
+                end
+              end
+              -- not enough spaces; consider them part of the batch
+              if nspaces < config.plugins.minimap.spaces_to_split then
+                batch_width = batch_width + nspaces * char_spacing
+              end
+              -- line has ended or no more space in the minimap;
+              -- we can go to the next line
+              if eol <= w or batch_start + batch_width > minimap_cutoff_x then
+                if batch_width > 0 then
+                  flush_batch(type, cache)
+                end
+                break
+              end
+              -- enough spaces to split the batch
+              if nspaces >= config.plugins.minimap.spaces_to_split then
+                flush_batch(type, cache)
+                batch_start = batch_start + nspaces * char_spacing
+              end
+            end
+          end
+        end
+      end
+      if end_col and token_start >= end_col then
+        break
+      end
+    end
+    return cache
+  end
+
+  -- per visual row
+  local visual_line_count = dv:visual_line_count()
   for idx = minimap_lines_start, endidx do
+    local line, start_col = dv:visual_position_from_row(idx)
+    local end_col
+    if idx < visual_line_count then
+      local next_line, next_col = dv:visual_position_from_row(idx + 1)
+      if next_line == line then
+        end_col = next_col
+      end
+    end
+
     batch_syntax_type = nil
     batch_start = 0
     batch_width = 0
     last_batch_end = -1
 
-    render_highlight(idx, line_y)
-    local cache = highlighter_cache[dv.doc.highlighter][idx]
-    if not highlighter_cache[dv.doc.highlighter][idx] then -- need to cache
-      highlighter_cache[dv.doc.highlighter][idx] = {}
-      cache = highlighter_cache[dv.doc.highlighter][idx]
-      -- per token
-      for _, type, text in dv.doc.highlighter:each_token(idx) do
-        if not config.plugins.minimap.syntax_highlight then
-          type = nil
-        end
-        local start = 1
-        while true do
-          -- find text followed spaces followed by newline
-          local s, e, w, eol = string.ufind(text, "[^%s]*()[ \t]*()\n?", start)
-          if not s then break end
-          local nchars = w - s
-          start = e + 1
-          batch_width = batch_width + char_spacing * nchars
-
-          local nspaces = 0
-          for i=w,e do
-            local whitespace = string.sub(text, i, i)
-            if whitespace == "\t" then
-              nspaces = nspaces + config.plugins.minimap.tab_width
-            elseif whitespace == " " then
-              nspaces = nspaces + 1
-            end
-          end
-          -- not enough spaces; consider them part of the batch
-          if nspaces < config.plugins.minimap.spaces_to_split then
-            batch_width = batch_width + nspaces * char_spacing
-          end
-          -- line has ended or no more space in the minimap;
-          -- we can go to the next line
-          if eol <= w or batch_start + batch_width > minimap_cutoff_x then
-            if batch_width > 0 then
-              flush_batch(type, cache)
-            end
-            break
-          end
-          -- enough spaces to split the batch
-          if nspaces >= config.plugins.minimap.spaces_to_split then
-            flush_batch(type, cache)
-            batch_start = batch_start + nspaces * char_spacing
-          end
-        end
+    render_highlight(line, line_y)
+    local cache
+    if start_col == 1 and not end_col then
+      cache = highlighter_cache[dv.doc.highlighter][line]
+      if not cache then
+        cache = build_cache(line, 1)
+        highlighter_cache[dv.doc.highlighter][line] = cache
       end
+    else
+      cache = build_cache(line, start_col, end_col)
     end
     -- draw from cache
     for i=1,#cache,3 do

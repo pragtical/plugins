@@ -1,4 +1,4 @@
--- mod-version:3
+-- mod-version:3.11
 local core = require "core"
 local config = require "core.config"
 local common = require "core.common"
@@ -116,8 +116,11 @@ local function draw_color_previews(self, line, x, y)
           c1, c2, c3, c4 = table.unpack(rgba)
         end
 
-        local x1 = x + self:get_col_x_offset(line, vcol1 + col1 - 1)
-        local x2 = x + self:get_col_x_offset(line, vcol1 + col2)
+        local x1, y1 = self:get_line_screen_position(line, vcol1 + col1 - 1)
+        local x2, y2 = self:get_line_screen_position(line, vcol1 + col2)
+        if y1 ~= y2 then
+          x2 = x + self:get_col_x_offset(line, vcol1 + col2)
+        end
         local oy = self:get_line_text_y_offset()
 
         tmp[1], tmp[2], tmp[3], tmp[4] = c1, c2, c3, c4
@@ -126,13 +129,13 @@ local function draw_color_previews(self, line, x, y)
         local mode = config.plugins.colorpreview.mode
 
         if mode == "underline" then
-          local line_y = y + self:get_line_height()
+          local line_y = y1 + self:get_line_height()
           local line_h = math.ceil(4 * SCALE)
           renderer.draw_rect(x1, line_y - line_h, x2 - x1, line_h, tmp)
         elseif not (self.doc:has_selection() and line >= l1 and line <= l2) then
           local text_color = math.max(c1, c2, c3) < 128 and white or black
-          renderer.draw_rect(x1, y, x2 - x1, self:get_line_height(), tmp)
-          renderer.draw_text(self:get_font(), text:sub(col1, col2), x1, y + oy, text_color)
+          renderer.draw_rect(x1, y1, x2 - x1, self:get_line_height(), tmp)
+          renderer.draw_text(self:get_font(), text:sub(col1, col2), x1, y1 + oy, text_color)
         end
 
         ccol = col2 + 1

@@ -31,3 +31,14 @@ command.add("core.docview", {
 keymap.add {
   ["f6"] = "toggle-snake-camel:toggle",
 }
+
+if core.menu_view then
+  core.menu_view:register({ "edit", "convert" }, {
+    core.menu_view.DIVIDER,
+    {
+      id = "toggle-snake-camel",
+      text = "Toggle Snake / Camel Case",
+      command = "toggle-snake-camel:toggle"
+    }
+  }, "togglesnakecamel")
+end

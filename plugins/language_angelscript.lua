@@ -6,7 +6,7 @@ syntax.add {
   files = { "%.as$", "%.asc$" },
   comment = "//",
   patterns = {
-    { pattern = "//.-\n",                   type = "comment"  },
+    { pattern = "//.*",                     type = "comment"  },
     { pattern = { "/%*", "%*/" },           type = "comment"  },
     { pattern = { "#", "[^\\]\n" },         type = "comment"  },
     { pattern = { '"', '"', '\\' },         type = "string"   },
@@ -14,7 +14,9 @@ syntax.add {
     { pattern = "-?0[xX]%x+",               type = "number"   },
     { pattern = "-?0[bB][0-1]+",            type = "number"   },
     { pattern = "-?0[oO][0-7]+",            type = "number"   },
-    { pattern = "-?%d+[%d%.eE]*f?",         type = "number"   },
+    { regex = "-?(?:\\d+\\.(?!\\.)\\d*|\\.\\d\\d*|\\d+)(?:[eE][+-]?\\d+)?f?",
+      type = "number"
+    },
     { pattern = "-?%.?%d+f?",               type = "number"   },
     { pattern = "&inout",                   type = "keyword"  },
     { pattern = "&in",                      type = "keyword"  },
@@ -85,4 +87,3 @@ syntax.add {
     ["xor"]        = "operator",
   },
 }
-

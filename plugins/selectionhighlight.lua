@@ -1,4 +1,4 @@
--- mod-version:3
+-- mod-version:3.11
 local common = require "core.common"
 local style = require "core.style"
 local DocView = require "core.docview"
@@ -65,10 +65,13 @@ function DocView:draw_line_body(line, x, y)
         if start_col == nil then break end
         -- don't draw box around the selection
         if line ~= line1 or start_col ~= col1 then
-          local x1 = x + self:get_col_x_offset(line, vcol1 + start_col - 1)
-          local x2 = x + self:get_col_x_offset(line, vcol1 + end_col)
+          local x1, y1 = self:get_line_screen_position(line, vcol1 + start_col - 1)
+          local x2, y2 = self:get_line_screen_position(line, vcol1 + end_col)
+          if y1 ~= y2 then
+            x2 = x + self:get_col_x_offset(line, vcol1 + end_col)
+          end
           local color = style.selectionhighlight or style.syntax.comment
-          draw_box(x1, y, x2 - x1, lh, color)
+          draw_box(x1, y1, x2 - x1, lh, color)
         end
         last_col = end_col + 1
       end

@@ -10,7 +10,7 @@ syntax.add {
   symbol_non_word_chars = " \t\n/\\()\"':,.;<>~!%^&*|+=[]{}`?-",
   patterns = {
     { pattern = "^#!.*[ /]v\n",             type = "comment"  },
-    { pattern = "//.-\n",                   type = "comment"  },
+    { pattern = "//.*",                   type = "comment"  },
     { pattern = { "/%*", "%*/" },           type = "comment"  },
     -- Strings
     { pattern = { '"', '"', '\\' },
@@ -403,7 +403,7 @@ syntax.add {
   files = { PATHSEP .. "v%.mod$" },
   comment = "//",
   patterns = {
-    { pattern = "//.-\n",                   type = "comment"  },
+    { pattern = "//.*",                   type = "comment"  },
     { pattern = { "/%*", "%*/" },           type = "comment"  },
     { pattern = { '"', '"', '\\' },         type = "string"   },
     { pattern = { "'", "'", '\\' },         type = "string"   },

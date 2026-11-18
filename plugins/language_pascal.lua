@@ -1,17 +1,17 @@
 -- mod-version:3
 local syntax = require "core.syntax"
 
-syntax.add {
+local definition = {
   name = "Pascal",
   files = { "%.pas$", "%.pp$", "%.p$", "%.dpr$" },
   comment = "//",
   patterns = {
     -- comments
     { pattern = "//.*",                  type = "comment" },
-    { pattern = "{.-}",                  type = "comment" },
+    { pattern = { "{", "}" },            type = "comment" },
     { pattern = { "%(%*", "%*%)" },      type = "comment" },
     -- strings
-    { pattern = { "'", "'", "\\" },      type = "string" },
+    { pattern = { "'", "'" },            type = "string" },
     -- compiler directives
     { pattern = "#%d+",                  type = "string" },
     -- uppercase constants of at least 2 chars in len
@@ -19,6 +19,9 @@ syntax.add {
       type = "number"
     },
     -- numbers
+    { pattern = "%$%x+",                 type = "number" },
+    { pattern = "&[0-7]+",               type = "number" },
+    { pattern = "%%[01]+",               type = "number" },
     { pattern = "0x[%da-fA-F]+",         type = "number" },
     { pattern = "%d+%.%d+",              type = "number" },
     { pattern = "%d+",                   type = "number" },
@@ -97,3 +100,24 @@ syntax.add {
     ["exit"] = "function"
   }
 }
+
+-- Match keywords independently of their spelling's case.
+local groups = {}
+for word, token_type in pairs(definition.symbols) do
+  local escaped = word:gsub("([^%w_])", "\\%1")
+  groups[token_type] = groups[token_type] or {}
+  table.insert(groups[token_type], escaped)
+end
+local token_types = {}
+for token_type in pairs(groups) do token_types[#token_types + 1] = token_type end
+table.sort(token_types)
+for _, token_type in ipairs(token_types) do
+  local words = groups[token_type]
+  table.sort(words)
+  table.insert(definition.patterns, 1, {
+    regex = "(?i:" .. table.concat(words, "|") .. ")(?![a-zA-Z0-9_])",
+    type = token_type,
+  })
+end
+
+syntax.add(definition)

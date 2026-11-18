@@ -1,20 +1,41 @@
 -- mod-version:3
 local syntax = require "core.syntax"
 
-syntax.add {
+local expression = { patterns = {}, symbols = {} }
+local function string_contents(interpolated, verbatim)
+  local patterns = {}
+  if verbatim then
+    patterns[#patterns + 1] = { pattern = '""', type = "character.special" }
+  else
+    patterns[#patterns + 1] = { pattern = "\\.", type = "character.special" }
+  end
+  if interpolated then
+    patterns[#patterns + 1] = { pattern = "{{", type = "string" }
+    patterns[#patterns + 1] = { pattern = "}}", type = "string" }
+    patterns[#patterns + 1] = { pattern = { "{", "}" }, type = "keyword2", syntax = expression }
+  end
+  patterns[#patterns + 1] = { pattern = '[^"{\\]+', type = "string" }
+  patterns[#patterns + 1] = { pattern = ".", type = "string" }
+  return { patterns = patterns, symbols = {} }
+end
+
+local csharp = {
   name = "C#",
   files = "%.cs$",
   comment = "//",
   patterns = {
-    { pattern = "//.-\n",                   type = "comment"  },
+    { pattern = "//.*",                   type = "comment"  },
     { pattern = { "/%*", "%*/" },           type = "comment"  },
-    { pattern = { '"', '"', '\\' },         type = "string"   },
-    { pattern = { "[%$%@]?\"", '"', '\\' }, type = "string"   }, -- string interpolation and verbatim
+    { regex = { '[$]@"|@[$]"', '"(?!")' }, type = "string", syntax = string_contents(true, true) },
+    { regex = { '@"', '"(?!")' }, type = "string", syntax = string_contents(false, true) },
+    { pattern = { '%$"', '"', '\\' }, type = "string", syntax = string_contents(true, false) },
+    { pattern = { '"', '"', '\\' }, type = "string", syntax = string_contents(false, false) },
+    { pattern = { "{", "}" }, type = "normal", syntax = expression },
     { pattern = "'\\x%x?%x?%x?%x'",         type = "string"   }, -- character hexadecimal escape sequence
     { pattern = "'\\u%x%x%x%x'",            type = "string"   }, -- character unicode escape sequence
     { pattern = "'\\?.'",                   type = "string"   }, -- character literal
     { pattern = "-?0x%x+",                  type = "number"   },
-    { pattern = "-?%d+[%d%.eE]*f?",         type = "number"   },
+    { regex = "-?(?:\\d+\\.(?!\\.)\\d*|\\.\\d\\d*|\\d+)(?:[eE][+-]?\\d+)?f?",         type = "number"   },
     { pattern = "-?%.?%d+f?",               type = "number"   },
     { pattern = "[%+%-=/%*%^%%<>!~|&]",     type = "operator" },
     { pattern = "%?%?",                     type = "operator" }, -- ?? null-coalescing
@@ -119,4 +140,8 @@ syntax.add {
     ["null"]       = "literal",
   },
 }
+
+expression.patterns, expression.symbols = csharp.patterns, csharp.symbols
+
+syntax.add(csharp)
 

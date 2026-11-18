@@ -6,7 +6,7 @@ syntax.add {
   files = { "%.zig$" },
   comment = "//",
   patterns = {
-    { pattern = "//.-\n",                       type = "comment"  },
+    { pattern = "//.*",                       type = "comment"  },
     { pattern = "\\\\.-\n",                     type = "string" },
     { pattern = { '"', '"', '\\' },             type = "string" },
     { pattern = { "'", "'", '\\' },             type = "string" },

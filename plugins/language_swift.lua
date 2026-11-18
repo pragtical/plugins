@@ -1,20 +1,40 @@
--- Author: Rohan Vashisht: https://github.com/rohanvashisht1234/
-
-
 -- mod-version:3
+-- Author: Rohan Vashisht: https://github.com/rohanvashisht1234/
 local syntax = require "core.syntax"
 
-syntax.add {
+local block_comment = { patterns = {}, symbols = {} }
+block_comment.patterns = {
+  { pattern = { "/%*", "%*/" }, type = "comment", syntax = block_comment },
+  { pattern = "[^/%*]+", type = "comment" },
+  { pattern = ".", type = "comment" },
+}
+
+local expression = { patterns = {}, symbols = {} }
+local function string_contents(raw)
+    return {
+        patterns = {
+            { pattern = { raw and "\\#%(" or "\\%(", "%)" }, type = "keyword2", syntax = expression },
+            { pattern = raw and "\\#." or "\\.", type = "character.special" },
+            { pattern = '[^"\\]+', type = "string" },
+            { pattern = ".", type = "string" },
+        },
+        symbols = {},
+    }
+end
+
+local swift = {
     name = "Swift",
     files = { "%.swift$" },
     comment = "//",
     patterns = {
-        { pattern = { '"', '"', '\\' },         type = "string" },                           -- tested ok
-        { pattern = { '"""', '"""', '\\' },     type = "string" },                           -- tested ok
-        { pattern = { '#"', '"#', '\\' },       type = "string" },                           -- tested ok
-        { pattern = { '#"""', '"""#', '\\' },   type = "string" },                           -- tested ok
+        { pattern = { '"""', '"""', '\\' }, type = "string", syntax = string_contents(false) },
+        { pattern = { '"', '"', '\\' }, type = "string", syntax = string_contents(false) },
+        { pattern = { '#"""', '"""#' }, type = "string", syntax = string_contents(true) },
+        { pattern = { '#"', '"#' }, type = "string", syntax = string_contents(true) },
+        { pattern = { "%(", "%)" }, type = "normal", syntax = expression },
+        { pattern = "%.%.[%.<]", type = "operator" },
         { pattern = "//.*",                     type = "comment" },                          -- tested ok
-        { pattern = { "/%*", "%*/" },           type = "comment" },                          -- tested ok
+        { pattern = { "/%*", "%*/" },           type = "comment", syntax = block_comment },                          -- tested ok
         { pattern = "[!%-/*?:=><+]",            type = "operator" },                         -- tested ok
         { pattern = "[%a_][%w_]*%f[(]",         type = "function" },                         -- tested ok
         { pattern = "let()%s+()[%a_][%w_]*",    type = { "keyword", "normal", "literal" } }, -- tested ok
@@ -24,7 +44,7 @@ syntax.add {
         { pattern = "class()%s+()[%a_][%w_]*",  type = { "keyword", "normal", "literal" } }, -- tested ok
         { pattern = "enum()%s+()[%a_][%w_]*",   type = { "keyword", "normal", "literal" } }, -- tested ok
 
-        { pattern = "-?%d+[%d%.eE_]*",          type = "number" },                           -- tested ok
+        { regex = "-?(?:\\d[\\d_]*\\.(?!\\.)[\\d_]*|\\.\\d[\\d_]*|\\d[\\d_]*)(?:[eE][+-]?\\d[\\d_]*)?",          type = "number" },                           -- tested ok
         { pattern = "-?%.?%d+",                 type = "number" },                           -- tested ok
         { pattern = "[%a_][%w_]*",              type = "normal" },                           -- tested ok
     },
@@ -147,3 +167,7 @@ syntax.add {
         ["at"]              = "keyword2", -- tested ok
     }
 }
+
+expression.patterns, expression.symbols = swift.patterns, swift.symbols
+
+syntax.add(swift)

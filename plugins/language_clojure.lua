@@ -1,14 +1,15 @@
--- Author: Rohan Vashisht: https://github.com/RohanVashisht1234/
-
 -- mod-version:3
+-- Author: Rohan Vashisht: https://github.com/RohanVashisht1234/
 local syntax = require "core.syntax"
+
 syntax.add {
     name = "Clojure",
     comment = ";;",
-    files = { 
+    files = {
         "%.clj$",
-        "%.cljs$", 
-        "%.clc$", 
+        "%.cljs$",
+        "%.cljc$",
+        "%.clc$",
         "%.edn$",
     },
     patterns = {
@@ -24,7 +25,9 @@ syntax.add {
         { pattern = '%(()require()%s+()[%a_][%w_]*',          type = { 'normal', 'keyword', 'literal', 'literal' } }, -- highlight the word after require keyword
         { pattern = '%(()[%a_][%w_/]*',                       type = { 'normal', 'literal' } },                       -- patterns that are like this: (my_function/subdir_1)
         { pattern = '-?0x%x+',                                type = 'number' },                                      -- Hexadecimal
-        { pattern = '-?%d+[%d%.eE]*f?',                       type = 'number' },                                      -- Floating-point numbers
+        { regex = "-?(?:\\d+\\.(?!\\.)\\d*|\\.\\d+|\\d+)(?:[eE][+-]?\\d+)?M?",
+          type = 'number'
+        },                                      -- Floating-point numbers
         { pattern = '-?%.?%d+f?',                             type = 'number' },                                      -- Floating-point numbers
         { pattern = '[!%#%$%%&*+./%<=>%?@\\%^|%-~:]',         type = 'operator' },                                    -- Character classes
         { pattern = "[%a_'][%w_']*",                          type = 'normal' },                                      -- Normal

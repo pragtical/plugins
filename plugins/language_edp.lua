@@ -13,7 +13,9 @@ syntax.add {
     { pattern = { "/%*", "%*/" },           type = "comment" },
     { pattern = { '"', '"', '\\' },         type = "string" },
     { pattern = "0x%x+[%x']*",              type = "number" },
-    { pattern = "%d+[%d%.'eE]*f?",          type = "number" },
+    { regex = "(?:\\d[\\d']*\\.(?!\\.)[\\d']*|\\.\\d[\\d']*|\\d[\\d']*)(?:[eE][+-]?\\d[\\d']*)?f?",
+      type = "number"
+    },
     { pattern = "%.?%d+[%d']*f?",           type = "number" },
     { pattern = "[%+%-=/%*%^%%<>!~|:&]",    type = "operator" },
     { pattern = "##",                       type = "operator" },

@@ -6,7 +6,8 @@ syntax.add {
   files = { "%.sass$" ,"%.scss$"},
   comment = "//",
   patterns = {
-    { pattern = "/[/%*].-\n",             type = "comment"  },
+    { pattern = "//.*",              type = "comment"  },
+    { pattern = { "/%*", "%*/" },        type = "comment"  },
     { pattern = { '"', '"', '\\' },       type = "string"   },
     { pattern = { "'", "'", '\\' },       type = "string"   },
     { pattern = "$%w+",                   type = "keyword"  },

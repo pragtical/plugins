@@ -1,7 +1,6 @@
 -- mod-version:3
 -- Support for the GDScript programming language: https://godotengine.org/
 -- Covers the most used keywords up to Godot version 3.2.x
-
 local syntax = require "core.syntax"
 
 syntax.add {
@@ -9,11 +8,15 @@ syntax.add {
   files = { "%.gd$" },
   comment = "#",
   patterns = {
-    { pattern = "#.-\n",                    type = "comment"  },
+    { pattern = "#.*",                    type = "comment"  },
+    { pattern = { '"""', '"""', '\\' },     type = "string"   },
+    { pattern = { "'''", "'''", '\\' },     type = "string"   },
     { pattern = { '"', '"', '\\' },         type = "string"   },
     { pattern = { "'", "'", '\\' },         type = "string"   },
     { pattern = "-?0x%x*",                  type = "number"   },
-    { pattern = "-?%d+[%d%.e]*",            type = "number"   },
+    { regex = "-?(?:\\d+\\.(?!\\.)\\d*|\\.\\d\\d*|\\d+)(?:[eE][+-]?\\d+)?",
+      type = "number"
+    },
     { pattern = "-?%.?%d+",                 type = "number"   },
     { pattern = "[%+%:%-=/%*%^%%<>!~|&]",   type = "operator" },
     { pattern = "[%a_][%w_]*%f[(]",         type = "function" },

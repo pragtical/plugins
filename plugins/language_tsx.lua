@@ -3,7 +3,18 @@
 -- Current JS syntax highlighter will highlight half the document due to closing tags.
 local syntax = require "core.syntax"
 
-syntax.add {
+local expression = { patterns = {}, symbols = {} }
+local template_string = {
+  patterns = {
+    { pattern = "\\.", type = "character.special" },
+    { pattern = { "%${", "}" }, type = "keyword2", syntax = expression },
+    { pattern = "[^`$\\]+", type = "string" },
+    { pattern = ".", type = "string" },
+  },
+  symbols = {},
+}
+
+local definition = {
   name = "TypeScript with JSX",
   files = { "%.tsx$", "%.astro$" },
   comment = "//",
@@ -13,9 +24,10 @@ syntax.add {
     { pattern = { "/%*", "%*/" },       type = "comment"  },
     { pattern = { '"', '"', '\\' },     type = "string"   },
     { pattern = { "'", "'", '\\' },     type = "string"   },
-    { pattern = { "`", "`", '\\' },     type = "string"   },
+    { pattern = { "`", "`", '\\' }, type = "string", syntax = template_string },
+    { pattern = { "{", "}" }, type = "normal", syntax = expression },
     { pattern = "0x[%da-fA-F]+",        type = "number"   },
-    { pattern = "-?%d+[%d%.eE]*",       type = "number"   },
+    { regex = "-?(?:\\d+\\.(?!\\.)\\d*|\\.\\d\\d*|\\d+)(?:[eE][+-]?\\d+)?",       type = "number"   },
     { pattern = "-?%.?%d+",             type = "number"   },
     { pattern = "[%+%-=/%*%^%%<>!~|&]", type = "operator" },
     { pattern = "interface%s()[%a_][%w_]*", type = {"keyword", "keyword2"} },
@@ -73,3 +85,7 @@ syntax.add {
     ["this"]       = "keyword2",
   },
 }
+
+expression.patterns, expression.symbols = definition.patterns, definition.symbols
+
+syntax.add(definition)

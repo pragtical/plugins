@@ -31,16 +31,23 @@ config.plugins.memoryusage = common.merge({
   }
 }, config.plugins.memoryusage)
 
+local last_usage
+
 core.status_view:add_item({
   name = "status:memory-usage",
   alignment = StatusView.Item.RIGHT,
   get_item = function()
+    if core.request_update then core.request_update(1) end
+    local usage = string.format(
+      "%.2f MB", (math.floor(collectgarbage("count") / 10.24) / 100)
+    )
+    if usage ~= last_usage then
+      last_usage = usage
+      core.redraw = true
+    end
     return {
       style.text,
-      string.format(
-        "%.2f MB",
-        (math.floor(collectgarbage("count") / 10.24) / 100)
-      )
+      usage
     }
   end,
   position = 1,

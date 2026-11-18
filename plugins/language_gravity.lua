@@ -8,7 +8,7 @@ syntax.add {
 	block_comment = {"/*", "*/"},
 	patterns = {
 		{ pattern = "#![^\n]+", type = "comment" },
-		{ pattern = "//[^\n]+", type = "comment" },
+		{ pattern = "//.*", type = "comment" },
 		{ pattern = { "/%*", "%*/" }, type = "comment" },
 		{ pattern = { '"', '"', "\\" }, type = "string" },
 
@@ -20,7 +20,7 @@ syntax.add {
 		{ pattern = "0[bB][0-1]+%f[%D]", type = "number" },
 		{ pattern = "0[oO][0-7]+", type = "number" },
 		{ pattern = "0[xX]%x+", type = "number" },
-		{ pattern = "%.?%d+[eE]?%-?%d*", type = "number" },
+		{ regex = [[(?:\d+\.(?!\.)\d*|\.\d+|\d+)(?:[eE][+-]?\d+)?]], type = "number" },
 
 		{ pattern = "#%s*include%s*%f[\"]", type = "literal"},
 		{ pattern = "#%s*unittest%s*%f[{]", type = "literal"},

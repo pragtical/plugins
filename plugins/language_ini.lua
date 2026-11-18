@@ -1,5 +1,4 @@
 -- mod-version:3
-
 local syntax = require "core.syntax"
 
 syntax.add {
@@ -18,7 +17,7 @@ syntax.add {
     { pattern = { "'''", "'''" }, type = "string" },
     { pattern = { "'", "'" }, type = "string" },
     -- keys
-    { pattern = "^[^=]+()=%s*", type = {"function", "operator"} },
+    { pattern = "^%s*[^%s=;#%[%]][^=;#%[%]\n]*()=%s*", type = {"function", "operator"} },
     -- prevent treating boolean values with ending space as non enclosed string
     { pattern = "true%s+", type = "literal" },
     { pattern = "false%s+", type = "literal" },
@@ -31,7 +30,7 @@ syntax.add {
     { pattern = "%a+%S*", type = "symbol" },
     -- numbers values
     { pattern = "[%-+]?%.?%d[%d_]*%.[%d_]+%f[%s%.]", type = "number" },
-    { pattern = "[%-+]?%.?%d[%d_]*%f[%s]", type = "number" },
+    { pattern = "[%-+]?%.?%d[%d_]*%f[^%w_.]", type = "number" },
     -- any non enclosed string value
     { pattern = "%a+", type = "symbol" },
   },

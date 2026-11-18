@@ -11,34 +11,13 @@ local DocView = require "core.docview"
 config.plugins.centerdoc = common.merge({
   enabled = true,
   zen_mode = false,
+  zen_mode_hide_menu_bar = true,
   zen_mode_hide_status_bar = true,
   zen_mode_hide_tabs = true,
   zen_mode_hide_line_numbers = true
 }, config.plugins.centerdoc)
 
-local draw_line_gutter = DocView.draw_line_gutter
 local get_gutter_width = DocView.get_gutter_width
-
-
-function DocView:draw_line_gutter(line, x, y, width)
-  local lh
-  if not config.plugins.centerdoc.enabled then
-    lh = draw_line_gutter(self, line, x, y, width)
-  else
-    local real_gutter_width
-    if type(config.show_line_numbers) == "boolean" then
-      real_gutter_width = config.show_line_numbers
-        and self:get_font():get_width(#self.doc.lines)
-        or self:get_gutter_width()
-    else
-      real_gutter_width = self:get_font():get_width(#self.doc.lines)
-    end
-    local offset = self:get_gutter_width() - real_gutter_width * 2
-    offset = offset - style.padding.x / 2
-    lh = draw_line_gutter(self, line, x + offset, y, real_gutter_width)
-  end
-  return lh
-end
 
 
 function DocView:get_gutter_width()
@@ -55,6 +34,10 @@ end
 local previous_win_status
 ---@type boolean
 local previous_treeview_status
+---@type boolean?
+local previous_toolbar_status
+---@type boolean?
+local previous_menu_bar_status
 ---@type boolean
 local previous_statusbar_status
 ---@type boolean
@@ -62,9 +45,23 @@ local previous_tabs_status
 ---@type boolean
 local previous_line_numbers_status
 
+local function set_menu_bar_visible(visible)
+  if core.menu_view and visible ~= nil then
+    if visible then
+      core.menu_view:show()
+    else
+      core.menu_view:hide()
+    end
+  end
+end
+
 local function save_previous_status()
-  previous_win_status = system.get_window_mode(core.window)
+  previous_win_status = core.window
+    and system.get_window_mode(core.window)
+    or core.window_mode
   previous_treeview_status = treeview.visible
+  previous_toolbar_status = treeview.toolbar and treeview.toolbar.visible
+  previous_menu_bar_status = core.menu_view and core.menu_view.visible
   previous_statusbar_status = core.status_view.visible
   previous_tabs_status = config.hide_tabs
   previous_line_numbers_status = config.show_line_numbers
@@ -81,6 +78,10 @@ local function toggle_zen_mode(enabled)
       command.perform "core:toggle-fullscreen"
     end
     treeview.visible = false
+    if treeview.toolbar then treeview.toolbar.visible = false end
+    if config.plugins.centerdoc.zen_mode_hide_menu_bar then
+      set_menu_bar_visible(false)
+    end
     if config.plugins.centerdoc.zen_mode_hide_status_bar then
       core.status_view.visible = false
     end
@@ -102,6 +103,10 @@ local function toggle_zen_mode(enabled)
       command.perform "core:toggle-fullscreen"
     end
     treeview.visible = previous_treeview_status
+    if treeview.toolbar then treeview.toolbar.visible = previous_toolbar_status end
+    if config.plugins.centerdoc.zen_mode_hide_menu_bar then
+      set_menu_bar_visible(previous_menu_bar_status)
+    end
     if config.plugins.centerdoc.zen_mode_hide_status_bar then
       core.status_view.visible = previous_statusbar_status
     end
@@ -135,13 +140,31 @@ config.plugins.centerdoc.config_spec = {
     default = false,
     on_apply = function(enabled)
       if on_startup then
-        core.add_thread(function()
-          save_previous_status()
-          toggle_zen_mode(enabled)
-        end)
+        if enabled then -- don't step over config.plugins.centerdoc.enabled
+          core.add_thread(function()
+            save_previous_status()
+            toggle_zen_mode(enabled)
+          end)
+        end
         on_startup = false
       else
         toggle_zen_mode(enabled)
+      end
+    end
+  },
+  {
+    label = "Hide Menu Bar on Zen Mode",
+    description = "Hide the menu bar when using zen mode.",
+    path = "zen_mode_hide_menu_bar",
+    type = "toggle",
+    default = true,
+    on_apply = function(enabled)
+      if config.plugins.centerdoc.zen_mode then
+        if enabled then
+          set_menu_bar_visible(false)
+        else
+          set_menu_bar_visible(previous_menu_bar_status)
+        end
       end
     end
   },

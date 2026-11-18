@@ -72,16 +72,18 @@ core.open_doc = function(filename)
 end
 
 -- Save recent files list on program quit
-local core_run = core.run
-core.run = function()
-  core_run()
-  if #recent_files > 0 then
-    local file = io.open(recent_files_path, "w+")
-    if file then
-      file:write("return ", common.serialize(recent_files, {pretty = true}))
-      file:close()
+local core_exit = core.exit
+core.exit = function(quit_fn, force)
+  if force then
+    if #recent_files > 0 then
+      local file = io.open(recent_files_path, "w+")
+      if file then
+        file:write("return ", common.serialize(recent_files, {pretty = true}))
+        file:close()
+      end
     end
   end
+  core_exit(quit_fn, force)
 end
 
 -- Register command and default keymap

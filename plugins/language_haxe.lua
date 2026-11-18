@@ -1,5 +1,6 @@
 -- mod-version:3
 local syntax = require "core.syntax"
+local expression = { patterns = {}, symbols = {} }
 
 syntax.add {
   name = "Haxe Compiler Arguments",
@@ -17,9 +18,12 @@ syntax.add {
   name = "Haxe String Interpolation",
   files = "%.hx__string_interp$",
   patterns = {
-    { pattern = {"%${", "}", "\\"},     type="keyword", syntax = ".hx" },
-    { pattern = {"%$", "%s", "\\"},     type="keyword", syntax = ".hx" },
-    { pattern = "[^ ]",                 type = "string"}
+    { pattern = "\\.", type = "character.special" },
+    { pattern = "%$%$", type = "string" },
+    { pattern = { "%${", "}" }, type = "keyword", syntax = expression },
+    { pattern = "%$[%a_][%w_]*", type = "keyword" },
+    { pattern = "[^'$\\]+", type = "string" },
+    { pattern = ".", type = "string" },
   },
   symbols = {}
 }
@@ -34,7 +38,7 @@ syntax.add {
   symbols = {}
 }
 
-syntax.add {
+local haxe = {
   name = "Haxe",
   files = "%.hx$",
   comment = "//",
@@ -47,14 +51,13 @@ syntax.add {
     { pattern = "import%s+()[%w%.]*%.()%u[%w]*",            type = {"keyword", "normal", "keyword2"}},
     { pattern = "abstract%s+()%u[%w_]*%s*%(()%s*%u[%w_]*",  type = {"keyword2", "normal", "keyword2"} },
     { pattern = "from%s+()%u[%w_]*%s+()to%s+()%u[%w_]*",    type = {"keyword", "keyword2", "keyword", "keyword2"}},
-    { pattern = "//.*\n",                                   type = "comment"  },
+    { pattern = "//.*",                                     type = "comment"  },
     { pattern = { "/%*", "%*/" },                           type = "comment"  },
     { pattern = { '"', '"', '\\' },                         type = "string"   },
-    { pattern = { "'", "'", "\\" },                         type = "string", syntax = ".hx__string_interp"},  
-    { pattern = "-?%.?%d+",                                 type = "number"   },
+    { pattern = { "'", "'", "\\" },                         type = "string", syntax = ".hx__string_interp"},
+    { pattern = { "{", "}" }, type = "normal", syntax = expression },
     { pattern = "-?0x%x+",                                  type = "number"   },
-    { pattern = "-?%d+%.[%deE]+",                           type = "number"   },
-    { pattern = "-?%d+[%deE]+",                             type = "number"   },
+    { regex = [[-?(?:\d+\.(?!\.)\d*|\.\d+|\d+)(?:[eE][+-]?\d+)?]], type = "number" },
     { pattern = "[%+%-%.=/%*%^%%<>!~|&]",                   type = "operator" },
     { pattern = "[%a_][%w_]*()%s*%f[(]",                    type = {"function", "normal"} },
     { pattern = "[%a_][%w_]*",                              type = "symbol"   },
@@ -111,3 +114,6 @@ syntax.add {
   },
 }
 
+expression.patterns, expression.symbols = haxe.patterns, haxe.symbols
+
+syntax.add(haxe)

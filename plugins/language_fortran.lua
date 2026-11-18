@@ -1,10 +1,8 @@
--- Author: Rohan Vashisht: https://github.com/rohanvashisht1234/
-
-
 -- mod-version:3
+-- Author: Rohan Vashisht: https://github.com/rohanvashisht1234/
 local syntax = require "core.syntax"
 
-syntax.add {
+local definition = {
     name = "Fortran",                                                                         -- tested ok
     files = {
         "%.f$",                                                                               -- tested ok
@@ -24,7 +22,9 @@ syntax.add {
         { pattern = "use()%s+()[%a_][%w_]*",     type = { "keyword", "normal", "literal" } }, -- tested ok
         { pattern = "struct()%s+()[%a_][%w_]*",  type = { "keyword", "normal", "literal" } }, -- tested ok
 
-        { pattern = "-?%d+[%d%.eE_]*",           type = "number" },                           -- tested ok
+        { regex = [[-?(?:\d+\.(?!\.)\d*|\.\d+|\d+)(?:[eEdD][+-]?\d+)?(?:_[a-zA-Z0-9_]+)?]],
+          type = "number"
+        },
         { pattern = "-?%.?%d+",                  type = "number" },                           -- tested ok
         { pattern = "[%a_][%w_]*",               type = "normal" },                           -- tested ok
     },
@@ -83,3 +83,24 @@ syntax.add {
         [".neqv."]  = "keyword2", -- tested ok
     }
 }
+
+-- Match keywords independently of their spelling's case.
+local groups = {}
+for word, token_type in pairs(definition.symbols) do
+  local escaped = word:gsub("([^%w_])", "\\%1")
+  groups[token_type] = groups[token_type] or {}
+  table.insert(groups[token_type], escaped)
+end
+local token_types = {}
+for token_type in pairs(groups) do token_types[#token_types + 1] = token_type end
+table.sort(token_types)
+for _, token_type in ipairs(token_types) do
+  local words = groups[token_type]
+  table.sort(words)
+  table.insert(definition.patterns, 1, {
+    regex = "(?i:" .. table.concat(words, "|") .. ")(?![a-zA-Z0-9_])",
+    type = token_type,
+  })
+end
+
+syntax.add(definition)

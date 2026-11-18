@@ -17,24 +17,25 @@ syntax.add {
     { pattern = { '"', '"', "\\" }, type = "string" },
 
     -- Numbers
-    { pattern = "%.?%d+", type = "number" },
+    { pattern = "%d+%.?%d*", type = "number" },
+    { pattern = "%.%d+", type = "number" },
 
     -- Child type
-    { pattern = "%[.*%]", type = "literal" },
+    { pattern = "%[[^%]\n]*%]", type = "literal" },
 
     -- Operators
     { pattern = "%$", type = "operator" },
     { pattern = "=>%s*%$().*()%(%)", type = { "operator", "function", "normal" } },
 
     -- Properties
-    { pattern = "[%w-_]+()%s*:", type = { "keyword", "normal" } },
+    { pattern = "[%w_%-]+()%s*:", type = { "keyword", "normal" } },
 
     -- Classes
     { pattern = "[%w_-%.]+%s*(){", type = { "keyword2", "normal"} },
     { pattern = "[%w_-%.]+%s*()[%w_-]+%s*{", type = { "keyword2", "normal"} },
 
     -- Symbols
-    { pattern = "[%w-_]+", type = "symbol" },
+    { pattern = "[%w_%-]+", type = "symbol" },
 
   },
   symbols = {
@@ -87,4 +88,3 @@ syntax.add {
     ["C_"] = "operator",
   }
 }
-
