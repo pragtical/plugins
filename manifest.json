@@ -1892,8 +1892,8 @@
       "description": "Detects and underlines URLs in files, and enables a context menu entry and a hotkey to open them in the default browser.",
       "id": "link_opener",
       "mod_version": "3",
-      "remote": "https://github.com/irisdominguez/pragtical_link-opener_plugin:20760da1fd9f677d87497b48e79a7b4b197bd370",
-      "version": "0.1.4"
+      "remote": "https://github.com/irisdominguez/pragtical_link-opener_plugin:f32b330bae05e293a006ec5492903cbc714a5e5c",
+      "version": "0.1.5"
     },
     {
       "description": "Advanced linter with ErrorLens-like error reporting. Compatible with linters made for `linter` *([screenshot](https://raw.githubusercontent.com/pragtical/lintplus/master/screenshots/1.png))*",
