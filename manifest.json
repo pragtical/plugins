@@ -2423,8 +2423,8 @@
       "description": "An integrated terminal for pragtical.",
       "id": "terminal",
       "mod_version": "3",
-      "remote": "https://github.com/pragtical/terminal.git:4ecc2dac09487094ca4e6cf9ccbf775624f91106",
-      "version": "1.095"
+      "remote": "https://github.com/pragtical/terminal.git:0e31dc6cce191f4b933a7af62e0423fd95b0c249",
+      "version": "2.0"
     },
     {
       "description": "Allows you to play tetris directly in the editor.",
