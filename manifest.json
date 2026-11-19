@@ -2101,7 +2101,7 @@
       "id": "matrix",
       "mod_version": "3",
       "path": "plugins/matrix.lua",
-      "version": "0.1.1"
+      "version": "0.1.2"
     },
     {
       "description": "Local audio and video playback with playlists, artwork, visualizations and fullscreen through libmpv.",

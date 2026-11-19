@@ -357,6 +357,7 @@ configure_screensaver = function(enabled)
 end
 
 local root_update = RootView.update
+local exclusive_presentation = false
 ---Schedule the screensaver's actual idle deadline through normal view updates.
 function RootView:update(...)
   local result = root_update(self, ...)
@@ -368,9 +369,14 @@ function RootView:update(...)
     return result
   end
   local now = system.get_time()
+  -- Another view owns drawing while watching a video or using an exclusive UI.
+  -- Reset once more when it ends, including after a long paused presentation.
+  local exclusive = not fullscreen and rawget(self, "draw") ~= nil
+  if exclusive or exclusive_presentation then last_activity = now end
+  exclusive_presentation = exclusive
   if not system.window_has_focus(core.window) then
     last_activity = now
-  elseif not fullscreen then
+  elseif not fullscreen and not exclusive then
     local remaining = last_activity
       + math.max(1, config.plugins.matrix.idle_minutes) * 60 - now
     if remaining <= 0 then enter_fullscreen(MatrixView(), true)
