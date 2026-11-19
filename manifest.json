@@ -2566,8 +2566,8 @@
       "id": "webbrowser",
       "mod_version": "3.14.0",
       "name": "Web Browser",
-      "remote": "https://github.com/pragtical/webbrowser.git:9229b36cce7d07abf558c85ff41490732cdf41e9",
-      "version": "0.1.0"
+      "remote": "https://github.com/pragtical/webbrowser.git:495e7445612086b1d9c8db016a7333eacb5a8a82",
+      "version": "0.2.0"
     },
     {
       "description": "Adds in a word count to the statusview.",
