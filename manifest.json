@@ -2548,13 +2548,6 @@
       "version": "0.1.3"
     },
     {
-      "description": "VI(vim?) bindings with a hint of DOOM Emacs, for pragtical",
-      "id": "vibe",
-      "mod_version": "3",
-      "remote": "https://github.com/pragtical/vibe:e65f212d522fbe0799f8ea929436a7f142f49723",
-      "version": "0.1.2"
-    },
-    {
       "description": "Audio visualizer for Pragtical using cava",
       "id": "visu",
       "mod_version": "3",
