@@ -296,9 +296,9 @@
     {
       "description": "Build targets, compiler diagnostics and program output. Supports Make, CMake, Meson, Gradle, shell scripts and an internal C/C++ backend. *([screenshot](https://raw.githubusercontent.com/pragtical/ide/master/screenshots/build.png))*",
       "id": "build",
-      "mod_version": "3.12.3",
-      "remote": "https://github.com/pragtical/ide.git:61efc5fb30451f3b5439036f55daa6e4790a57c7",
-      "version": "0.3.1"
+      "mod_version": "3.15.0",
+      "remote": "https://github.com/pragtical/ide.git:299e914e979b14b5eba144c5278c90de7425140e",
+      "version": "0.4.0"
     },
     {
       "description": "Centers document's content on the screen and adds zen mode support *([screenshot](https://user-images.githubusercontent.com/3920290/82127896-bf6e4500-97ae-11ea-97fc-ba9a552bc9a4.png))*",
@@ -412,9 +412,9 @@
     {
       "description": "Debugger integration with GDB MI and DAP backends, source breakpoints, stack navigation and watch expressions. *([screenshot](https://raw.githubusercontent.com/pragtical/ide/master/screenshots/debugger.png))*",
       "id": "debugger",
-      "mod_version": "3.12.3",
-      "remote": "https://github.com/pragtical/ide.git:61efc5fb30451f3b5439036f55daa6e4790a57c7",
-      "version": "0.3.1"
+      "mod_version": "3.15.0",
+      "remote": "https://github.com/pragtical/ide.git:299e914e979b14b5eba144c5278c90de7425140e",
+      "version": "0.4.0"
     },
     {
       "description": "Adds the current workspace and file to your Discord rich presence. Linux-only.",
@@ -2604,9 +2604,9 @@
     {
       "description": "A metapackage that turns Pragtical into an IDE for C/C++.",
       "id": "ide_c",
-      "mod_version": "3.12.3",
-      "remote": "https://github.com/pragtical/ide.git:61efc5fb30451f3b5439036f55daa6e4790a57c7",
-      "version": "0.1.1"
+      "mod_version": "3.15.0",
+      "remote": "https://github.com/pragtical/ide.git:299e914e979b14b5eba144c5278c90de7425140e",
+      "version": "0.2.0"
     },
     {
       "description": "A metapackage providing Pragtical language tools for Clojure.",
