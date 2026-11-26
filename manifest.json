@@ -2750,8 +2750,7 @@
       "id": "flying_island",
       "mod_version": "3",
       "name": "Flying Island",
-      "path": "plugins/flying_island",
-      "remote": "https://github.com/TongshiWang/pragtical-flying-island.git:072be6702a2d51e33cf76e081f2794a827110a7a",
+      "remote": "https://github.com/TongshiWang/pragtical-flying-island:451b66b889565f236bf63d1495c263d37df56ebe",
       "tags": [
         "ui",
         "theme",
@@ -2760,7 +2759,7 @@
         "transparency",
         "jetbrains"
       ],
-      "version": "1.0.0"
+      "version": "1.0.1"
     },
     {
       "description": "Simplified Chinese (zh-CN) UI localization for Pragtical covering menus, settings, dialogs, status bar, and Plugin Manager.",
@@ -2772,8 +2771,7 @@
       "id": "locale_zh_cn",
       "mod_version": "3",
       "name": "Simplified Chinese Localization",
-      "path": "plugins/locale_zh_cn",
-      "remote": "https://github.com/TongshiWang/pragtical-locale-zh-cn.git:0df1e832be01507afd272fd92f9aa1bd8a1d96b4",
+      "remote": "https://github.com/TongshiWang/pragtical-locale-zh-cn:0df1e832be01507afd272fd92f9aa1bd8a1d96b4",
       "tags": [
         "locale",
         "i18n",
