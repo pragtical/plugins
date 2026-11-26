@@ -2739,6 +2739,49 @@
         "fun"
       ],
       "version": "1.0.0"
+    },
+    {
+      "description": "JetBrains 2023+ Dark SVG icons, floating rounded islands UI, pill tabs, and Windows 11 transparency/DWM blur ported from Flying-Island-dark-for-VS-code.",
+      "extra": {
+        "author": "TongshiWang",
+        "follow_branch": "main",
+        "license": "MIT"
+      },
+      "id": "flying_island",
+      "mod_version": "3",
+      "name": "Flying Island",
+      "path": "plugins/flying_island",
+      "remote": "https://github.com/TongshiWang/pragtical-flying-island.git:072be6702a2d51e33cf76e081f2794a827110a7a",
+      "tags": [
+        "ui",
+        "theme",
+        "icons",
+        "svg",
+        "transparency",
+        "jetbrains"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "description": "Simplified Chinese (zh-CN) UI localization for Pragtical covering menus, settings, dialogs, status bar, and Plugin Manager.",
+      "extra": {
+        "author": "TongshiWang",
+        "follow_branch": "main",
+        "license": "MIT"
+      },
+      "id": "locale_zh_cn",
+      "mod_version": "3",
+      "name": "Simplified Chinese Localization",
+      "path": "plugins/locale_zh_cn",
+      "remote": "https://github.com/TongshiWang/pragtical-locale-zh-cn.git:0df1e832be01507afd272fd92f9aa1bd8a1d96b4",
+      "tags": [
+        "locale",
+        "i18n",
+        "chinese",
+        "zh-cn",
+        "ui"
+      ],
+      "version": "1.0.0"
     }
   ],
   "remotes": [
